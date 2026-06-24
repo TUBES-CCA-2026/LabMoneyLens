@@ -10,3 +10,7 @@ Route::get('/', function () {
 
 Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan');
 Route::get('/', [welcomecontroller::class, 'index'])->name('welcome');
+
+Route::get('/', function () {
+    return view('login');
+});
