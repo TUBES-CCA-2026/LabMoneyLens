@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-    @vite('resources/css/login.css')
+    <?php echo app('Illuminate\Foundation\Vite')('resources/css/login.css'); ?>
 </head>
 <body>
 
@@ -17,24 +17,24 @@
         
         <div class="left-side">
             <div class="logo-image-container">
-                <img src="{{ asset('image/logo.png') }}?v={{ time() }}" alt="Logo MoneyLens" class="site-logo">
+                <img src="<?php echo e(asset('image/logo.png')); ?>?v=<?php echo e(time()); ?>" alt="Logo MoneyLens" class="site-logo">
             </div>
         </div>
 
         <div class="right-side">
-            <form action="{{ route('login.post') }}" method="POST" class="login-form">
-                @csrf
+            <form action="<?php echo e(route('login.post')); ?>" method="POST" class="login-form">
+                <?php echo csrf_field(); ?>
 
-                @if($errors->any())
-                    <div class="login-error">{{ $errors->first() }}</div>
-                @endif
+                <?php if($errors->any()): ?>
+                    <div class="login-error"><?php echo e($errors->first()); ?></div>
+                <?php endif; ?>
 
                 <div class="form-group">
                     <label class="form-label" for="identifier">
                         <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                         Username / Email
                     </label>
-                    <input type="text" id="identifier" name="identifier" class="form-input" placeholder="USERNAME atau EMAIL" value="{{ old('identifier') }}" required>
+                    <input type="text" id="identifier" name="identifier" class="form-input" placeholder="USERNAME atau EMAIL" value="<?php echo e(old('identifier')); ?>" required>
                 </div>
 
                 <div class="form-group">
@@ -54,4 +54,4 @@
     </div>
 
 </body>
-</html>
+</html><?php /**PATH C:\yaya\LabMoneyLens\resources\views/login.blade.php ENDPATH**/ ?>
