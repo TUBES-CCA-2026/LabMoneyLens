@@ -43,12 +43,19 @@ class welcomecontroller extends Controller
             'uraian' => 'nullable|string|max:255',
             'nominal' => 'required|numeric|min:0',
             'id_jenis_pengeluaran' => 'required|integer',
+            'receipt_image' => 'nullable|image|max:5120',
         ]);
+
+        $receiptPath = null;
+        if ($request->hasFile('receipt_image')) {
+            $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
+        }
 
         DB::table('pengeluaran')->insert([
             'tanggal' => $data['tanggal'],
-            'uraian' => $data['uraian'] ?? null,
+            'uraian' => $data['uraian'] ?? '',
             'nominal' => $data['nominal'],
+            'foto_struk' => $receiptPath,
             'id_jenis_pengeluaran' => $data['id_jenis_pengeluaran'],
             'id_user' => session('user_id'),
             'is_confirmed' => false,

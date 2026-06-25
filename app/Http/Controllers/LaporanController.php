@@ -58,6 +58,34 @@ class LaporanController extends Controller
             ->sortByDesc('tanggal')
             ->values();
 
+        if ($request->query('export') === 'csv') {
+            $filename = 'laporan-' . now()->format('YmdHis') . '.csv';
+            $headers = [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            ];
+
+            $callback = function () use ($records) {
+                $output = fopen('php://output', 'w');
+                fprintf($output, "%s", chr(0xEF) . chr(0xBB) . chr(0xBF));
+                fputcsv($output, ['ID Laporan', 'Kategori', 'Jumlah (IDR)', 'Tanggal', 'Jenis']);
+
+                foreach ($records as $row) {
+                    fputcsv($output, [
+                        $row->id,
+                        $row->kategori,
+                        $row->jumlah,
+                        $row->tanggal,
+                        $row->tipe,
+                    ]);
+                }
+
+                fclose($output);
+            };
+
+            return response()->stream($callback, 200, $headers);
+        }
+
         $totalIncome = $pemasukan->sum('jumlah');
         $totalExpense = $pengeluaran->sum('jumlah');
         $balance = $totalIncome - $totalExpense;

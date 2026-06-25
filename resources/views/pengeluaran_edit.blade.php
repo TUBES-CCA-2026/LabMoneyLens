@@ -20,10 +20,12 @@
       </div>
       <nav class="sidebar-nav">
         <a href="{{ route('dashboard') }}" class="nav-item">Dashboard</a>
-        <a href="{{ route('welcome') }}" class="nav-item active">Pengeluaran</a>
-        <a href="{{ route('pemasukan') }}" class="nav-item">Pemasukan</a>
+        @unless(session('user_role') == 'Kepala Lab')
+          <a href="{{ route('welcome') }}" class="nav-item active">Pengeluaran</a>
+          <a href="{{ route('pemasukan') }}" class="nav-item">Pemasukan</a>
+          <a href="{{ route('recycle') }}" class="nav-item">Recycle Bin</a>
+        @endunless
         <a href="{{ route('laporan') }}" class="nav-item">Laporan</a>
-        <a href="{{ route('recycle') }}" class="nav-item">Recycle Bin</a>
       </nav>
       <div class="sidebar-logout">
         <form action="{{ route('logout') }}" method="POST">

@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PemasukanController;
+use App\Http\Controllers\ReceiptAnalysisController;
 use App\Http\Controllers\welcomecontroller;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,7 @@ Route::post('/pemasukan/store', [PemasukanController::class, 'store'])->name('pe
 Route::post('/pemasukan/confirm/{id}', [PemasukanController::class, 'confirm'])->name('pemasukan.confirm');
 Route::post('/pemasukan/delete/{id}', [PemasukanController::class, 'destroy'])->name('pemasukan.delete');
 Route::post('/pemasukan/confirm-all', [PemasukanController::class, 'confirmAll'])->name('pemasukan.confirmAll');
+Route::post('/receipt/parse', [ReceiptAnalysisController::class, 'parse'])->name('receipt.parse');
 Route::post('/pengeluaran/store', [App\Http\Controllers\welcomecontroller::class, 'store'])->name('pengeluaran.store');
 Route::get('/pengeluaran/edit/{id}', [App\Http\Controllers\welcomecontroller::class, 'edit'])->name('pengeluaran.edit');
 Route::post('/pengeluaran/update/{id}', [App\Http\Controllers\welcomecontroller::class, 'update'])->name('pengeluaran.update');

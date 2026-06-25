@@ -17,9 +17,9 @@ class DashboardController extends Controller
         $totalExpense = DB::table('pengeluaran')->sum('nominal');
         $balance = $totalIncome - $totalExpense;
 
-        $expenseCategories = DB::table('pengeluaran')
-            ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
-            ->select('jenis_pengeluaran.nama_jenis as category', DB::raw('SUM(pengeluaran.nominal) as total'))
+        $expenseCategories = DB::table('jenis_pengeluaran')
+            ->leftJoin('pengeluaran', 'jenis_pengeluaran.id_jenis_pengeluaran', '=', 'pengeluaran.id_jenis_pengeluaran')
+            ->select('jenis_pengeluaran.nama_jenis as category', DB::raw('COALESCE(SUM(pengeluaran.nominal), 0) as total'))
             ->groupBy('jenis_pengeluaran.nama_jenis')
             ->orderByDesc('total')
             ->get();

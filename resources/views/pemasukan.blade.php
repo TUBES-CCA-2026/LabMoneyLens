@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Pengeluaran — Dashboard</title>
 
   @vite(['resources/css/style1.css', 'resources/js/script1.js'])
+  <script>window.receiptParseUrl = "{{ route('receipt.parse') }}";</script>
 </head>
 <body>
 
@@ -29,24 +31,26 @@
           Dashboard
         </a>
 
-        <a href="{{ route('welcome') }}" class="nav-item">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
-          Pengeluaran
-        </a>
+        @unless(session('user_role') == 'Kepala Lab')
+          <a href="{{ route('welcome') }}" class="nav-item">
+            <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+            Pengeluaran
+          </a>
 
-        <a href="{{ route('pemasukan') }}" class="nav-item active">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Pemasukan
-        </a>
+          <a href="{{ route('pemasukan') }}" class="nav-item active">
+            <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Pemasukan
+          </a>
+
+          <a href="{{ route('recycle') }}" class="nav-item">
+            <svg viewBox="0 0 24 24" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Recycle Bin
+          </a>
+        @endunless
 
         <a href="{{ route('laporan') }}" class="nav-item">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           Laporan
-        </a>
-
-        <a href="{{ route('recycle') }}" class="nav-item">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          Recycle Bin
         </a>
       </nav>
 
@@ -70,14 +74,18 @@
         <p class="panel-subtitle">Tambahkan catatan pemasukan baru secara manual atau foto struk fisik Anda.</p>
 
         <div class="upload-zone" role="button" tabindex="0" aria-label="Unggah foto struk">
-          <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-          <span class="upload-label">Unggah foto di sini</span>
+          <span id="upload-preview">
+            <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <span class="upload-label">Unggah foto di sini</span>
+          </span>
         </div>
 
         <p class="divider-text">Atau secara manual</p>
 
-        <form method="POST" action="{{ route('pemasukan.store') }}" class="input-form">
+        <form id="receipt_form" method="POST" action="{{ route('pemasukan.store') }}" enctype="multipart/form-data" class="input-form">
           @csrf
+          <input type="file" id="receipt_image" name="receipt_image" accept="image/*" hidden>
+          <input type="hidden" id="receipt_type" name="type" value="pemasukan">
           <div class="form-group">
             <label class="form-label" for="kategori">Kategori</label>
             <select class="form-input" id="kategori" name="id_jenis_penerimaan" required>
@@ -129,7 +137,7 @@
                 <th style="width:24%">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="table-body">
               @forelse($incomes as $income)
                 <tr>
                   <td>{{ $income->id }}</td>
@@ -159,7 +167,5 @@
 
     </main>
   </div>
-
-  <script src="script.js"></script>
 </body>
 </html>
