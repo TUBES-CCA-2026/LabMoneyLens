@@ -28,8 +28,12 @@ class LoginController extends Controller
             ->orWhere('nama', $request->identifier)
             ->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return back()->withErrors(['identifier' => 'Username atau password salah'])->withInput();
+        if (!$user) {
+            return back()->withErrors(['type' => 'username_not_found'])->withInput();
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['type' => 'password_invalid'])->withInput();
         }
 
         session([

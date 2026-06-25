@@ -25,10 +25,6 @@
             <form action="{{ route('login.post') }}" method="POST" class="login-form">
                 @csrf
 
-                @if($errors->any())
-                    <div class="login-error">{{ $errors->first() }}</div>
-                @endif
-
                 <div class="form-group">
                     <label class="form-label" for="identifier">
                         <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
@@ -52,6 +48,73 @@
         </div>
 
     </div>
+
+    <!-- Error Modal: Username Not Found -->
+    <div id="usernameModal" class="modal" style="display: none;">
+        <div class="modal-content modal-error-username">
+            <div class="modal-header">
+                <h2>Username Tidak Ditemukan</h2>
+                <button type="button" class="modal-close" onclick="closeModal('usernameModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Username atau email yang Anda masukkan tidak terdaftar dalam sistem. Silakan periksa kembali atau hubungi administrator.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn" onclick="closeModal('usernameModal')">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal: Password Invalid -->
+    <div id="passwordModal" class="modal" style="display: none;">
+        <div class="modal-content modal-error-password">
+            <div class="modal-header">
+                <h2>Password Salah</h2>
+                <button type="button" class="modal-close" onclick="closeModal('passwordModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Password yang Anda masukkan tidak sesuai. Silakan coba lagi dengan password yang benar.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn" onclick="closeModal('passwordModal')">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Show appropriate modal based on error type
+        @if($errors->has('type'))
+            @if($errors->first('type') === 'username_not_found')
+                showModal('usernameModal');
+            @elseif($errors->first('type') === 'password_invalid')
+                showModal('passwordModal');
+            @endif
+        @endif
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -70,33 +70,34 @@
         </div>
  
         <p class="divider-text">Atau secara manual</p>
- 
-        <div class="form-group">
-          <label class="form-label" for="kategori">Kategori</label>
-          <select class="form-input" id="kategori">
-            <option value="">Pilih</option>
-            <option>Makanan</option>
-            <option>Transportasi</option>
-            <option>Belanja</option>
-            <option>Kesehatan</option>
-            <option>Lainnya</option>
-          </select>
-        </div>
- 
-        <div class="form-group">
-          <label class="form-label" for="jumlah">Jumlah (IDR)</label>
-          <input type="number" class="form-input" id="jumlah" placeholder="Rp" min="0" />
-        </div>
- 
-        <div class="form-group">
-          <label class="form-label" for="tanggal">Tanggal</label>
-          <input type="date" class="form-input" id="tanggal" />
-        </div>
- 
-        <button class="save-btn" id="save-btn">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Simpan
-        </button>
+
+        <form method="POST" action="{{ route('pengeluaran.store') }}" class="input-form">
+          @csrf
+          <div class="form-group">
+            <label class="form-label" for="id_jenis_pengeluaran">Kategori</label>
+            <select class="form-input" id="id_jenis_pengeluaran" name="id_jenis_pengeluaran" required>
+              <option value="">Pilih</option>
+              @foreach($jenis as $j)
+                <option value="{{ $j->id }}">{{ $j->nama }}</option>
+              @endforeach
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="nominal">Jumlah (IDR)</label>
+            <input type="number" class="form-input" id="nominal" name="nominal" placeholder="Rp" min="0" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="tanggal">Tanggal</label>
+            <input type="date" class="form-input" id="tanggal" name="tanggal" required />
+          </div>
+
+          <button class="save-btn" type="submit">
+            <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Simpan
+          </button>
+        </form>
       </section>
  
       <!-- Panel Pratinjau -->
@@ -106,7 +107,10 @@
             <h1 class="preview-title">Pratinjau Entri</h1>
             <p class="preview-subtitle">Transaksi yang baru ditambahkan namun belum dikonfirmasi</p>
           </div>
-          <button class="confirm-btn" id="confirm-btn">Konfirmasi</button>
+          <form action="{{ route('pengeluaran.confirmAll') }}" method="POST">
+            @csrf
+            <button class="confirm-btn" type="submit">Konfirmasi</button>
+          </form>
         </div>
  
         <div class="table-wrap">
@@ -117,7 +121,7 @@
                 <th style="width:30%">Kategori</th>
                 <th style="width:20%">Jumlah (IDR)</th>
                 <th style="width:20%">Tanggal</th>
-                <th style="width:8%">Status</th>
+                <th style="width:8%">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -127,7 +131,18 @@
                   <td>{{ $expense->kategori }}</td>
                   <td>Rp {{ number_format($expense->jumlah, 0, ',', '.') }}</td>
                   <td>{{ \Illuminate\Support\Carbon::parse($expense->tanggal)->format('d/m/Y') }}</td>
-                  <td>Tersimpan</td>
+                  <td class="action-cell">
+                    @if($expense->is_confirmed)
+                      <span class="status confirmed">Terkonfirmasi</span>
+                    @else
+                      <a href="{{ route('pengeluaran.edit', ['id' => $expense->id]) }}" class="btn-edit">Edit</a>
+                      <span class="sep">/</span>
+                      <form action="{{ route('pengeluaran.delete', ['id' => $expense->id]) }}" method="POST" style="display:inline">
+                        @csrf
+                        <button type="submit" class="btn-hapus">Batalkan</button>
+                      </form>
+                    @endif
+                  </td>
                 </tr>
               @empty
                 <tr>

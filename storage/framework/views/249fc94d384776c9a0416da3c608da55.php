@@ -76,29 +76,33 @@
 
         <p class="divider-text">Atau secara manual</p>
 
-        <div class="form-group">
-          <label class="form-label" for="kategori">Kategori</label>
-          <select class="form-input" id="kategori">
-            <option value="">Pilih</option>
-            <option>Dana Hibah</option>
-            <option>Dana Fakultas</option>
-          </select>
-        </div>
+        <form method="POST" action="<?php echo e(route('pemasukan.store')); ?>" class="input-form">
+          <?php echo csrf_field(); ?>
+          <div class="form-group">
+            <label class="form-label" for="kategori">Kategori</label>
+            <select class="form-input" id="kategori" name="id_jenis_penerimaan" required>
+              <option value="">Pilih</option>
+              <?php $__currentLoopData = $jenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($j->id); ?>"><?php echo e($j->nama); ?></option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="jumlah">Jumlah (IDR)</label>
-          <input type="number" class="form-input" id="jumlah" placeholder="Rp" min="0" />
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="jumlah">Jumlah (IDR)</label>
+            <input type="number" class="form-input" id="jumlah" name="nominal" placeholder="Rp" min="0" required />
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="tanggal">Tanggal</label>
-          <input type="date" class="form-input" id="tanggal" />
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="tanggal">Tanggal</label>
+            <input type="date" class="form-input" id="tanggal" name="tanggal" required />
+          </div>
 
-        <button class="save-btn" id="save-btn">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Simpan
-        </button>
+          <button id="save-btn" class="save-btn" type="submit">
+            <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Simpan
+          </button>
+        </form>
       </section>
 
       <!-- Panel Pratinjau -->
@@ -108,7 +112,10 @@
             <h1 class="preview-title">Pratinjau Entri</h1>
             <p class="preview-subtitle">Transaksi yang baru ditambahkan namun belum dikonfirmasi</p>
           </div>
-          <button class="confirm-btn" id="confirm-btn">Konfirmasi</button>
+          <form action="<?php echo e(route('pemasukan.confirmAll')); ?>" method="POST">
+            <?php echo csrf_field(); ?>
+            <button class="confirm-btn" type="submit">Konfirmasi</button>
+          </form>
         </div>
 
         <div class="table-wrap">
@@ -119,7 +126,7 @@
                 <th style="width:30%">Kategori</th>
                 <th style="width:20%">Jumlah (IDR)</th>
                 <th style="width:20%">Tanggal</th>
-                <th style="width:8%">Status</th>
+                <th style="width:8%">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -129,7 +136,16 @@
                   <td><?php echo e($income->kategori); ?></td>
                   <td>Rp <?php echo e(number_format($income->jumlah, 0, ',', '.')); ?></td>
                   <td><?php echo e(\Illuminate\Support\Carbon::parse($income->tanggal)->format('d/m/Y')); ?></td>
-                  <td>Tersimpan</td>
+                  <td class="action-cell">
+                    <?php if($income->is_confirmed): ?>
+                      <span class="status confirmed">Terkonfirmasi</span>
+                    <?php else: ?>
+                      <form action="<?php echo e(route('pemasukan.delete', ['id' => $income->id])); ?>" method="POST" style="display:inline">
+                        <?php echo csrf_field(); ?>
+                        <button type="submit" class="btn-hapus">Batalkan</button>
+                      </form>
+                    <?php endif; ?>
+                  </td>
                 </tr>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>

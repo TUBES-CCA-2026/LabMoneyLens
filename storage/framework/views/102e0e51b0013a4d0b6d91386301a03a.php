@@ -98,8 +98,9 @@
             </div>
             <div class="chart-bars">
               <?php $__currentLoopData = $expenseCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="chart-bar" style="height: <?php echo e(max(10, min(220, ($category->total / max(1, $expenseCategories->max('total'))) * 220))); ?>px;">
-                  <span><?php echo e($category->category); ?></span>
+                <div class="chart-bar">
+                  <div class="bar-fill" style="height: <?php echo e(max(10, min(220, ($category->total / max(1, $expenseCategories->max('total'))) * 220))); ?>px;"></div>
+                  <span class="bar-label"><?php echo e($category->category); ?></span>
                 </div>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>

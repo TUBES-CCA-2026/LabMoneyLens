@@ -115,7 +115,7 @@
 }
 
 .confirm-btn {
-    background: #0d9488;
+    background: #10b981;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -130,7 +130,42 @@
 }
 
 .confirm-btn:hover {
-    background: #065f56;
+    background: #059669;
+}
+
+.btn-edit,
+.btn-hapus {
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.btn-edit {
+    color: #0d9488;
+}
+
+.btn-hapus {
+    color: #ef4444;
+}
+
+.status.confirmed {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #047857;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.empty-row {
+    text-align: center;
+    color: #0d9488;
 }
 
 .dropdown-form {

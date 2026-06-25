@@ -64,7 +64,7 @@
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 16px;
 }
 
@@ -95,51 +95,93 @@
 }
 
 .chart-placeholder {
-    display: flex;
-    gap: 16px;
-    min-height: 280px;
-    align-items: flex-end;
+    position: relative;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 20px;
+    min-height: 360px;
+    padding-bottom: 56px; /* space for labels */
+}
+
+.chart-placeholder::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+        rgba(13, 148, 136, 0.12) 1px,
+        transparent 1px
+    );
+    background-size: 100% 35px;
+    pointer-events: none;
 }
 
 .chart-y-labels {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: repeat(9, 1fr);
+    gap: 0;
     min-width: 90px;
     color: #0d9488;
     font-size: 11px;
 }
 
+.chart-y-labels span {
+    display: block;
+    align-self: end;
+    line-height: 1.2;
+}
+
 .chart-bars {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: flex-end;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex: 1;
-    gap: 14px;
-    padding-bottom: 12px;
+    gap: 20px;
+    padding-bottom: 40px; /* space reserved for labels */
     border-left: 1px solid rgba(13, 148, 136, 0.18);
     border-bottom: 1px solid rgba(13, 148, 136, 0.18);
+    overflow: hidden; /* remove horizontal scrollbar */
+}
+
+.chart-bars::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 40px; /* baseline aligned with bar bottoms */
+    height: 1px;
+    background: rgba(13, 148, 136, 0.18);
 }
 
 .chart-bar {
-    flex: 1;
-    max-width: 56px;
-    background: #34d399;
-    border-radius: 14px 14px 0 0;
-    position: relative;
+    flex: 0 0 64px;
+    min-width: 64px;
     display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 10px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.bar-fill {
+    width: 100%;
+    background: #ef4444;
+    border-radius: 14px 14px 0 0;
+    min-height: 8px;
+    align-self: flex-end; /* ensure bar fills start at baseline */
+    transform-origin: bottom center;
+    transition: height 300ms ease;
+}
+
+.bar-label {
     color: #065f56;
     font-size: 11px;
     text-align: center;
-}
-
-.chart-bar span {
-    transform: translateY(8px);
-    display: block;
-    max-width: 64px;
+    line-height: 1.2;
+    max-width: 70px;
     word-wrap: break-word;
 }
 

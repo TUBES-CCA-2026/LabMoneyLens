@@ -25,7 +25,8 @@ class LaporanController extends Controller
                 'pemasukan.tanggal',
                 DB::raw("'Pemasukan' as tipe")
             )
-            ->whereNull('pemasukan.deleted_at');
+            ->whereNull('pemasukan.deleted_at')
+            ->where('pemasukan.is_confirmed', true);
 
         $pengeluaranQuery = DB::table('pengeluaran')
             ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
@@ -36,7 +37,8 @@ class LaporanController extends Controller
                 'pengeluaran.tanggal',
                 DB::raw("'Pengeluaran' as tipe")
             )
-            ->whereNull('pengeluaran.deleted_at');
+            ->whereNull('pengeluaran.deleted_at')
+            ->where('pengeluaran.is_confirmed', true);
 
         if ($month && preg_match('/^\d{4}-\d{2}$/', $month)) {
             [$year, $monthNumber] = explode('-', $month);

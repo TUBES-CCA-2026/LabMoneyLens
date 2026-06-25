@@ -98,8 +98,9 @@
             </div>
             <div class="chart-bars">
               @foreach($expenseCategories as $category)
-                <div class="chart-bar" style="height: {{ max(10, min(220, ($category->total / max(1, $expenseCategories->max('total'))) * 220)) }}px;">
-                  <span>{{ $category->category }}</span>
+                <div class="chart-bar">
+                  <div class="bar-fill" style="height: {{ max(10, min(220, ($category->total / max(1, $expenseCategories->max('total'))) * 220)) }}px;"></div>
+                  <span class="bar-label">{{ $category->category }}</span>
                 </div>
               @endforeach
             </div>
