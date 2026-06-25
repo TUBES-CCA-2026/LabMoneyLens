@@ -122,11 +122,11 @@
           <table>
             <thead>
               <tr>
-                <th style="width:22%">ID_Pemasukan</th>
-                <th style="width:30%">Kategori</th>
-                <th style="width:20%">Jumlah (IDR)</th>
-                <th style="width:20%">Tanggal</th>
-                <th style="width:8%">Aksi</th>
+                <th style="width:18%">ID_Pemasukan</th>
+                <th style="width:25%">Kategori</th>
+                <th style="width:18%">Jumlah (IDR)</th>
+                <th style="width:15%">Tanggal</th>
+                <th style="width:24%">Aksi</th>
               </tr>
             </thead>
             <tbody>

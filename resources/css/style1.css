@@ -422,8 +422,10 @@ td {
 
 .action-cell {
     display: flex;
-    gap: 4px;
+    gap: 6px;
     align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }
 
 .btn-edit {
