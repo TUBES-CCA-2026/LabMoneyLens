@@ -281,3 +281,65 @@ td {
     color: #ccc;
     font-size: 12px;
 }
+
+/* ── RESPONSIVE DESIGN (MOBILE) ── */
+@media (max-width: 1024px) {
+    .app {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        border-radius: 0;
+        padding: 10px;
+        flex-direction: column;
+    }
+    .sidebar-user {
+        margin-bottom: 0;
+        padding-bottom: 10px;
+        justify-content: center;
+    }
+    .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 8px;
+        padding-bottom: 4px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .sidebar-nav::-webkit-scrollbar {
+        display: none;
+    }
+    .nav-item {
+        padding: 8px 12px;
+        font-size: 10px;
+        flex: 0 0 auto;
+        justify-content: center;
+        white-space: nowrap;
+    }
+    .nav-item a {
+        justify-content: center;
+    }
+    .sidebar-logout {
+        display: flex;
+        justify-content: center;
+        border-top: none;
+        margin-top: 5px;
+        padding-top: 0;
+    }
+    .main {
+        flex-direction: column;
+        padding: 12px;
+    }
+    .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+        width: 100%;
+    }
+    table {
+        min-width: 600px;
+    }
+}

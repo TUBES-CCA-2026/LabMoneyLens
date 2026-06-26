@@ -103,18 +103,20 @@
                 <span>Rp {{ number_format($value, 0, ',', '.') }}</span>
               @endforeach
             </div>
-            <div class="chart-bars">
-              @foreach($expenseCategories as $category)
-                <div class="chart-bar">
-                  <div class="bar-fill" style="height: {{ ($category->total / $maxAxis) * 100 }}%;"></div>
-                </div>
-              @endforeach
-            </div>
-            <div class="chart-base-line"></div>
-            <div class="chart-x-labels">
-              @foreach($expenseCategories as $category)
-                <span>{{ $category->category }}</span>
-              @endforeach
+            <div class="chart-scrollable">
+              <div class="chart-bars">
+                @foreach($expenseCategories as $category)
+                  <div class="chart-bar">
+                    <div class="bar-fill" style="height: {{ ($category->total / $maxAxis) * 100 }}%;"></div>
+                  </div>
+                @endforeach
+              </div>
+              <div class="chart-base-line"></div>
+              <div class="chart-x-labels">
+                @foreach($expenseCategories as $category)
+                  <span>{{ $category->category }}</span>
+                @endforeach
+              </div>
             </div>
           </div>
         </article>

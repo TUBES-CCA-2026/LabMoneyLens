@@ -19,8 +19,7 @@ class welcomecontroller extends Controller
                 'pengeluaran.id_pengeluaran as id',
                 'jenis_pengeluaran.nama_jenis as kategori',
                 'pengeluaran.nominal as jumlah',
-                'pengeluaran.tanggal as tanggal',
-                'pengeluaran.is_confirmed as is_confirmed'
+                'pengeluaran.tanggal as tanggal'
             )
             ->whereNull('pengeluaran.deleted_at')
             ->orderByDesc('pengeluaran.tanggal')
@@ -58,27 +57,13 @@ class welcomecontroller extends Controller
             'foto_struk' => $receiptPath,
             'id_jenis_pengeluaran' => $data['id_jenis_pengeluaran'],
             'id_user' => session('user_id'),
-            'is_confirmed' => false,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('welcome')->with('success', 'Pengeluaran disimpan (menunggu konfirmasi).');
+        return redirect()->route('welcome')->with('success', 'Pengeluaran disimpan.');
     }
 
-    public function confirm($id)
-    {
-        if (!session()->has('user_id')) {
-            return redirect()->route('login');
-        }
-
-        DB::table('pengeluaran')
-            ->where('id_pengeluaran', $id)
-            ->whereNull('deleted_at')
-            ->update(['is_confirmed' => true, 'updated_at' => now()]);
-
-        return redirect()->route('welcome')->with('success', 'Pengeluaran dikonfirmasi.');
-    }
 
     public function destroy($id)
     {
@@ -118,10 +103,6 @@ class welcomecontroller extends Controller
             return redirect()->route('welcome')->with('error', 'Pengeluaran tidak ditemukan.');
         }
 
-        if ($expense->is_confirmed) {
-            return redirect()->route('welcome')->with('error', 'Pengeluaran sudah dikonfirmasi dan tidak bisa diedit.');
-        }
-
         $jenis = DB::table('jenis_pengeluaran')->select('id_jenis_pengeluaran as id', 'nama_jenis as nama')->get();
 
         return view('pengeluaran_edit', compact('expense', 'jenis'));
@@ -142,7 +123,6 @@ class welcomecontroller extends Controller
         $updated = DB::table('pengeluaran')
             ->where('id_pengeluaran', $id)
             ->whereNull('deleted_at')
-            ->where('is_confirmed', false)
             ->update([
                 'tanggal' => $data['tanggal'],
                 'nominal' => $data['nominal'],
@@ -157,17 +137,4 @@ class welcomecontroller extends Controller
         return redirect()->route('welcome')->with('success', 'Pengeluaran berhasil diperbarui.');
     }
 
-    public function confirmAll()
-    {
-        if (!session()->has('user_id')) {
-            return redirect()->route('login');
-        }
-
-        DB::table('pengeluaran')
-            ->whereNull('deleted_at')
-            ->where('is_confirmed', false)
-            ->update(['is_confirmed' => true, 'updated_at' => now()]);
-
-        return redirect()->route('welcome')->with('success', 'Semua pengeluaran terkonfirmasi dan masuk ke laporan.');
-    }
 }

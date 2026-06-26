@@ -19,8 +19,7 @@ class PemasukanController extends Controller
                 'pemasukan.id_pemasukan as id',
                 'jenis_penerimaan.nama_jenis as kategori',
                 'pemasukan.nominal as jumlah',
-                'pemasukan.tanggal as tanggal',
-                'pemasukan.is_confirmed as is_confirmed'
+                'pemasukan.tanggal as tanggal'
             )
             ->whereNull('pemasukan.deleted_at')
             ->orderByDesc('pemasukan.tanggal')
@@ -57,40 +56,71 @@ class PemasukanController extends Controller
             'foto_bukti' => $receiptPath,
             'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
             'id_user' => session('user_id'),
-            'is_confirmed' => false,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        return redirect()->route('pemasukan')->with('success', 'Pemasukan disimpan (menunggu konfirmasi).');
+        return redirect()->route('pemasukan')->with('success', 'Pemasukan disimpan.');
     }
 
-    public function confirm($id)
+    public function edit($id)
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
         }
 
-        DB::table('pemasukan')
+        $income = DB::table('pemasukan')
+            ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
+            ->select(
+                'pemasukan.id_pemasukan as id',
+                'jenis_penerimaan.nama_jenis as kategori',
+                'pemasukan.nominal as jumlah',
+                'pemasukan.tanggal as tanggal',
+                'pemasukan.uraian as uraian',
+                'pemasukan.id_jenis_penerimaan as id_jenis_penerimaan'
+            )
+            ->where('pemasukan.id_pemasukan', $id)
+            ->whereNull('pemasukan.deleted_at')
+            ->first();
+
+        if (!$income) {
+            return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak ditemukan.');
+        }
+
+        $jenis = DB::table('jenis_penerimaan')->select('id_jenis_penerimaan as id', 'nama_jenis as nama')->get();
+
+        return view('pemasukan_edit', compact('income', 'jenis'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        if (!session()->has('user_id')) {
+            return redirect()->route('login');
+        }
+
+        $data = $request->validate([
+            'tanggal' => 'required|date',
+            'uraian' => 'nullable|string|max:255',
+            'nominal' => 'required|numeric|min:0',
+            'id_jenis_penerimaan' => 'required|integer',
+        ]);
+
+        $updated = DB::table('pemasukan')
             ->where('id_pemasukan', $id)
             ->whereNull('deleted_at')
-            ->update(['is_confirmed' => true, 'updated_at' => now()]);
+            ->update([
+                'tanggal' => $data['tanggal'],
+                'uraian' => $data['uraian'] ?? '',
+                'nominal' => $data['nominal'],
+                'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
+                'updated_at' => now(),
+            ]);
 
-        return redirect()->route('pemasukan')->with('success', 'Pemasukan dikonfirmasi.');
-    }
-
-    public function confirmAll()
-    {
-        if (!session()->has('user_id')) {
-            return redirect()->route('login');
+        if (!$updated) {
+            return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak dapat diperbarui.');
         }
 
-        DB::table('pemasukan')
-            ->whereNull('deleted_at')
-            ->where('is_confirmed', false)
-            ->update(['is_confirmed' => true, 'updated_at' => now()]);
-
-        return redirect()->route('pemasukan')->with('success', 'Semua pemasukan terkonfirmasi dan masuk ke laporan.');
+        return redirect()->route('pemasukan')->with('success', 'Pemasukan berhasil diperbarui.');
     }
 
     public function destroy($id)

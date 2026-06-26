@@ -74,7 +74,8 @@
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;
-    margin-top: 4px;
+    margin-top: 10px;
+    width: 100%;
     transition: background 0.15s;
 }
 
@@ -188,4 +189,11 @@
 
 .apply-filter-btn:hover {
     background: #065f56;
+}
+
+/* ── RESPONSIVE DESIGN (MOBILE) ── */
+@media (max-width: 1024px) {
+    .input-panel {
+        width: 100%;
+    }
 }

@@ -120,12 +120,8 @@
         <div class="preview-header">
           <div>
             <h1 class="preview-title">Pratinjau Entri</h1>
-            <p class="preview-subtitle">Transaksi yang baru ditambahkan namun belum dikonfirmasi</p>
+            <p class="preview-subtitle">Daftar transaksi terbaru yang sudah tersimpan</p>
           </div>
-          <form action="{{ route('pemasukan.confirmAll') }}" method="POST">
-            @csrf
-            <button class="confirm-btn" type="submit">Konfirmasi</button>
-          </form>
         </div>
 
         <div class="table-wrap">
@@ -147,14 +143,12 @@
                   <td>Rp {{ number_format($income->jumlah, 0, ',', '.') }}</td>
                   <td>{{ \Illuminate\Support\Carbon::parse($income->tanggal)->format('d/m/Y') }}</td>
                   <td class="action-cell">
-                    @if($income->is_confirmed)
-                      <span class="status confirmed">Terkonfirmasi</span>
-                    @else
-                      <form action="{{ route('pemasukan.delete', ['id' => $income->id]) }}" method="POST" style="display:inline">
-                        @csrf
-                        <button type="submit" class="btn-hapus">Batalkan</button>
-                      </form>
-                    @endif
+                    <a href="{{ route('pemasukan.edit', ['id' => $income->id]) }}" class="btn-edit">Edit</a>
+                    <span class="sep">/</span>
+                    <form action="{{ route('pemasukan.delete', ['id' => $income->id]) }}" method="POST" style="display:inline">
+                      @csrf
+                      <button type="submit" class="btn-hapus">Hapus</button>
+                    </form>
                   </td>
                 </tr>
               @empty

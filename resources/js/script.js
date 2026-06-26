@@ -1,56 +1,5 @@
-const data = [];
-
-function renderTable() {
-  const tbody = document.getElementById("table-body");
-  if (!tbody) {
-    return;
-  }
-  tbody.innerHTML = data.map((row, i) => `
-    <tr>
-      <td>${row.id}</td>
-      <td>${row.kategori}</td>
-      <td>${row.jumlah.toLocaleString("id-ID")}</td>
-      <td>${row.tanggal}</td>
-      <td class="action-cell">
-        <button class="btn-edit" onclick="editRow(${i})">Edit</button>
-        <span class="sep">/</span>
-        <button class="btn-hapus" onclick="deleteRow(${i})">Hapus</button>
-      </td>
-    </tr>
-  `).join("");
-}
-
-function deleteRow(i) {
-  if (confirm(`Hapus entri ${data[i].id}?`)) {
-    data.splice(i, 1);
-    renderTable();
-  }
-}
-
-function editRow(i) {
-  const row = data[i];
-  const newJumlah = prompt(`Edit jumlah untuk ${row.id}:`, row.jumlah);
-  if (newJumlah !== null && !isNaN(newJumlah) && newJumlah.trim() !== "") {
-    data[i].jumlah = parseInt(newJumlah);
-    renderTable();
-  }
-}
-
-function formatTanggal(dateStr) {
-  const d = new Date(dateStr);
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${mm}/${dd}/${yyyy}`;
-}
-
-function generateId() {
-  return "PEN" + String(data.length + 1).padStart(6, "0");
-}
-
 // ── SATU DOMContentLoaded untuk semuanya ──
 document.addEventListener("DOMContentLoaded", () => {
-  renderTable();
 
   // ── Drag & Drop ──
   const uploadZone = document.querySelector(".upload-zone");
@@ -218,42 +167,4 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  // ── Simpan ──
-  document.getElementById("save-btn").addEventListener("click", (e) => {
-    if (document.querySelector('form[enctype="multipart/form-data"]')) {
-      return;
-    }
-    const kategori = document.getElementById("kategori").value;
-    const jumlah   = document.getElementById("jumlah").value;
-    const tanggal  = document.getElementById("tanggal").value;
-
-    if (!kategori || !jumlah || !tanggal) {
-      alert("Lengkapi semua field terlebih dahulu.");
-      return;
-    }
-
-    data.push({
-      id: generateId(),
-      kategori,
-      jumlah: parseInt(jumlah),
-      tanggal: formatTanggal(tanggal),
-      foto: uploadedFile ? URL.createObjectURL(uploadedFile) : null,
-    });
-
-    renderTable();
-
-    document.getElementById("kategori").value = "";
-    document.getElementById("jumlah").value   = "";
-    document.getElementById("tanggal").value  = "";
-    resetUploadZone();
-  });
-
-  // ── Konfirmasi ──
-  document.getElementById("confirm-btn").addEventListener("click", () => {
-    if (data.length === 0) {
-      alert("Tidak ada entri untuk dikonfirmasi.");
-      return;
-    }
-    alert(`${data.length} entri berhasil dikonfirmasi!`);
-  });
 });
