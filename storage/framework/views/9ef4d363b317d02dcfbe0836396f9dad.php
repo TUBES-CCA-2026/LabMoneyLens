@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>Pengeluaran — Dashboard</title>
 
-  @vite(['resources/css/style1.css', 'resources/js/script1.js'])
-  <script>window.receiptParseUrl = "{{ route('receipt.parse') }}";</script>
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style1.css', 'resources/js/script1.js']); ?>
+  <script>window.receiptParseUrl = "<?php echo e(route('receipt.parse')); ?>";</script>
 </head>
 <body>
 
@@ -20,45 +20,45 @@
           <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         </div>
         <div>
-          <div class="sidebar-username">{{ session('user_name', 'USERNAME') }}</div>
-          <div class="sidebar-role">{{ session('user_role', 'Administrator') }}</div>
+          <div class="sidebar-username"><?php echo e(session('user_name', 'USERNAME')); ?></div>
+          <div class="sidebar-role"><?php echo e(session('user_role', 'Administrator')); ?></div>
         </div>
       </div>
 
       <nav class="sidebar-nav">
-        <a href="{{ route('dashboard') }}" class="nav-item">
+        <a href="<?php echo e(route('dashboard')); ?>" class="nav-item">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </a>
 
-        @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('welcome') }}" class="nav-item">
+        <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+          <a href="<?php echo e(route('welcome')); ?>" class="nav-item">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
             Pengeluaran
           </a>
 
-          <a href="{{ route('pemasukan') }}" class="nav-item active">
+          <a href="<?php echo e(route('pemasukan')); ?>" class="nav-item active">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             Pemasukan
           </a>
-        @endunless
+        <?php endif; ?>
 
-        <a href="{{ route('laporan') }}" class="nav-item">
+        <a href="<?php echo e(route('laporan')); ?>" class="nav-item">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           Laporan
         </a>
 
-        @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('recycle') }}" class="nav-item">
+        <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+          <a href="<?php echo e(route('recycle')); ?>" class="nav-item">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
             Recycle Bin
           </a>
-        @endunless
+        <?php endif; ?>
       </nav>
 
       <div class="sidebar-logout">
-        <form action="{{ route('logout') }}" method="POST">
-          @csrf
+        <form action="<?php echo e(route('logout')); ?>" method="POST">
+          <?php echo csrf_field(); ?>
           <button type="submit" class="logout-btn">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Log-out
@@ -84,17 +84,17 @@
 
         <p class="divider-text">Atau secara manual</p>
 
-        <form id="receipt_form" method="POST" action="{{ route('pemasukan.store') }}" enctype="multipart/form-data" class="input-form">
-          @csrf
+        <form id="receipt_form" method="POST" action="<?php echo e(route('pemasukan.store')); ?>" enctype="multipart/form-data" class="input-form">
+          <?php echo csrf_field(); ?>
           <input type="file" id="receipt_image" name="receipt_image" accept="image/*" hidden>
           <input type="hidden" id="receipt_type" name="type" value="pemasukan">
           <div class="form-group">
             <label class="form-label" for="kategori">Kategori</label>
             <select class="form-input" id="kategori" name="id_jenis_penerimaan" required>
               <option value="">Pilih</option>
-              @foreach($jenis as $j)
-                <option value="{{ $j->id }}">{{ $j->nama }}</option>
-              @endforeach
+              <?php $__currentLoopData = $jenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($j->id); ?>"><?php echo e($j->nama); ?></option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
           </div>
 
@@ -122,8 +122,8 @@
             <h1 class="preview-title">Pratinjau Entri</h1>
             <p class="preview-subtitle">Transaksi yang baru ditambahkan namun belum dikonfirmasi</p>
           </div>
-          <form action="{{ route('pemasukan.confirmAll') }}" method="POST">
-            @csrf
+          <form action="<?php echo e(route('pemasukan.confirmAll')); ?>" method="POST">
+            <?php echo csrf_field(); ?>
             <button class="confirm-btn" type="submit">Konfirmasi</button>
           </form>
         </div>
@@ -140,28 +140,28 @@
               </tr>
             </thead>
             <tbody id="table-body">
-              @forelse($incomes as $income)
+              <?php $__empty_1 = true; $__currentLoopData = $incomes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $income): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <tr>
-                  <td>{{ $income->id }}</td>
-                  <td>{{ $income->kategori }}</td>
-                  <td>Rp {{ number_format($income->jumlah, 0, ',', '.') }}</td>
-                  <td>{{ \Illuminate\Support\Carbon::parse($income->tanggal)->format('d/m/Y') }}</td>
+                  <td><?php echo e($income->id); ?></td>
+                  <td><?php echo e($income->kategori); ?></td>
+                  <td>Rp <?php echo e(number_format($income->jumlah, 0, ',', '.')); ?></td>
+                  <td><?php echo e(\Illuminate\Support\Carbon::parse($income->tanggal)->format('d/m/Y')); ?></td>
                   <td class="action-cell">
-                    @if($income->is_confirmed)
+                    <?php if($income->is_confirmed): ?>
                       <span class="status confirmed">Terkonfirmasi</span>
-                    @else
-                      <form action="{{ route('pemasukan.delete', ['id' => $income->id]) }}" method="POST" style="display:inline">
-                        @csrf
+                    <?php else: ?>
+                      <form action="<?php echo e(route('pemasukan.delete', ['id' => $income->id])); ?>" method="POST" style="display:inline">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="btn-hapus">Batalkan</button>
                       </form>
-                    @endif
+                    <?php endif; ?>
                   </td>
                 </tr>
-              @empty
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
                   <td colspan="5" class="empty-row">Belum ada data pemasukan.</td>
                 </tr>
-              @endforelse
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
@@ -170,4 +170,4 @@
     </main>
   </div>
 </body>
-</html>
+</html><?php /**PATH E:\LML\LabMoneyLens\resources\views/pemasukan.blade.php ENDPATH**/ ?>

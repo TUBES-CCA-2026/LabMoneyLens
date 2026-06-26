@@ -23,9 +23,11 @@
         @unless(session('user_role') == 'Kepala Lab')
           <a href="{{ route('welcome') }}" class="nav-item active">Pengeluaran</a>
           <a href="{{ route('pemasukan') }}" class="nav-item">Pemasukan</a>
-          <a href="{{ route('recycle') }}" class="nav-item">Recycle Bin</a>
         @endunless
         <a href="{{ route('laporan') }}" class="nav-item">Laporan</a>
+        @unless(session('user_role') == 'Kepala Lab')
+          <a href="{{ route('recycle') }}" class="nav-item">Recycle Bin</a>
+        @endunless
       </nav>
       <div class="sidebar-logout">
         <form action="{{ route('logout') }}" method="POST">
