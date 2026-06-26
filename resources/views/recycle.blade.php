@@ -4,11 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recycle Bin — Dashboard</title>
-  @vite(['resources/css/style.css','resources/css/recyclebin.css'])
+  @vite(['resources/css/style.css','resources/css/recyclebin.css','resources/js/script.js'])
+  
+  <!-- Inline mobile hamburger styling as backup -->
+  <style>
+    @media (max-width: 1024px) {
+      .hamburger-menu {
+        display: flex !important;
+      }
+      .sidebar {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 220px !important;
+        height: 100vh !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+        z-index: 999 !important;
+      }
+      .sidebar.active {
+        transform: translateX(0) !important;
+      }
+      .sidebar-overlay {
+        opacity: 0 !important;
+        transition: opacity 0.3s ease !important;
+      }
+      .sidebar-overlay.active {
+        display: block !important;
+        opacity: 1 !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
   <div class="app">
+    <!-- ── Hamburger Menu Button ── -->
+    <button id="hamburger-menu" class="hamburger-menu" aria-label="Toggle Menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <!-- ── Sidebar Overlay ── -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
     <aside class="sidebar">
       <div class="sidebar-user">
@@ -70,10 +109,6 @@
             <article class="status-card trash-card">
               <span class="status-label">TOTAL ITEMS</span>
               <strong class="status-value">{{ $totalItems }} Record</strong>
-            </article>
-            <article class="status-card time-card">
-              <span class="status-label">AVERAGE TIME</span>
-              <strong class="status-value">{{ $averageDays }} Days</strong>
             </article>
             <article class="status-card value-card">
               <span class="status-label">TOTAL VALUE</span>

@@ -46,13 +46,8 @@ class RecycleController extends Controller
 
         $totalItems = $records->count();
         $totalValue = $records->sum('jumlah');
-        $averageDays = $totalItems > 0
-            ? round($records->avg(function ($item) {
-                return Carbon::parse($item->deleted_at)->diffInDays(Carbon::now());
-            }))
-            : 0;
 
-        return view('recycle', compact('records', 'totalItems', 'totalValue', 'averageDays'));
+        return view('recycle', compact('records', 'totalItems', 'totalValue'));
     }
 
     public function restore(Request $request, $type, $id)

@@ -110,6 +110,47 @@
 
 /* ── RESPONSIVE DESIGN (MOBILE) ── */
 @media (max-width: 1024px) {
+    .hamburger-menu {
+        display: flex;
+    }
+
+    .app {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        width: 220px;
+        height: 100vh;
+        border-radius: 0;
+        padding: 16px 0;
+        flex-direction: column;
+        z-index: 999;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .main {
+        flex-direction: column;
+        padding: 12px;
+        margin-left: 0;
+    }
+
     .report-filter {
         flex-direction: column;
     }

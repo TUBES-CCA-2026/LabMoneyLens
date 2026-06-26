@@ -44,6 +44,15 @@ class PemasukanController extends Controller
             'receipt_image' => 'nullable|image|max:5120',
         ]);
 
+        // Validasi saldo tidak boleh Rp0
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->sum('nominal') + $data['nominal'];
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->sum('nominal');
+        $newBalance = $totalIncome - $totalExpense;
+        
+        if ($newBalance == 0) {
+            return redirect()->route('pemasukan')->with('error', 'Saldo tidak boleh Rp0. Operasi dibatalkan.');
+        }
+
         $receiptPath = null;
         if ($request->hasFile('receipt_image')) {
             $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
@@ -56,6 +65,7 @@ class PemasukanController extends Controller
             'foto_bukti' => $receiptPath,
             'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
             'id_user' => session('user_id'),
+            'is_confirmed' => 1,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

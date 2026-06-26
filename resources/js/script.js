@@ -1,5 +1,44 @@
+// ── HAMBURGER MENU TOGGLE ──
+function initHamburgerMenu() {
+  const hamburger = document.getElementById("hamburger-menu");
+  const sidebar = document.querySelector(".sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+
+  if (!hamburger) return;
+
+  function closeSidebar() {
+    hamburger.classList.remove("active");
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+    // Backup: Reset inline style
+    sidebar.style.transform = "translateX(-100%)";
+  }
+
+  hamburger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    hamburger.classList.toggle("active");
+    sidebar.classList.toggle("active");
+    overlay.classList.toggle("active");
+    // Backup: Apply inline style for transform
+    if (sidebar.classList.contains("active")) {
+      sidebar.style.transform = "translateX(0)";
+    } else {
+      sidebar.style.transform = "translateX(-100%)";
+    }
+  });
+
+  overlay.addEventListener("click", closeSidebar);
+
+  document.querySelectorAll(".nav-item").forEach((item) => {
+    item.addEventListener("click", closeSidebar);
+  });
+
+  document.querySelector(".sidebar-logout")?.addEventListener("click", closeSidebar);
+}
+
 // ── SATU DOMContentLoaded untuk semuanya ──
 document.addEventListener("DOMContentLoaded", () => {
+  initHamburgerMenu();
 
   // ── Drag & Drop ──
   const uploadZone = document.querySelector(".upload-zone");

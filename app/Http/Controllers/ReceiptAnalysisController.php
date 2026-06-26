@@ -19,39 +19,49 @@ class ReceiptAnalysisController extends Controller
 
         $image = $request->file('receipt_image');
         $contents = base64_encode(file_get_contents($image->getRealPath()));
-        $dataUri = 'data:' . $image->getMimeType() . ';base64,' . $contents;
+        $mimeType = $image->getMimeType();
 
         $prompt = "Anda adalah asisten yang mengekstrak informasi dari struk kasir Indonesia. " .
             "Kembalikan hanya JSON valid dengan field berikut: tanggal, nominal, kategori, uraian. " .
             "Gunakan format tanggal YYYY-MM-DD. Untuk nominal, kembalikan hanya angka tanpa titik atau koma. " .
             "Jika field tidak dapat dijelaskan, kembalikan string kosong untuk field tersebut.";
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . config('services.openai.key'),
-            'Content-Type' => 'application/json',
-        ])->post('https://api.openai.com/v1/responses', [
-            'model' => 'gpt-4.1-mini',
-            'input' => [
+        $apiKey = config('services.gemini.key');
+
+        if (empty($apiKey)) {
+            return response()->json([
+                'error' => 'GEMINI_API_KEY belum dikonfigurasi di file .env Anda. Harap ikuti panduan sebelumnya untuk mendapatkan API Key dari Google AI Studio.'
+            ], 500);
+        }
+
+        $response = Http::withoutVerifying()->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
+            'contents' => [
                 [
-                    'role' => 'user',
-                    'content' => [
-                        ['type' => 'input_text', 'text' => $prompt],
-                        ['type' => 'input_image', 'image_url' => $dataUri],
+                    'parts' => [
+                        ['text' => $prompt],
+                        [
+                            'inlineData' => [
+                                'mimeType' => $mimeType,
+                                'data' => $contents,
+                            ],
+                        ],
                     ],
                 ],
             ],
-            'max_output_tokens' => 500,
+            'generationConfig' => [
+                'responseMimeType' => 'application/json',
+            ],
         ]);
 
         if (!$response->successful()) {
             $body = $response->json();
             Log::error('Receipt analysis failed', ['status' => $response->status(), 'body' => $body]);
-            $errorMessage = data_get($body, 'error.message', data_get($body, 'error', 'Gagal menganalisis gambar.'));
-            return response()->json(['error' => $errorMessage], $response->status());
+            $errorMessage = data_get($body, 'error.message', 'Gagal menganalisis gambar.');
+            return response()->json(['error' => $errorMessage], $response->status() ?: 500);
         }
 
         $body = $response->json();
-        $text = data_get($body, 'output.0.content.0.text', data_get($body, 'output.0.content.0', ''));
+        $text = data_get($body, 'candidates.0.content.parts.0.text', '');
         $parsed = $this->parseJsonText((string) $text);
 
         $parsed['tanggal'] = $this->normalizeDate($parsed['tanggal']);

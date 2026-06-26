@@ -13,8 +13,8 @@ class DashboardController extends Controller
             return redirect()->route('login');
         }
 
-        $totalIncome = DB::table('pemasukan')->sum('nominal');
-        $totalExpense = DB::table('pengeluaran')->sum('nominal');
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->sum('nominal');
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->sum('nominal');
         $balance = $totalIncome - $totalExpense;
 
         $expenseCategories = DB::table('jenis_pengeluaran')
@@ -26,6 +26,7 @@ class DashboardController extends Controller
 
         $recentIncome = DB::table('pemasukan')
             ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
+            ->where('pemasukan.is_confirmed', 1)
             ->select(
                 'pemasukan.id_pemasukan as id',
                 'jenis_penerimaan.nama_jenis as category',
@@ -37,6 +38,7 @@ class DashboardController extends Controller
 
         $recentExpense = DB::table('pengeluaran')
             ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
+            ->where('pengeluaran.is_confirmed', 1)
             ->select(
                 'pengeluaran.id_pengeluaran as id',
                 'jenis_pengeluaran.nama_jenis as category',
