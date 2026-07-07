@@ -2,7 +2,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 22px;
 }
 
 .recycle-header {
@@ -15,60 +15,73 @@
 .status-cards {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
     width: 100%;
 }
 
 .status-card {
-    border-radius: 18px;
-    padding: 20px 22px;
-    background: #fff;
-    border: 2px solid #dbeafe;
+    border-radius: 16px;
+    padding: 22px;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
+    border: 2px solid #e0f7f5;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+    transition: all 0.3s ease;
+}
+
+.status-card:hover {
+    border-color: #0d9488;
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15);
+    transform: translateY(-4px);
 }
 
 .status-label {
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.7px;
-    color: #64748b;
+    letter-spacing: 0.8px;
+    color: #0d9488;
 }
 
 .status-value {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 800;
-    color: #0f172a;
+    color: #0f766e;
+    line-height: 1.1;
 }
 
 .trash-card {
-    border-color: #f87171;
+    border-color: rgba(248, 113, 113, 0.3);
+    background: linear-gradient(135deg, #fef2f2 0%, #fce7e6 100%);
 }
 
 .time-card {
-    border-color: #94a3b8;
+    border-color: rgba(148, 163, 184, 0.3);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
 .value-card {
-    border-color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.3);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
 }
 
 .success-message {
     padding: 14px 18px;
-    border-radius: 14px;
-    background: #d1fae5;
-    color: #064e3b;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+    color: #047857;
     font-weight: 600;
-    border: 1px solid #10b981;
+    border: 2px solid rgba(16, 185, 129, 0.2);
 }
 
 .table-wrap {
-    background: #ffffff;
-    border-radius: 22px;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
+    border-radius: 16px;
     overflow: hidden;
-    border: 2px solid #c8f0f5;
+    border: 2px solid #e0f7f5;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
 }
 
 table {
@@ -77,33 +90,48 @@ table {
 }
 
 thead tr {
-    background: #e0f2fe;
+    background: linear-gradient(90deg, #0f766e 0%, #0d9488 100%);
 }
 
 th {
-    padding: 16px 14px;
+    padding: 16px;
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.7px;
-    color: #0f172a;
+    letter-spacing: 0.8px;
+    color: #ffffff;
     text-align: left;
+    font-weight: 700;
 }
 
 tbody tr {
-    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    border-bottom: 1px solid #f0f7f6;
+    transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+    background: #f9fdfb;
+}
+
+tbody tr:nth-child(even) {
+    background: #fafefe;
+}
+
+tbody tr:nth-child(odd) {
+    background: #ffffff;
 }
 
 td {
-    padding: 16px 14px;
-    font-size: 12px;
-    color: #334155;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #0f5249;
     vertical-align: middle;
 }
 
 .empty-row {
     text-align: center;
-    padding: 30px 0;
-    color: #64748b;
+    padding: 32px 0;
+    color: #0d9488;
+    font-weight: 500;
 }
 
 .action-cell {
@@ -121,55 +149,69 @@ td {
 .restore-all-btn,
 .empty-trash-btn {
     border: none;
-    border-radius: 999px;
+    border-radius: 10px;
     padding: 10px 18px;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease;
+    transition: all 0.2s ease;
 }
 
 .btn-restore {
-    background: #d1fae5;
-    color: #065f46;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.1));
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.btn-restore:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.15));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 .btn-delete {
-    background: #fee2e2;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.1));
     color: #b91c1c;
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.btn-restore:hover,
-.btn-delete:hover,
-.restore-all-btn:hover,
-.empty-trash-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+.btn-delete:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(239, 68, 68, 0.15));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
 .recycle-actions {
     display: flex;
-    gap: 12px;
+    gap: 14px;
     flex-wrap: wrap;
 }
 
 .restore-all-btn {
-    background: #38bdf8;
-    color: #0f172a;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.restore-all-btn:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
 }
 
 .empty-trash-btn {
-    background: #f87171;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.empty-trash-btn:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
 }
 
 @media (max-width: 900px) {
-    .hamburger-menu {
-        display: flex;
-    }
-
     .app {
         flex-direction: column;
     }

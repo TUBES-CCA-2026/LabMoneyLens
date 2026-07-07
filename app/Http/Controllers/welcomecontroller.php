@@ -40,18 +40,18 @@ class welcomecontroller extends Controller
         $data = $request->validate([
             'tanggal' => 'required|date',
             'uraian' => 'nullable|string|max:255',
-            'nominal' => 'required|numeric|min:0',
+            'nominal' => 'required|numeric|min:1',
             'id_jenis_pengeluaran' => 'required|integer',
             'receipt_image' => 'nullable|image|max:5120',
         ]);
 
-        // Validasi saldo tidak boleh Rp0
+        // Validasi pengeluaran tidak boleh melebihi saldo yang dimiliki
         $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->sum('nominal');
-        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->sum('nominal') + $data['nominal'];
-        $newBalance = $totalIncome - $totalExpense;
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->sum('nominal');
+        $currentBalance = $totalIncome - $totalExpense;
         
-        if ($newBalance == 0) {
-            return redirect()->route('welcome')->with('error', 'Saldo tidak boleh Rp0. Operasi dibatalkan.');
+        if ($data['nominal'] > $currentBalance) {
+            return redirect()->route('welcome')->with('error', 'Pengeluaran tidak boleh melebihi saldo. Saldo Anda: Rp ' . number_format($currentBalance, 0, ',', '.'));
         }
 
         $receiptPath = null;
@@ -129,6 +129,26 @@ class welcomecontroller extends Controller
             'nominal' => 'required|numeric|min:0',
             'id_jenis_pengeluaran' => 'required|integer',
         ]);
+
+        // Get old expense amount
+        $oldExpense = DB::table('pengeluaran')
+            ->where('id_pengeluaran', $id)
+            ->whereNull('deleted_at')
+            ->first();
+
+        if (!$oldExpense) {
+            return redirect()->route('welcome')->with('error', 'Pengeluaran tidak ditemukan.');
+        }
+
+        // Validasi pengeluaran tidak boleh melebihi saldo yang dimiliki
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->sum('nominal');
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->sum('nominal');
+        $currentBalance = $totalIncome - $totalExpense;
+        $maxAllowedExpense = $currentBalance + $oldExpense->nominal; // Saldo + pengeluaran lama
+
+        if ($data['nominal'] > $maxAllowedExpense) {
+            return redirect()->route('pengeluaran.edit', $id)->with('error', 'Pengeluaran tidak boleh melebihi saldo. Saldo tersedia: Rp ' . number_format($maxAllowedExpense, 0, ',', '.'));
+        }
 
         $updated = DB::table('pengeluaran')
             ->where('id_pengeluaran', $id)

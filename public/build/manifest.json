@@ -52,7 +52,7 @@
     "src": "_instrument-sans-600-normal-DMks36a2.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DHIPF9CY.css",
+    "file": "assets/app-CV0evE99.css",
     "name": "app",
     "names": [
       "app.css"
@@ -60,10 +60,85 @@
     "src": "resources/css/app.css",
     "isEntry": true
   },
+  "resources/css/dashboard.css": {
+    "file": "assets/dashboard-BvPTOMuK.css",
+    "name": "dashboard",
+    "names": [
+      "dashboard.css"
+    ],
+    "src": "resources/css/dashboard.css",
+    "isEntry": true
+  },
+  "resources/css/laporan.css": {
+    "file": "assets/laporan-WZh9Jcii.css",
+    "name": "laporan",
+    "names": [
+      "laporan.css"
+    ],
+    "src": "resources/css/laporan.css",
+    "isEntry": true
+  },
+  "resources/css/login.css": {
+    "file": "assets/login-2OTFZVnn.css",
+    "name": "login",
+    "names": [
+      "login.css"
+    ],
+    "src": "resources/css/login.css",
+    "isEntry": true
+  },
+  "resources/css/recyclebin.css": {
+    "file": "assets/recyclebin-D9VuLFnl.css",
+    "name": "recyclebin",
+    "names": [
+      "recyclebin.css"
+    ],
+    "src": "resources/css/recyclebin.css",
+    "isEntry": true
+  },
+  "resources/css/style.css": {
+    "file": "assets/style-DKELssAP.css",
+    "name": "style",
+    "names": [
+      "style.css"
+    ],
+    "src": "resources/css/style.css",
+    "isEntry": true
+  },
+  "resources/css/style1.css": {
+    "file": "assets/style1-CqVGIs15.css",
+    "name": "style1",
+    "names": [
+      "style1.css"
+    ],
+    "src": "resources/css/style1.css",
+    "isEntry": true
+  },
+  "resources/css/welcome.css": {
+    "file": "assets/welcome-BSbCh8yA.css",
+    "name": "welcome",
+    "names": [
+      "welcome.css"
+    ],
+    "src": "resources/css/welcome.css",
+    "isEntry": true
+  },
   "resources/js/app.js": {
     "file": "assets/app-BvRk9kiK.js",
     "name": "app",
     "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/script.js": {
+    "file": "assets/script-D84I95RC.js",
+    "name": "script",
+    "src": "resources/js/script.js",
+    "isEntry": true
+  },
+  "resources/js/script1.js": {
+    "file": "assets/script1-CY4CzJQ5.js",
+    "name": "script1",
+    "src": "resources/js/script1.js",
     "isEntry": true
   }
 }
