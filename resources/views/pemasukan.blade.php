@@ -169,7 +169,7 @@
               <tr>
                 <th style="width:25%">Kategori</th>
                 <th style="width:18%">Jumlah (IDR)</th>
-                <th style="width:15%">Tanggal</th>
+                <th style="width:15%">Tanggal & Waktu</th>
                 <th style="width:24%">Aksi</th>
               </tr>
             </thead>
@@ -178,7 +178,7 @@
                 <tr>
                   <td>{{ $income->kategori }}</td>
                   <td>Rp {{ number_format($income->jumlah, 0, ',', '.') }}</td>
-                  <td>{{ \Illuminate\Support\Carbon::parse($income->tanggal)->format('d/m/Y') }}</td>
+                  <td>{{ \Illuminate\Support\Carbon::parse($income->created_at)->format('d/m/Y H:i') }}</td>
                   <td class="action-cell">
                     <a href="{{ route('pemasukan.edit', ['id' => $income->id]) }}" class="btn-edit">Edit</a>
                     <span class="sep">/</span>

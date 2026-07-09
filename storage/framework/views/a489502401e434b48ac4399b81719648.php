@@ -154,7 +154,7 @@
               <tr>
                 <th>Kategori</th>
                 <th>Jumlah (IDR)</th>
-                <th>Tanggal</th>
+                <th>Tanggal & Waktu</th>
                 <th>Jenis</th>
               </tr>
             </thead>
@@ -163,7 +163,7 @@
                 <tr>
                   <td><?php echo e($row->kategori); ?></td>
                   <td><?php echo e(number_format($row->jumlah, 0, ',', '.')); ?></td>
-                  <td><?php echo e(\Illuminate\Support\Carbon::parse($row->tanggal)->format('d/m/Y')); ?></td>
+                  <td><?php echo e(\Illuminate\Support\Carbon::parse($row->created_at)->format('d/m/Y H:i')); ?></td>
                   <td><?php echo e($row->tipe); ?></td>
                 </tr>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

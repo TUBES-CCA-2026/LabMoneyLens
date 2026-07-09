@@ -154,7 +154,7 @@
               <tr>
                 <th>Kategori</th>
                 <th>Jumlah (IDR)</th>
-                <th>Tanggal</th>
+                <th>Tanggal & Waktu</th>
                 <th>Jenis</th>
               </tr>
             </thead>
@@ -163,7 +163,7 @@
                 <tr>
                   <td>{{ $row->kategori }}</td>
                   <td>{{ number_format($row->jumlah, 0, ',', '.') }}</td>
-                  <td>{{ \Illuminate\Support\Carbon::parse($row->tanggal)->format('d/m/Y') }}</td>
+                  <td>{{ \Illuminate\Support\Carbon::parse($row->created_at)->format('d/m/Y H:i') }}</td>
                   <td>{{ $row->tipe }}</td>
                 </tr>
               @empty

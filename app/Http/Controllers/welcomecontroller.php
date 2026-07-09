@@ -19,10 +19,11 @@ class welcomecontroller extends Controller
                 'pengeluaran.id_pengeluaran as id',
                 'jenis_pengeluaran.nama_jenis as kategori',
                 'pengeluaran.nominal as jumlah',
-                'pengeluaran.tanggal as tanggal'
+                'pengeluaran.tanggal as tanggal',
+                'pengeluaran.created_at as created_at'
             )
             ->whereNull('pengeluaran.deleted_at')
-            ->orderByDesc('pengeluaran.tanggal')
+            ->orderBy('pengeluaran.created_at')
             ->get();
 
         $jenis = DB::table('jenis_pengeluaran')->select('id_jenis_pengeluaran as id', 'nama_jenis as nama')->get();

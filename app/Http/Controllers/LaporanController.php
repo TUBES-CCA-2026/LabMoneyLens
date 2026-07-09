@@ -23,6 +23,7 @@ class LaporanController extends Controller
                 'jenis_penerimaan.nama_jenis as kategori',
                 'pemasukan.nominal as jumlah',
                 'pemasukan.tanggal',
+                'pemasukan.created_at as created_at',
                 DB::raw("'Pemasukan' as tipe")
             )
             ->whereNull('pemasukan.deleted_at');
@@ -34,6 +35,7 @@ class LaporanController extends Controller
                 'jenis_pengeluaran.nama_jenis as kategori',
                 'pengeluaran.nominal as jumlah',
                 'pengeluaran.tanggal',
+                'pengeluaran.created_at as created_at',
                 DB::raw("'Pengeluaran' as tipe")
             )
             ->whereNull('pengeluaran.deleted_at');
@@ -53,7 +55,7 @@ class LaporanController extends Controller
         $pengeluaran = $pengeluaranQuery->get();
 
         $records = $pemasukan->concat($pengeluaran)
-            ->sortByDesc('tanggal')
+            ->sortBy('created_at')
             ->values();
 
         if ($request->query('export') === 'csv') {
@@ -66,14 +68,14 @@ class LaporanController extends Controller
             $callback = function () use ($records) {
                 $output = fopen('php://output', 'w');
                 fprintf($output, "%s", chr(0xEF) . chr(0xBB) . chr(0xBF));
-                fputcsv($output, ['ID Laporan', 'Kategori', 'Jumlah (IDR)', 'Tanggal', 'Jenis']);
+                fputcsv($output, ['ID Laporan', 'Kategori', 'Jumlah (IDR)', 'Tanggal & Waktu', 'Jenis']);
 
                 foreach ($records as $row) {
                     fputcsv($output, [
                         $row->id,
                         $row->kategori,
                         $row->jumlah,
-                        $row->tanggal,
+                        \Illuminate\Support\Carbon::parse($row->created_at)->format('d/m/Y H:i'),
                         $row->tipe,
                     ]);
                 }

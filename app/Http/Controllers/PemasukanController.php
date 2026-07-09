@@ -19,10 +19,11 @@ class PemasukanController extends Controller
                 'pemasukan.id_pemasukan as id',
                 'jenis_penerimaan.nama_jenis as kategori',
                 'pemasukan.nominal as jumlah',
-                'pemasukan.tanggal as tanggal'
+                'pemasukan.tanggal as tanggal',
+                'pemasukan.created_at as created_at'
             )
             ->whereNull('pemasukan.deleted_at')
-            ->orderByDesc('pemasukan.tanggal')
+            ->orderBy('pemasukan.created_at')
             ->get();
 
         $jenis = DB::table('jenis_penerimaan')->select('id_jenis_penerimaan as id', 'nama_jenis as nama')->get();
