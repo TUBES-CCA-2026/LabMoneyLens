@@ -167,7 +167,6 @@
           <table>
             <thead>
               <tr>
-                <th style="width:18%">ID_Pemasukan</th>
                 <th style="width:25%">Kategori</th>
                 <th style="width:18%">Jumlah (IDR)</th>
                 <th style="width:15%">Tanggal</th>
@@ -177,7 +176,6 @@
             <tbody id="table-body">
               @forelse($incomes as $income)
                 <tr>
-                  <td>{{ $income->id }}</td>
                   <td>{{ $income->kategori }}</td>
                   <td>Rp {{ number_format($income->jumlah, 0, ',', '.') }}</td>
                   <td>{{ \Illuminate\Support\Carbon::parse($income->tanggal)->format('d/m/Y') }}</td>
@@ -192,7 +190,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="5" class="empty-row">Belum ada data pemasukan.</td>
+                  <td colspan="4" class="empty-row">Belum ada data pemasukan.</td>
                 </tr>
               @endforelse
             </tbody>
