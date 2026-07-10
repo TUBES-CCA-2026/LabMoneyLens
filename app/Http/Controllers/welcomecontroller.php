@@ -20,10 +20,11 @@ class welcomecontroller extends Controller
                 'jenis_pengeluaran.nama_jenis as kategori',
                 'pengeluaran.nominal as jumlah',
                 'pengeluaran.tanggal as tanggal',
+                'pengeluaran.uraian as uraian',
                 'pengeluaran.created_at as created_at'
             )
             ->whereNull('pengeluaran.deleted_at')
-            ->orderBy('pengeluaran.created_at')
+            ->orderBy('pengeluaran.tanggal', 'desc')
             ->get();
 
         $jenis = DB::table('jenis_pengeluaran')->select('id_jenis_pengeluaran as id', 'nama_jenis as nama')->get();
@@ -58,6 +59,18 @@ class welcomecontroller extends Controller
         $receiptPath = null;
         if ($request->hasFile('receipt_image')) {
             $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
+        }
+
+        // Cek apakah entri serupa ada di Recycle Bin (deleted)
+        $existsInRecycle = DB::table('pengeluaran')
+            ->whereNotNull('deleted_at')
+            ->where('nominal', $data['nominal'])
+            ->where('tanggal', $data['tanggal'])
+            ->where('id_jenis_pengeluaran', $data['id_jenis_pengeluaran'])
+            ->exists();
+
+        if ($existsInRecycle) {
+            return redirect()->route('welcome')->with('error', 'Entri serupa ditemukan di Recycle Bin. Pulihkan entri tersebut sebelum menambahkan kembali.');
         }
 
         DB::table('pengeluaran')->insert([

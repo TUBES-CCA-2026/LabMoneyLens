@@ -58,6 +58,9 @@ class LaporanController extends Controller
             ->sortBy('created_at')
             ->values();
 
+        // Recent entries (latest 10) for preview panel
+        $recentRecords = $records->sortByDesc('created_at')->values()->take(10);
+
         if ($request->query('export') === 'csv') {
             $filename = 'laporan-' . now()->format('YmdHis') . '.csv';
             $headers = [
@@ -98,6 +101,7 @@ class LaporanController extends Controller
 
         return view('laporan', compact(
             'records',
+            'recentRecords',
             'totalIncome',
             'totalExpense',
             'balance',

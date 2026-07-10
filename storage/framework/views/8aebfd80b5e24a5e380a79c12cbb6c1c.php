@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Pengeluaran — LabMoneyLens</title>
-  @vite(['resources/css/style.css','resources/css/welcome.css','resources/js/script.js'])
-  <script>window.receiptParseUrl = "{{ route('receipt.parse') }}";</script>
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+  <title>Pemasukan — LabMoneyLens</title>
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/css/welcome.css','resources/js/script.js']); ?>
+  <script>window.receiptParseUrl = "<?php echo e(route('receipt.parse')); ?>";</script>
 
   <style>
     /* ── Override layout: centered main ── */
@@ -28,14 +28,14 @@
 
     /* ── Page Header ── */
     .page-hero {
-      background: linear-gradient(135deg, #991b1b 0%, #dc2626 55%, #ef4444 100%);
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 60%, #10b981 100%);
       border-radius: 20px;
       padding: 28px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      box-shadow: 0 8px 24px rgba(220, 38, 38, 0.25);
+      box-shadow: 0 8px 24px rgba(13, 148, 136, 0.25);
     }
 
     .page-hero-info h1 {
@@ -47,7 +47,7 @@
 
     .page-hero-info p {
       font-size: 13px;
-      color: rgba(255,255,255,0.82);
+      color: rgba(255,255,255,0.8);
       margin-top: 6px;
       line-height: 1.5;
     }
@@ -78,24 +78,18 @@
       margin-top: 4px;
     }
 
-    .hero-balance-badge .badge-warning {
-      font-size: 10px;
-      color: rgba(255,255,255,0.75);
-      margin-top: 4px;
-    }
-
     /* ── Form Card ── */
     .form-card {
-      background: linear-gradient(135deg, #ffffff 0%, #fff9f9 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
       border-radius: 20px;
-      border: 2px solid #fecaca;
-      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.08);
+      border: 2px solid #e0f7f5;
+      box-shadow: 0 4px 16px rgba(13, 148, 136, 0.1);
       overflow: hidden;
     }
 
     .form-card-header {
-      background: linear-gradient(90deg, #fff5f5 0%, #fee2e2 100%);
-      border-bottom: 2px solid #fecaca;
+      background: linear-gradient(90deg, #f0fdf9 0%, #ecfdf5 100%);
+      border-bottom: 2px solid #e0f7f5;
       padding: 18px 28px;
       display: flex;
       align-items: center;
@@ -105,13 +99,13 @@
     .form-card-header .header-icon {
       width: 40px;
       height: 40px;
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+      box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
     }
 
     .form-card-header .header-icon svg {
@@ -124,13 +118,12 @@
     .form-card-header h2 {
       font-size: 16px;
       font-weight: 800;
-      color: #991b1b;
+      color: #0f766e;
     }
 
     .form-card-header p {
       font-size: 12px;
-      color: #dc2626;
-      opacity: 0.8;
+      color: #0d9488;
       margin-top: 2px;
     }
 
@@ -138,13 +131,13 @@
       padding: 28px;
     }
 
-    /* ── Upload zone ── */
+    /* ── Upload zone (compact horizontal) ── */
     .upload-row {
       display: flex;
       align-items: center;
       gap: 16px;
-      background: linear-gradient(135deg, rgba(254,226,226,0.4) 0%, transparent 100%);
-      border: 2px dashed rgba(239, 68, 68, 0.35);
+      background: linear-gradient(135deg, rgba(224,247,245,0.4) 0%, transparent 100%);
+      border: 2px dashed rgba(13, 148, 136, 0.35);
       border-radius: 14px;
       padding: 16px 20px;
       cursor: pointer;
@@ -153,14 +146,14 @@
     }
 
     .upload-row:hover {
-      border-color: #ef4444;
-      background: rgba(254,226,226,0.6);
+      border-color: #0d9488;
+      background: rgba(224,247,245,0.6);
     }
 
     .upload-row-icon {
       width: 44px;
       height: 44px;
-      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      background: linear-gradient(135deg, #e0f7f5 0%, #ccfbf1 100%);
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -171,7 +164,7 @@
     .upload-row-icon svg {
       width: 22px;
       height: 22px;
-      stroke: #ef4444;
+      stroke: #0d9488;
       fill: none;
     }
 
@@ -182,7 +175,7 @@
     .upload-row-text strong {
       font-size: 13px;
       font-weight: 700;
-      color: #991b1b;
+      color: #0f766e;
       display: block;
     }
 
@@ -194,7 +187,7 @@
     }
 
     .upload-row-btn {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -208,8 +201,8 @@
     }
 
     .upload-row-btn:hover {
-      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      background: linear-gradient(135deg, #0a7065 0%, #047857 100%);
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
       transform: translateY(-1px);
     }
 
@@ -220,7 +213,9 @@
       gap: 18px;
     }
 
-    .form-grid .span-2 { grid-column: span 2; }
+    .form-grid .span-2 {
+      grid-column: span 2;
+    }
 
     .form-group {
       display: flex;
@@ -231,7 +226,7 @@
     .form-label {
       font-size: 11px;
       font-weight: 700;
-      color: #991b1b;
+      color: #0f766e;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       display: flex;
@@ -248,30 +243,35 @@
 
     .form-input {
       padding: 11px 14px;
-      border: 2px solid #fecaca;
+      border: 2px solid #ccf0ee;
       border-radius: 10px;
       font-size: 13px;
       font-family: inherit;
-      color: #7f1d1d;
+      color: #0f766e;
       background: #ffffff;
       outline: none;
       width: 100%;
       transition: all 0.2s ease;
     }
 
-    .form-input:hover { border-color: #fca5a5; }
+    .form-input:hover { border-color: #a5e8e3; }
     .form-input:focus {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+      border-color: #0d9488;
+      box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
     }
 
     select.form-input {
       appearance: none;
       -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230d9488' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 12px center;
       padding-right: 34px;
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 76px;
     }
 
     .nominal-wrapper {
@@ -285,39 +285,12 @@
       transform: translateY(-50%);
       font-size: 13px;
       font-weight: 700;
-      color: #ef4444;
+      color: #0d9488;
       pointer-events: none;
     }
 
     .form-input.with-prefix {
       padding-left: 38px;
-    }
-
-    /* ── Saldo info bar ── */
-    .saldo-info {
-      background: linear-gradient(135deg, #fff1f2 0%, #fff5f5 100%);
-      border: 1.5px solid #fecaca;
-      border-radius: 12px;
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .saldo-info-icon {
-      font-size: 22px;
-    }
-
-    .saldo-info-text {
-      flex: 1;
-      font-size: 12px;
-      color: #7f1d1d;
-    }
-
-    .saldo-info-text strong {
-      color: #dc2626;
-      font-size: 14px;
     }
 
     /* ── Form Actions ── */
@@ -326,7 +299,7 @@
       gap: 12px;
       margin-top: 24px;
       padding-top: 20px;
-      border-top: 2px solid #fff1f2;
+      border-top: 2px solid #f0fdf9;
     }
 
     .save-btn {
@@ -335,7 +308,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
       color: #ffffff;
       border: none;
       border-radius: 12px;
@@ -346,12 +319,12 @@
       font-family: inherit;
       letter-spacing: 0.3px;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
     }
 
     .save-btn:hover {
-      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+      background: linear-gradient(135deg, #0a7065 0%, #047857 100%);
+      box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
       transform: translateY(-2px);
     }
 
@@ -389,16 +362,16 @@
 
     /* ── Table Section ── */
     .table-section {
-      background: linear-gradient(135deg, #ffffff 0%, #fff9f9 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
       border-radius: 20px;
-      border: 2px solid #fecaca;
-      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.07);
+      border: 2px solid #e0f7f5;
+      box-shadow: 0 4px 16px rgba(13, 148, 136, 0.08);
       overflow: hidden;
     }
 
     .table-section-header {
-      background: linear-gradient(90deg, #fff5f5 0%, #fee2e2 100%);
-      border-bottom: 2px solid #fecaca;
+      background: linear-gradient(90deg, #f0fdf9 0%, #ecfdf5 100%);
+      border-bottom: 2px solid #e0f7f5;
       padding: 16px 24px;
       display: flex;
       align-items: center;
@@ -409,7 +382,7 @@
     .table-section-header h3 {
       font-size: 14px;
       font-weight: 800;
-      color: #991b1b;
+      color: #0f766e;
       text-transform: uppercase;
       letter-spacing: 0.6px;
     }
@@ -417,16 +390,17 @@
     .table-section-header .entry-count {
       font-size: 12px;
       font-weight: 600;
-      color: #dc2626;
-      background: rgba(239, 68, 68, 0.1);
+      color: #0d9488;
+      background: rgba(13, 148, 136, 0.1);
       padding: 4px 12px;
       border-radius: 20px;
     }
 
-    .table-wrap { overflow-x: auto; }
+    .table-wrap {
+      overflow-x: auto;
+    }
 
-    thead tr { background: linear-gradient(90deg, #991b1b 0%, #dc2626 100%) !important; }
-
+    /* ── Helper tip ── */
     .laporan-tip {
       text-align: center;
       font-size: 12px;
@@ -435,7 +409,7 @@
     }
 
     .laporan-tip a {
-      color: #dc2626;
+      color: #0d9488;
       font-weight: 700;
       text-decoration: none;
     }
@@ -481,41 +455,41 @@
           <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         </div>
         <div>
-          <div class="sidebar-username">{{ session('user_name', 'USERNAME') }}</div>
-          <div class="sidebar-role">{{ session('user_role', 'Administrator') }}</div>
+          <div class="sidebar-username"><?php echo e(session('user_name', 'USERNAME')); ?></div>
+          <div class="sidebar-role"><?php echo e(session('user_role', 'Administrator')); ?></div>
         </div>
       </div>
 
       <nav class="sidebar-nav">
-        <a href="{{ route('dashboard') }}" class="nav-item">
+        <a href="<?php echo e(route('dashboard')); ?>" class="nav-item">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </a>
-        @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('welcome') }}" class="nav-item active">
+        <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+          <a href="<?php echo e(route('welcome')); ?>" class="nav-item">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
             Pengeluaran
           </a>
-          <a href="{{ route('pemasukan') }}" class="nav-item">
+          <a href="<?php echo e(route('pemasukan')); ?>" class="nav-item active">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             Pemasukan
           </a>
-        @endunless
-        <a href="{{ route('laporan') }}" class="nav-item">
+        <?php endif; ?>
+        <a href="<?php echo e(route('laporan')); ?>" class="nav-item">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           Laporan
         </a>
-        @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('recycle') }}" class="nav-item">
+        <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+          <a href="<?php echo e(route('recycle')); ?>" class="nav-item">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
             Recycle Bin
           </a>
-        @endunless
+        <?php endif; ?>
       </nav>
 
       <div class="sidebar-logout">
-        <form action="{{ route('logout') }}" method="POST">
-          @csrf
+        <form action="<?php echo e(route('logout')); ?>" method="POST">
+          <?php echo csrf_field(); ?>
           <button type="submit" class="logout-btn">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Log-out
@@ -529,20 +503,19 @@
       <div class="page-wrapper">
 
         <!-- Page Hero -->
-        @php
+        <?php
           $totalIncome  = \Illuminate\Support\Facades\DB::table('pemasukan')->where('is_confirmed',1)->whereNull('deleted_at')->sum('nominal');
           $totalExpense = \Illuminate\Support\Facades\DB::table('pengeluaran')->where('is_confirmed',1)->whereNull('deleted_at')->sum('nominal');
           $saldo = $totalIncome - $totalExpense;
-        @endphp
+        ?>
         <div class="page-hero">
           <div class="page-hero-info">
-            <h1>🧾 Input Pengeluaran</h1>
-            <p>Catat pengeluaran baru secara manual atau scan foto struk belanja.<br>Pengeluaran tidak boleh melebihi saldo yang tersedia.</p>
+            <h1>💰 Input Pemasukan</h1>
+            <p>Catat pemasukan baru secara manual atau scan foto struk/kwitansi Anda.<br>Semua data tersimpan aman dan dapat diakses di halaman Laporan.</p>
           </div>
           <div class="hero-balance-badge">
-            <div class="badge-label">Saldo Tersedia</div>
-            <div class="badge-value">Rp {{ number_format($saldo, 0, ',', '.') }}</div>
-            <div class="badge-warning">Maks. pengeluaran yang bisa diinput</div>
+            <div class="badge-label">Saldo Saat Ini</div>
+            <div class="badge-value">Rp <?php echo e(number_format($saldo, 0, ',', '.')); ?></div>
           </div>
         </div>
 
@@ -550,74 +523,64 @@
         <div class="form-card">
           <div class="form-card-header">
             <div class="header-icon">
-              <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
             <div>
-              <h2>Form Pengeluaran Baru</h2>
+              <h2>Form Pemasukan Baru</h2>
               <p>Semua field bertanda <span style="color:#ef4444;font-weight:700;">●</span> wajib diisi</p>
             </div>
           </div>
 
           <div class="form-card-body">
-            <!-- Saldo warning bar -->
-            <div class="saldo-info">
-              <span class="saldo-info-icon">⚠️</span>
-              <div class="saldo-info-text">
-                Saldo saat ini: <strong>Rp {{ number_format($saldo, 0, ',', '.') }}</strong>.
-                Pengeluaran tidak boleh melebihi nominal ini.
-              </div>
-            </div>
-
-            <!-- Upload Zone -->
+            <!-- Upload Zone (horizontal compact) -->
             <div class="upload-row" id="upload-row" role="button" tabindex="0" aria-label="Unggah foto struk">
               <div class="upload-row-icon">
                 <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               </div>
               <div class="upload-row-text">
-                <strong id="upload-filename">📎 Scan / Unggah Foto Struk Belanja</strong>
+                <strong id="upload-filename">📎 Scan / Unggah Foto Struk atau Kwitansi</strong>
                 <span>Format: JPG, PNG, WEBP — Maks. 5MB. Data akan diisi otomatis.</span>
               </div>
               <button type="button" class="upload-row-btn" onclick="document.getElementById('receipt_image').click()">Pilih File</button>
             </div>
 
-            <form id="receipt_form" method="POST" action="{{ route('pengeluaran.store') }}" enctype="multipart/form-data" class="input-form">
-              @csrf
+            <form id="receipt_form" method="POST" action="<?php echo e(route('pemasukan.store')); ?>" enctype="multipart/form-data" class="input-form">
+              <?php echo csrf_field(); ?>
               <input type="file" id="receipt_image" name="receipt_image" accept="image/*" hidden>
-              <input type="hidden" id="receipt_type" name="type" value="pengeluaran">
+              <input type="hidden" id="receipt_type" name="type" value="pemasukan">
 
               <div class="form-grid">
                 <!-- Kategori -->
                 <div class="form-group">
-                  <label class="form-label" for="id_jenis_pengeluaran">
-                    <span class="required-dot"></span> Kategori Pengeluaran
+                  <label class="form-label" for="kategori">
+                    <span class="required-dot"></span> Kategori Penerimaan
                   </label>
-                  <select class="form-input" id="id_jenis_pengeluaran" name="id_jenis_pengeluaran" required>
+                  <select class="form-input" id="kategori" name="id_jenis_penerimaan" required>
                     <option value="">— Pilih Kategori —</option>
-                    @foreach($jenis as $j)
-                      <option value="{{ $j->id }}">{{ $j->nama }}</option>
-                    @endforeach
+                    <?php $__currentLoopData = $jenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                      <option value="<?php echo e($j->id); ?>"><?php echo e($j->nama); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </select>
                 </div>
 
                 <!-- Tanggal -->
                 <div class="form-group">
                   <label class="form-label" for="tanggal">
-                    <span class="required-dot"></span> Tanggal Pengeluaran
+                    <span class="required-dot"></span> Tanggal Penerimaan
                   </label>
                   <input type="date" class="form-input" id="tanggal" name="tanggal"
-                         value="{{ date('Y-m-d') }}" required />
+                         value="<?php echo e(date('Y-m-d')); ?>" required />
                 </div>
 
                 <!-- Nominal -->
                 <div class="form-group">
-                  <label class="form-label" for="nominal">
+                  <label class="form-label" for="jumlah">
                     <span class="required-dot"></span> Jumlah (IDR)
                   </label>
                   <div class="nominal-wrapper">
                     <span class="nominal-prefix">Rp</span>
-                    <input type="number" class="form-input with-prefix" id="nominal"
-                           name="nominal" placeholder="0" min="1"
-                           max="{{ $saldo }}" required />
+                    <input type="number" class="form-input with-prefix" id="jumlah"
+                           name="nominal" placeholder="0" min="1" required />
                   </div>
                 </div>
 
@@ -625,7 +588,7 @@
                 <div class="form-group">
                   <label class="form-label" for="uraian">Keterangan / Uraian</label>
                   <input type="text" class="form-input" id="uraian" name="uraian"
-                         placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
+                         placeholder="Contoh: Transfer dari bendahara, dana hibah..." maxlength="255" />
                 </div>
               </div>
 
@@ -637,7 +600,7 @@
                 </button>
                 <button id="save-btn" class="save-btn" type="submit">
                   <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                  Simpan Pengeluaran
+                  Simpan Pemasukan
                 </button>
               </div>
             </form>
@@ -647,8 +610,8 @@
         <!-- Table Section -->
         <div class="table-section">
           <div class="table-section-header">
-            <h3>📋 Riwayat Pengeluaran</h3>
-            <span class="entry-count">{{ count($expenses) }} entri</span>
+            <h3>📋 Riwayat Pemasukan</h3>
+            <span class="entry-count"><?php echo e(count($incomes)); ?> entri</span>
           </div>
           <div class="table-wrap">
             <table>
@@ -663,48 +626,48 @@
                 </tr>
               </thead>
               <tbody>
-                @forelse($expenses as $i => $expense)
+                <?php $__empty_1 = true; $__currentLoopData = $incomes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $income): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                   <tr>
-                    <td>{{ $i + 1 }}</td>
-                    <td>{{ \Carbon\Carbon::parse($expense->tanggal)->format('d M Y') }}</td>
-                    <td>{{ $expense->kategori }}</td>
+                    <td><?php echo e($i + 1); ?></td>
+                    <td><?php echo e(\Carbon\Carbon::parse($income->tanggal)->format('d M Y')); ?></td>
+                    <td><?php echo e($income->kategori); ?></td>
                     <td>
-                      @if(!empty($expense->uraian ?? ''))
-                        <span style="color:#374151;">{{ $expense->uraian }}</span>
-                      @else
+                      <?php if(!empty($income->uraian ?? '')): ?>
+                        <span style="color:#374151;"><?php echo e($income->uraian); ?></span>
+                      <?php else: ?>
                         <span style="color:#94a3b8;font-style:italic;">—</span>
-                      @endif
+                      <?php endif; ?>
                     </td>
                     <td>
-                      <span style="font-weight:700;color:#dc2626;">- Rp {{ number_format($expense->jumlah, 0, ',', '.') }}</span>
+                      <span style="font-weight:700;color:#059669;">+ Rp <?php echo e(number_format($income->jumlah, 0, ',', '.')); ?></span>
                     </td>
                     <td>
                       <div class="action-cell">
-                        <a href="{{ route('pengeluaran.edit', $expense->id) }}" class="btn-edit">Edit</a>
+                        <a href="<?php echo e(route('pemasukan.edit', $income->id)); ?>" class="btn-edit">Edit</a>
                         <span class="sep">|</span>
-                        <form method="POST" action="{{ route('pengeluaran.delete', $expense->id) }}" style="display:inline;"
-                              onsubmit="return confirm('Yakin ingin menghapus pengeluaran ini?')">
-                          @csrf
+                        <form method="POST" action="<?php echo e(route('pemasukan.delete', $income->id)); ?>" style="display:inline;"
+                              onsubmit="return confirm('Yakin ingin menghapus pemasukan ini?')">
+                          <?php echo csrf_field(); ?>
                           <button type="submit" class="btn-hapus">Hapus</button>
                         </form>
                       </div>
                     </td>
                   </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                   <tr>
                     <td colspan="6" style="text-align:center;padding:32px;color:#94a3b8;font-style:italic;">
-                      Belum ada data pengeluaran.
+                      Belum ada data pemasukan.
                     </td>
                   </tr>
-                @endforelse
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
-          @if(count($expenses) > 0)
+          <?php if(count($incomes) > 0): ?>
             <div class="laporan-tip">
-              Lihat ringkasan lengkap dan ekspor data di halaman <a href="{{ route('laporan') }}">Laporan</a>.
+              Lihat ringkasan lengkap dan ekspor data di halaman <a href="<?php echo e(route('laporan')); ?>">Laporan</a>.
             </div>
-          @endif
+          <?php endif; ?>
         </div>
 
       </div>
@@ -724,11 +687,11 @@
   <style>
     .custom-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:9999; justify-content:center; align-items:center; }
     .custom-modal.show { display:flex; }
-    .modal-content { background:linear-gradient(135deg,#fff 0%,#fff5f5 100%); border-radius:20px; padding:40px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(239,68,68,.15); text-align:center; animation:slideUp .4s cubic-bezier(.34,1.56,.64,1); }
+    .modal-content { background:linear-gradient(135deg,#fff 0%,#f0fbff 100%); border-radius:20px; padding:40px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(13,148,136,.2); text-align:center; animation:slideUp .4s cubic-bezier(.34,1.56,.64,1); }
     .modal-icon { font-size:64px; margin-bottom:20px; }
     .modal-content h2 { font-size:24px; color:#1f2937; margin-bottom:12px; font-weight:700; }
     .modal-content p { font-size:14px; color:#6b7280; margin-bottom:28px; line-height:1.6; }
-    .modal-btn { background:linear-gradient(135deg,#ef4444 0%,#dc2626 100%); color:#fff; border:none; padding:12px 32px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .3s ease; }
+    .modal-btn { background:linear-gradient(135deg,#0f766e 0%,#0d9488 100%); color:#fff; border:none; padding:12px 32px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .3s ease; }
     .modal-btn:hover { transform:translateY(-2px); }
     @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
   </style>
@@ -736,10 +699,11 @@
   <script>
     // Upload filename preview
     document.getElementById('receipt_image').addEventListener('change', function() {
-      const name = this.files[0] ? this.files[0].name : '📎 Scan / Unggah Foto Struk Belanja';
+      const name = this.files[0] ? this.files[0].name : '📎 Scan / Unggah Foto Struk atau Kwitansi';
       document.getElementById('upload-filename').textContent = name;
     });
 
+    // Click upload row
     document.getElementById('upload-row').addEventListener('click', function(e) {
       if (!e.target.classList.contains('upload-row-btn')) {
         document.getElementById('receipt_image').click();
@@ -756,12 +720,12 @@
     document.getElementById('custom-modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
 
     document.addEventListener('DOMContentLoaded', function() {
-      @if(session('error'))
-        showModal('Gagal', '{{ session("error") }}', '❌');
-      @elseif(session('success'))
-        showModal('Berhasil', '{{ session("success") }}', '✅');
-      @endif
+      <?php if(session('error')): ?>
+        showModal('Gagal', '<?php echo e(session("error")); ?>', '❌');
+      <?php elseif(session('success')): ?>
+        showModal('Berhasil', '<?php echo e(session("success")); ?>', '✅');
+      <?php endif; ?>
     });
   </script>
 </body>
-</html>
+</html><?php /**PATH D:\lbl\LabMoneyLens\resources\views/pemasukan.blade.php ENDPATH**/ ?>

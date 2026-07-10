@@ -13,6 +13,7 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])->name('dashboard.chartData');
 Route::get('/welcome', [welcomecontroller::class, 'index'])->name('welcome');
 Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan');
 Route::post('/pemasukan/store', [PemasukanController::class, 'store'])->name('pemasukan.store');
