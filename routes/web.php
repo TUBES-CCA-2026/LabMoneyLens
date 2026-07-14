@@ -5,6 +5,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PemasukanController;
 use App\Http\Controllers\ReceiptAnalysisController;
+use App\Http\Controllers\StrukController;
 use App\Http\Controllers\welcomecontroller;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,9 @@ Route::post('/pengeluaran/store', [App\Http\Controllers\welcomecontroller::class
 Route::get('/pengeluaran/edit/{id}', [App\Http\Controllers\welcomecontroller::class, 'edit'])->name('pengeluaran.edit');
 Route::post('/pengeluaran/update/{id}', [App\Http\Controllers\welcomecontroller::class, 'update'])->name('pengeluaran.update');
 Route::post('/pengeluaran/delete/{id}', [App\Http\Controllers\welcomecontroller::class, 'destroy'])->name('pengeluaran.delete');
+Route::get('/struk', [StrukController::class, 'index'])->name('struk');
+Route::post('/struk/delete/{type}/{id}', [StrukController::class, 'destroy'])->name('struk.delete');
+Route::post('/struk/update-foto/{type}/{id}', [StrukController::class, 'updateFoto'])->name('struk.updateFoto');
 Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
 Route::get('/recycle', [App\Http\Controllers\RecycleController::class, 'index'])->name('recycle');
 Route::post('/recycle/restore/{type}/{id}', [App\Http\Controllers\RecycleController::class, 'restore'])->name('recycle.restore');

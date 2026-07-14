@@ -40,15 +40,20 @@ class PemasukanController extends Controller
 
         $data = $request->validate([
             'tanggal' => 'required|date',
-            'uraian' => 'nullable|string|max:255',
-            'nominal' => 'required|numeric|min:0',
-            'id_jenis_penerimaan' => 'required|integer',
-            'receipt_image' => 'nullable|image|max:5120',
+            'uraian' => 'array',
+            'uraian.*' => 'nullable|string|max:255',
+            'nominal' => 'required|array',
+            'nominal.*' => 'required|numeric|min:0',
+            'id_jenis_penerimaan' => 'required|array',
+            'id_jenis_penerimaan.*' => 'required|integer',
+            'receipt_image' => 'required|image|max:5120',
         ]);
 
+        $totalNominal = array_sum($data['nominal']);
+
         // Validasi saldo tidak boleh Rp0
-        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->sum('nominal') + $data['nominal'];
-        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->sum('nominal');
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal') + $totalNominal;
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
         $newBalance = $totalIncome - $totalExpense;
         
         if ($newBalance == 0) {
@@ -60,31 +65,38 @@ class PemasukanController extends Controller
             $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
         }
 
-        // Cek apakah entri serupa ada di Recycle Bin (deleted)
-        $existsInRecycle = DB::table('pemasukan')
-            ->whereNotNull('deleted_at')
-            ->where('nominal', $data['nominal'])
-            ->where('tanggal', $data['tanggal'])
-            ->where('id_jenis_penerimaan', $data['id_jenis_penerimaan'])
-            ->exists();
+        $itemsCount = count($data['nominal']);
+        for ($i = 0; $i < $itemsCount; $i++) {
+            $nominal = $data['nominal'][$i];
+            $uraian = $data['uraian'][$i] ?? '';
+            $id_jenis = $data['id_jenis_penerimaan'][$i];
 
-        if ($existsInRecycle) {
-            return redirect()->route('pemasukan')->with('error', 'Entri serupa ditemukan di Recycle Bin. Pulihkan entri tersebut sebelum menambahkan kembali.');
+            // Cek apakah entri serupa ada di Recycle Bin (deleted)
+            $existsInRecycle = DB::table('pemasukan')
+                ->whereNotNull('deleted_at')
+                ->where('nominal', $nominal)
+                ->where('tanggal', $data['tanggal'])
+                ->where('id_jenis_penerimaan', $id_jenis)
+                ->exists();
+
+            if ($existsInRecycle) {
+                return redirect()->route('pemasukan')->with('error', "Entri serupa (Rp " . number_format($nominal, 0, ',', '.') . ") ditemukan di Recycle Bin. Pulihkan entri tersebut sebelum menambahkan kembali.");
+            }
+
+            DB::table('pemasukan')->insert([
+                'tanggal' => $data['tanggal'],
+                'uraian' => $uraian,
+                'nominal' => $nominal,
+                'foto_bukti' => $receiptPath,
+                'id_jenis_penerimaan' => $id_jenis,
+                'id_user' => session('user_id'),
+                'is_confirmed' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
 
-        DB::table('pemasukan')->insert([
-            'tanggal' => $data['tanggal'],
-            'uraian' => $data['uraian'] ?? '',
-            'nominal' => $data['nominal'],
-            'foto_bukti' => $receiptPath,
-            'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
-            'id_user' => session('user_id'),
-            'is_confirmed' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return redirect()->route('pemasukan')->with('success', 'Pemasukan disimpan.');
+        return redirect()->route('pemasukan')->with('success', 'Semua pemasukan berhasil disimpan.');
     }
 
     public function edit($id)

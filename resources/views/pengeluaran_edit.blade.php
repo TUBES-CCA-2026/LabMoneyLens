@@ -63,6 +63,7 @@
           <a href="{{ route('welcome') }}" class="nav-item active">Pengeluaran</a>
           <a href="{{ route('pemasukan') }}" class="nav-item">Pemasukan</a>
         @endunless
+        <a href="{{ route('struk') }}" class="nav-item">Galeri Struk</a>
         <a href="{{ route('laporan') }}" class="nav-item">Laporan</a>
         @unless(session('user_role') == 'Kepala Lab')
           <a href="{{ route('recycle') }}" class="nav-item">Recycle Bin</a>

@@ -41,19 +41,24 @@ class welcomecontroller extends Controller
 
         $data = $request->validate([
             'tanggal' => 'required|date',
-            'uraian' => 'nullable|string|max:255',
-            'nominal' => 'required|numeric|min:1',
-            'id_jenis_pengeluaran' => 'required|integer',
-            'receipt_image' => 'nullable|image|max:5120',
+            'uraian' => 'array',
+            'uraian.*' => 'nullable|string|max:255',
+            'nominal' => 'required|array',
+            'nominal.*' => 'required|numeric|min:1',
+            'id_jenis_pengeluaran' => 'required|array',
+            'id_jenis_pengeluaran.*' => 'required|integer',
+            'receipt_image' => 'required|image|max:5120',
         ]);
 
+        $totalNominal = array_sum($data['nominal']);
+
         // Validasi pengeluaran tidak boleh melebihi saldo yang dimiliki
-        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->sum('nominal');
-        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->sum('nominal');
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
         $currentBalance = $totalIncome - $totalExpense;
         
-        if ($data['nominal'] > $currentBalance) {
-            return redirect()->route('welcome')->with('error', 'Pengeluaran tidak boleh melebihi saldo. Saldo Anda: Rp ' . number_format($currentBalance, 0, ',', '.'));
+        if ($totalNominal > $currentBalance) {
+            return redirect()->route('welcome')->with('error', 'Total pengeluaran tidak boleh melebihi saldo. Saldo Anda: Rp ' . number_format($currentBalance, 0, ',', '.'));
         }
 
         $receiptPath = null;
@@ -61,31 +66,38 @@ class welcomecontroller extends Controller
             $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
         }
 
-        // Cek apakah entri serupa ada di Recycle Bin (deleted)
-        $existsInRecycle = DB::table('pengeluaran')
-            ->whereNotNull('deleted_at')
-            ->where('nominal', $data['nominal'])
-            ->where('tanggal', $data['tanggal'])
-            ->where('id_jenis_pengeluaran', $data['id_jenis_pengeluaran'])
-            ->exists();
+        $itemsCount = count($data['nominal']);
+        for ($i = 0; $i < $itemsCount; $i++) {
+            $nominal = $data['nominal'][$i];
+            $uraian = $data['uraian'][$i] ?? '';
+            $id_jenis = $data['id_jenis_pengeluaran'][$i];
 
-        if ($existsInRecycle) {
-            return redirect()->route('welcome')->with('error', 'Entri serupa ditemukan di Recycle Bin. Pulihkan entri tersebut sebelum menambahkan kembali.');
+            // Cek apakah entri serupa ada di Recycle Bin (deleted)
+            $existsInRecycle = DB::table('pengeluaran')
+                ->whereNotNull('deleted_at')
+                ->where('nominal', $nominal)
+                ->where('tanggal', $data['tanggal'])
+                ->where('id_jenis_pengeluaran', $id_jenis)
+                ->exists();
+
+            if ($existsInRecycle) {
+                return redirect()->route('welcome')->with('error', "Entri serupa (Rp " . number_format($nominal, 0, ',', '.') . ") ditemukan di Recycle Bin. Pulihkan entri tersebut sebelum menambahkan kembali.");
+            }
+
+            DB::table('pengeluaran')->insert([
+                'tanggal' => $data['tanggal'],
+                'uraian' => $uraian,
+                'nominal' => $nominal,
+                'foto_struk' => $receiptPath,
+                'id_jenis_pengeluaran' => $id_jenis,
+                'id_user' => session('user_id'),
+                'is_confirmed' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
 
-        DB::table('pengeluaran')->insert([
-            'tanggal' => $data['tanggal'],
-            'uraian' => $data['uraian'] ?? '',
-            'nominal' => $data['nominal'],
-            'foto_struk' => $receiptPath,
-            'id_jenis_pengeluaran' => $data['id_jenis_pengeluaran'],
-            'id_user' => session('user_id'),
-            'is_confirmed' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return redirect()->route('welcome')->with('success', 'Pengeluaran disimpan.');
+        return redirect()->route('welcome')->with('success', 'Semua pengeluaran berhasil disimpan.');
     }
 
 

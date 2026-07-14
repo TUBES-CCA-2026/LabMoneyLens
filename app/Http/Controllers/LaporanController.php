@@ -24,6 +24,7 @@ class LaporanController extends Controller
                 'pemasukan.nominal as jumlah',
                 'pemasukan.tanggal',
                 'pemasukan.created_at as created_at',
+                'pemasukan.uraian',
                 DB::raw("'Pemasukan' as tipe")
             )
             ->whereNull('pemasukan.deleted_at');
@@ -36,6 +37,7 @@ class LaporanController extends Controller
                 'pengeluaran.nominal as jumlah',
                 'pengeluaran.tanggal',
                 'pengeluaran.created_at as created_at',
+                'pengeluaran.uraian',
                 DB::raw("'Pengeluaran' as tipe")
             )
             ->whereNull('pengeluaran.deleted_at');
@@ -71,12 +73,13 @@ class LaporanController extends Controller
             $callback = function () use ($records) {
                 $output = fopen('php://output', 'w');
                 fprintf($output, "%s", chr(0xEF) . chr(0xBB) . chr(0xBF));
-                fputcsv($output, ['ID Laporan', 'Kategori', 'Jumlah (IDR)', 'Tanggal & Waktu', 'Jenis']);
+                fputcsv($output, ['ID Laporan', 'Kategori', 'Uraian', 'Jumlah (IDR)', 'Tanggal & Waktu', 'Jenis']);
 
                 foreach ($records as $row) {
                     fputcsv($output, [
                         $row->id,
                         $row->kategori,
+                        $row->uraian ?? '-',
                         $row->jumlah,
                         \Illuminate\Support\Carbon::parse($row->created_at)->format('d/m/Y H:i'),
                         $row->tipe,

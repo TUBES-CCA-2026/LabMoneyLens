@@ -501,6 +501,11 @@
             Pemasukan
           </a>
         @endunless
+        <a href="{{ route('struk') }}" class="nav-item">
+          <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Galeri Struk
+        </a>
+
         <a href="{{ route('laporan') }}" class="nav-item">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           Laporan
@@ -568,16 +573,19 @@
               </div>
             </div>
 
-            <!-- Upload Zone -->
+            <!-- Upload Zone - WAJIB PERTAMA -->
             <div class="upload-row" id="upload-row" role="button" tabindex="0" aria-label="Unggah foto struk">
               <div class="upload-row-icon">
                 <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               </div>
               <div class="upload-row-text">
-                <strong id="upload-filename">📎 Scan / Unggah Foto Struk Belanja</strong>
-                <span>Format: JPG, PNG, WEBP — Maks. 5MB. Data akan diisi otomatis.</span>
+                <strong id="upload-filename">📎 Upload Foto Struk Dulu <span style="color:#ef4444">*</span></strong>
+                <span>Struk wajib diunggah sebelum mengisi form. Format: JPG, PNG, WEBP — Maks. 5MB.</span>
               </div>
               <button type="button" class="upload-row-btn" onclick="document.getElementById('receipt_image').click()">Pilih File</button>
+            </div>
+            <div id="upload-required-notice" style="display:none; background:#fee2e2; border:1.5px solid #fecaca; border-radius:10px; padding:10px 16px; margin-bottom:16px; font-size:12px; color:#991b1b; font-weight:600;">
+              ⚠️ Foto struk harus diunggah terlebih dahulu sebelum form dapat diisi.
             </div>
 
             <form id="receipt_form" method="POST" action="{{ route('pengeluaran.store') }}" enctype="multipart/form-data" class="input-form">
@@ -585,49 +593,66 @@
               <input type="file" id="receipt_image" name="receipt_image" accept="image/*" hidden>
               <input type="hidden" id="receipt_type" name="type" value="pengeluaran">
 
-              <div class="form-grid">
-                <!-- Kategori -->
-                <div class="form-group">
-                  <label class="form-label" for="id_jenis_pengeluaran">
-                    <span class="required-dot"></span> Kategori Pengeluaran
-                  </label>
-                  <select class="form-input" id="id_jenis_pengeluaran" name="id_jenis_pengeluaran" required>
-                    <option value="">— Pilih Kategori —</option>
-                    @foreach($jenis as $j)
-                      <option value="{{ $j->id }}">{{ $j->nama }}</option>
-                    @endforeach
-                  </select>
+              <!-- Form overlay blocker -->
+              <div id="form-blocker" style="position:relative;">
+                <div id="form-overlay" style="position:absolute;inset:0;background:rgba(255,255,255,0.85);z-index:10;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(2px);">
+                  <div style="font-size:48px;">🧾</div>
+                  <div style="font-size:14px;font-weight:700;color:#991b1b;text-align:center;">Upload Foto Struk Terlebih Dahulu</div>
+                  <div style="font-size:12px;color:#64748b;text-align:center;">Form akan terbuka setelah foto struk berhasil diunggah.</div>
+                  <button type="button" onclick="document.getElementById('receipt_image').click()" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">📎 Pilih File Struk</button>
                 </div>
 
-                <!-- Tanggal -->
-                <div class="form-group">
-                  <label class="form-label" for="tanggal">
-                    <span class="required-dot"></span> Tanggal Pengeluaran
-                  </label>
-                  <input type="date" class="form-input" id="tanggal" name="tanggal"
-                         value="{{ date('Y-m-d') }}" required />
-                </div>
-
-                <!-- Nominal -->
-                <div class="form-group">
-                  <label class="form-label" for="nominal">
-                    <span class="required-dot"></span> Jumlah (IDR)
-                  </label>
-                  <div class="nominal-wrapper">
-                    <span class="nominal-prefix">Rp</span>
-                    <input type="number" class="form-input with-prefix" id="nominal"
-                           name="nominal" placeholder="0" min="1"
-                           max="{{ $saldo }}" required />
+              <div class="form-group span-2" style="margin-bottom: 20px;">
+                <label class="form-label" for="tanggal">
+                  <span class="required-dot"></span> Tanggal Transaksi (berlaku untuk semua baris)
+                </label>
+                <input type="date" class="form-input" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}" required />
+              </div>
+              
+              <div id="items-container">
+                <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fecaca;">
+                  <!-- Kategori -->
+                  <div class="form-group">
+                    <label class="form-label" for="id_jenis_pengeluaran_0">
+                      <span class="required-dot"></span> Kategori Pengeluaran
+                    </label>
+                    <select class="form-input" id="id_jenis_pengeluaran_0" name="id_jenis_pengeluaran[]" required>
+                      <option value="">— Pilih Kategori —</option>
+                      @foreach($jenis as $j)
+                        <option value="{{ $j->id }}">{{ $j->nama }}</option>
+                      @endforeach
+                    </select>
                   </div>
-                </div>
 
-                <!-- Keterangan -->
-                <div class="form-group">
-                  <label class="form-label" for="uraian">Keterangan / Uraian</label>
-                  <input type="text" class="form-input" id="uraian" name="uraian"
-                         placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
+                  <!-- Nominal -->
+                  <div class="form-group">
+                    <label class="form-label" for="nominal_0">
+                      <span class="required-dot"></span> Jumlah (IDR)
+                    </label>
+                    <div class="nominal-wrapper">
+                      <span class="nominal-prefix">Rp</span>
+                      <input type="number" class="form-input with-prefix" id="nominal_0"
+                             name="nominal[]" placeholder="0" min="1" required />
+                    </div>
+                  </div>
+
+                  <!-- Keterangan -->
+                  <div class="form-group span-2">
+                    <label class="form-label" for="uraian_0">Keterangan / Uraian</label>
+                    <input type="text" class="form-input" id="uraian_0" name="uraian[]"
+                           placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
+                  </div>
+                  
+                  <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
                 </div>
               </div>
+              
+              <button type="button" class="reset-btn" onclick="tambahBaris()" style="width: 100%; margin-bottom: 10px; border-style: dashed; color: #dc2626; border-color: #fca5a5;">
+                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Tambah Baris Item
+              </button>
+
+              </div><!-- /form-blocker -->
 
               <!-- Actions -->
               <div class="form-actions">
@@ -735,9 +760,25 @@
 
   <script>
     // Upload filename preview
-    document.getElementById('receipt_image').addEventListener('change', function() {
-      const name = this.files[0] ? this.files[0].name : '📎 Scan / Unggah Foto Struk Belanja';
-      document.getElementById('upload-filename').textContent = name;
+    const receiptInput = document.getElementById('receipt_image');
+    const formOverlay = document.getElementById('form-overlay');
+
+    receiptInput.addEventListener('change', function() {
+      if (this.files[0]) {
+        const name = this.files[0].name;
+        document.getElementById('upload-filename').textContent = '✅ ' + name;
+        document.getElementById('upload-filename').style.color = '#16a34a';
+        document.getElementById('upload-row').style.borderColor = '#16a34a';
+        document.getElementById('upload-row').style.background = 'rgba(220,252,231,0.5)';
+        // Hide overlay to unlock form
+        formOverlay.style.display = 'none';
+      } else {
+        document.getElementById('upload-filename').textContent = '📎 Upload Foto Struk Dulu *';
+        document.getElementById('upload-filename').style.color = '';
+        document.getElementById('upload-row').style.borderColor = '';
+        document.getElementById('upload-row').style.background = '';
+        formOverlay.style.display = 'flex';
+      }
     });
 
     document.getElementById('upload-row').addEventListener('click', function(e) {
@@ -762,6 +803,59 @@
         showModal('Berhasil', '{{ session("success") }}', '✅');
       @endif
     });
+
+    let rowCount = 1;
+    function tambahBaris() {
+      const container = document.getElementById('items-container');
+      const rowHtml = `
+        <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fecaca; animation: slideUp 0.3s ease;">
+          <div class="form-group">
+            <label class="form-label" for="id_jenis_pengeluaran_${rowCount}">
+              <span class="required-dot"></span> Kategori Pengeluaran
+            </label>
+            <select class="form-input" id="id_jenis_pengeluaran_${rowCount}" name="id_jenis_pengeluaran[]" required>
+              <option value="">— Pilih Kategori —</option>
+              @foreach($jenis as $j)
+                <option value="{{ $j->id }}">{{ $j->nama }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="nominal_${rowCount}">
+              <span class="required-dot"></span> Jumlah (IDR)
+            </label>
+            <div class="nominal-wrapper">
+              <span class="nominal-prefix">Rp</span>
+              <input type="number" class="form-input with-prefix" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+            </div>
+          </div>
+          <div class="form-group span-2">
+            <label class="form-label" for="uraian_${rowCount}">Keterangan / Uraian</label>
+            <input type="text" class="form-input" id="uraian_${rowCount}" name="uraian[]" placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
+          </div>
+          <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fee2e2; border: 1px solid #fecaca; color: #ef4444; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', rowHtml);
+      rowCount++;
+      updateHapusButtons();
+    }
+
+    function hapusBaris(btn) {
+      const row = btn.closest('.item-row');
+      row.remove();
+      updateHapusButtons();
+    }
+
+    function updateHapusButtons() {
+      const rows = document.querySelectorAll('.item-row');
+      const btns = document.querySelectorAll('.btn-hapus-baris');
+      if (rows.length > 1) {
+        btns.forEach(b => b.style.display = 'flex');
+      } else {
+        btns.forEach(b => b.style.display = 'none');
+      }
+    }
   </script>
 </body>
 </html>
