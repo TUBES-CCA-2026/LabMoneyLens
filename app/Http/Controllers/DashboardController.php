@@ -140,4 +140,54 @@ class DashboardController extends Controller
             'semester'   => $semester,
         ]);
     }
+
+    public function liveData(Request $request)
+    {
+        if (!session()->has('user_id')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $recentIncome = DB::table('pemasukan')
+            ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
+            ->where('pemasukan.is_confirmed', 1)
+            ->whereNull('pemasukan.deleted_at')
+            ->select(
+                'pemasukan.id_pemasukan as id',
+                'jenis_penerimaan.nama_jenis as category',
+                'pemasukan.nominal as amount',
+                'pemasukan.tanggal as tanggal',
+                DB::raw("'Pemasukan' as type")
+            )
+            ->get();
+
+        $recentExpense = DB::table('pengeluaran')
+            ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
+            ->where('pengeluaran.is_confirmed', 1)
+            ->whereNull('pengeluaran.deleted_at')
+            ->select(
+                'pengeluaran.id_pengeluaran as id',
+                'jenis_pengeluaran.nama_jenis as category',
+                'pengeluaran.nominal as amount',
+                'pengeluaran.tanggal as tanggal',
+                DB::raw("'Pengeluaran' as type")
+            )
+            ->get();
+
+        $recentTransactions = $recentIncome
+            ->concat($recentExpense)
+            ->sortByDesc('tanggal')
+            ->take(6)
+            ->values();
+
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+        $balance = $totalIncome - $totalExpense;
+
+        return response()->json([
+            'totalIncome' => (float) $totalIncome,
+            'totalExpense' => (float) $totalExpense,
+            'balance' => (float) $balance,
+            'recentTransactions' => $recentTransactions,
+        ]);
+    }
 }

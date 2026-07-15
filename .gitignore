@@ -30,3 +30,4 @@
 # /storage/framework/testing/*
 # /storage/framework/views/*
 # /storage/logs/*
+node_modules

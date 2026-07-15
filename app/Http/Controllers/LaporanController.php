@@ -13,57 +13,24 @@ class LaporanController extends Controller
             return redirect()->route('login');
         }
 
-        $month = $request->query('month');
-        $category = $request->query('category');
+        $query = $this->buildReportQuery($request);
+        $records = $query['records'];
+        $pemasukan = $query['pemasukan'];
+        $pengeluaran = $query['pengeluaran'];
+        $month = $query['month'];
+        $category = $query['category'];
 
-        $pemasukanQuery = DB::table('pemasukan')
-            ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
-            ->select(
-                'pemasukan.id_pemasukan as id',
-                'jenis_penerimaan.nama_jenis as kategori',
-                'pemasukan.nominal as jumlah',
-                'pemasukan.tanggal',
-                'pemasukan.created_at as created_at',
-                'pemasukan.uraian',
-                DB::raw("'Pemasukan' as tipe")
-            )
-            ->whereNull('pemasukan.deleted_at');
-
-        $pengeluaranQuery = DB::table('pengeluaran')
-            ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
-            ->select(
-                'pengeluaran.id_pengeluaran as id',
-                'jenis_pengeluaran.nama_jenis as kategori',
-                'pengeluaran.nominal as jumlah',
-                'pengeluaran.tanggal',
-                'pengeluaran.created_at as created_at',
-                'pengeluaran.uraian',
-                DB::raw("'Pengeluaran' as tipe")
-            )
-            ->whereNull('pengeluaran.deleted_at');
-
-        if ($month && preg_match('/^\d{4}-\d{2}$/', $month)) {
-            [$year, $monthNumber] = explode('-', $month);
-            $pemasukanQuery->whereYear('pemasukan.tanggal', $year)->whereMonth('pemasukan.tanggal', $monthNumber);
-            $pengeluaranQuery->whereYear('pengeluaran.tanggal', $year)->whereMonth('pengeluaran.tanggal', $monthNumber);
-        }
-
-        if ($category && $category !== 'semua') {
-            $pemasukanQuery->where('jenis_penerimaan.nama_jenis', $category);
-            $pengeluaranQuery->where('jenis_pengeluaran.nama_jenis', $category);
-        }
-
-        $pemasukan = $pemasukanQuery->get();
-        $pengeluaran = $pengeluaranQuery->get();
-
-        $records = $pemasukan->concat($pengeluaran)
-            ->sortBy('created_at')
-            ->values();
-
-        // Recent entries (latest 10) for preview panel
         $recentRecords = $records->sortByDesc('created_at')->values()->take(10);
 
         if ($request->query('export') === 'csv') {
+            if ($records->isEmpty()) {
+                return redirect()->route('laporan', array_filter([
+                    'month' => $month,
+                    'category' => $category,
+                ], fn ($value) => $value !== null && $value !== ''))
+                    ->with('error', 'Tidak ada data laporan untuk diunduh.');
+            }
+
             $filename = 'laporan-' . now()->format('YmdHis') . '.csv';
             $headers = [
                 'Content-Type' => 'text/csv; charset=UTF-8',
@@ -112,5 +79,85 @@ class LaporanController extends Controller
             'month',
             'category'
         ));
+    }
+
+    public function liveData(Request $request)
+    {
+        if (!session()->has('user_id')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $query = $this->buildReportQuery($request);
+        $records = $query['records'];
+        $pemasukan = $query['pemasukan'];
+        $pengeluaran = $query['pengeluaran'];
+
+        return response()->json([
+            'totalIncome' => (float) $pemasukan->sum('jumlah'),
+            'totalExpense' => (float) $pengeluaran->sum('jumlah'),
+            'balance' => (float) ($pemasukan->sum('jumlah') - $pengeluaran->sum('jumlah')),
+            'records' => $records->map(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'kategori' => $row->kategori,
+                    'uraian' => $row->uraian,
+                    'jumlah' => (float) $row->jumlah,
+                    'created_at' => \Illuminate\Support\Carbon::parse($row->created_at)->toIso8601String(),
+                    'tipe' => $row->tipe,
+                ];
+            })->values(),
+        ]);
+    }
+
+    private function buildReportQuery(Request $request): array
+    {
+        $month = $request->query('month');
+        $category = $request->query('category');
+
+        $pemasukanQuery = DB::table('pemasukan')
+            ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
+            ->select(
+                'pemasukan.id_pemasukan as id',
+                'jenis_penerimaan.nama_jenis as kategori',
+                'pemasukan.nominal as jumlah',
+                'pemasukan.tanggal',
+                'pemasukan.created_at as created_at',
+                'pemasukan.uraian',
+                DB::raw("'Pemasukan' as tipe")
+            )
+            ->whereNull('pemasukan.deleted_at');
+
+        $pengeluaranQuery = DB::table('pengeluaran')
+            ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
+            ->select(
+                'pengeluaran.id_pengeluaran as id',
+                'jenis_pengeluaran.nama_jenis as kategori',
+                'pengeluaran.nominal as jumlah',
+                'pengeluaran.tanggal',
+                'pengeluaran.created_at as created_at',
+                'pengeluaran.uraian',
+                DB::raw("'Pengeluaran' as tipe")
+            )
+            ->whereNull('pengeluaran.deleted_at');
+
+        if ($month && preg_match('/^\d{4}-\d{2}$/', $month)) {
+            [$year, $monthNumber] = explode('-', $month);
+            $pemasukanQuery->whereYear('pemasukan.tanggal', $year)->whereMonth('pemasukan.tanggal', $monthNumber);
+            $pengeluaranQuery->whereYear('pengeluaran.tanggal', $year)->whereMonth('pengeluaran.tanggal', $monthNumber);
+        }
+
+        if ($category && $category !== 'semua') {
+            $pemasukanQuery->where('jenis_penerimaan.nama_jenis', $category);
+            $pengeluaranQuery->where('jenis_pengeluaran.nama_jenis', $category);
+        }
+
+        $pemasukan = $pemasukanQuery->get();
+        $pengeluaran = $pengeluaranQuery->get();
+
+        $records = $pemasukan->concat($pengeluaran)
+            ->sortBy('created_at')
+            ->values();
+
+        return compact('records', 'pemasukan', 'pengeluaran', 'month', 'category');
     }
 }

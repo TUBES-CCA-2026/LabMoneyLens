@@ -476,15 +476,19 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-user">
+      <a href="{{ route('profile') }}" class="sidebar-user" style="display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit;">
         <div class="avatar">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          @if(!empty(session('user_photo')))
+            <img src="{{ asset('storage/' . session('user_photo')) }}" alt="Foto Profil" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" />
+          @else
+            <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          @endif
         </div>
         <div>
           <div class="sidebar-username">{{ session('user_name', 'USERNAME') }}</div>
           <div class="sidebar-role">{{ session('user_role', 'Administrator') }}</div>
         </div>
-      </div>
+      </a>
 
       <nav class="sidebar-nav">
         <a href="{{ route('dashboard') }}" class="nav-item">
@@ -513,7 +517,7 @@
         @unless(session('user_role') == 'Kepala Lab')
           <a href="{{ route('recycle') }}" class="nav-item">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            Recycle Bin
+            Back Up
           </a>
         @endunless
       </nav>
@@ -627,7 +631,7 @@
                   <!-- Nominal -->
                   <div class="form-group">
                     <label class="form-label" for="nominal_0">
-                      <span class="required-dot"></span> Jumlah (IDR)
+                      <span class="required-dot"></span> Nominal (IDR)
                     </label>
                     <div class="nominal-wrapper">
                       <span class="nominal-prefix">Rp</span>
@@ -822,7 +826,7 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="nominal_${rowCount}">
-              <span class="required-dot"></span> Jumlah (IDR)
+              <span class="required-dot"></span> Nominal (IDR)
             </label>
             <div class="nominal-wrapper">
               <span class="nominal-prefix">Rp</span>

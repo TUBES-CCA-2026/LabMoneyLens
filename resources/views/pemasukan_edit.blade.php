@@ -66,7 +66,7 @@
         <a href="{{ route('struk') }}" class="nav-item">Galeri Struk</a>
         <a href="{{ route('laporan') }}" class="nav-item">Laporan</a>
         @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('recycle') }}" class="nav-item">Recycle Bin</a>
+          <a href="{{ route('recycle') }}" class="nav-item">Back Up</a>
         @endunless
       </nav>
       <div class="sidebar-logout">
@@ -92,7 +92,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="nominal">Jumlah (IDR)</label>
+            <label class="form-label" for="nominal">Nominal (IDR)</label>
             <input type="number" class="form-input" id="nominal" name="nominal" placeholder="Rp" min="0" required value="{{ $income->jumlah }}" />
           </div>
           <div class="form-group">

@@ -15,6 +15,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])->name('dashboard.chartData');
+Route::get('/dashboard/live-data', [DashboardController::class, 'liveData'])->name('dashboard.liveData');
 Route::get('/welcome', [welcomecontroller::class, 'index'])->name('welcome');
 Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan');
 Route::post('/pemasukan/store', [PemasukanController::class, 'store'])->name('pemasukan.store');
@@ -27,9 +28,13 @@ Route::get('/pengeluaran/edit/{id}', [App\Http\Controllers\welcomecontroller::cl
 Route::post('/pengeluaran/update/{id}', [App\Http\Controllers\welcomecontroller::class, 'update'])->name('pengeluaran.update');
 Route::post('/pengeluaran/delete/{id}', [App\Http\Controllers\welcomecontroller::class, 'destroy'])->name('pengeluaran.delete');
 Route::get('/struk', [StrukController::class, 'index'])->name('struk');
+Route::get('/struk/download/{type}/{id}', [StrukController::class, 'download'])->name('struk.download');
 Route::post('/struk/delete/{type}/{id}', [StrukController::class, 'destroy'])->name('struk.delete');
 Route::post('/struk/update-foto/{type}/{id}', [StrukController::class, 'updateFoto'])->name('struk.updateFoto');
 Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
+Route::get('/laporan/live-data', [LaporanController::class, 'liveData'])->name('laporan.liveData');
+Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile');
+Route::post('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 Route::get('/recycle', [App\Http\Controllers\RecycleController::class, 'index'])->name('recycle');
 Route::post('/recycle/restore/{type}/{id}', [App\Http\Controllers\RecycleController::class, 'restore'])->name('recycle.restore');
 Route::post('/recycle/delete/{type}/{id}', [App\Http\Controllers\RecycleController::class, 'forceDelete'])->name('recycle.forceDelete');

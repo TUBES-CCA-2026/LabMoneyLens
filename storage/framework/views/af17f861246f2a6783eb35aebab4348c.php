@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Galeri Struk — Dashboard</title>
-  @vite(['resources/css/style.css','resources/js/script.js'])
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/js/script.js']); ?>
   
   <style>
     @media (max-width: 1024px) {
@@ -180,54 +180,54 @@
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
     <aside class="sidebar">
-      <a href="{{ route('profile') }}" class="sidebar-user" style="display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit;">
+      <a href="<?php echo e(route('profile')); ?>" class="sidebar-user" style="display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit;">
         <div class="avatar">
-          @if(!empty(session('user_photo')))
-            <img src="{{ asset('storage/' . session('user_photo')) }}" alt="Foto Profil" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" />
-          @else
+          <?php if(!empty(session('user_photo'))): ?>
+            <img src="<?php echo e(asset('storage/' . session('user_photo'))); ?>" alt="Foto Profil" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" />
+          <?php else: ?>
             <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          @endif
+          <?php endif; ?>
         </div>
         <div>
-          <div class="sidebar-username">{{ session('user_name', 'USERNAME') }}</div>
-          <div class="sidebar-role">{{ session('user_role', 'Administrator') }}</div>
+          <div class="sidebar-username"><?php echo e(session('user_name', 'USERNAME')); ?></div>
+          <div class="sidebar-role"><?php echo e(session('user_role', 'Administrator')); ?></div>
         </div>
       </a>
 
       <nav class="sidebar-nav">
-        <a href="{{ route('dashboard') }}" class="nav-item">
+        <a href="<?php echo e(route('dashboard')); ?>" class="nav-item">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </a>
-        @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('welcome') }}" class="nav-item">
+        <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+          <a href="<?php echo e(route('welcome')); ?>" class="nav-item">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
             Pengeluaran
           </a>
-          <a href="{{ route('pemasukan') }}" class="nav-item">
+          <a href="<?php echo e(route('pemasukan')); ?>" class="nav-item">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             Pemasukan
           </a>
-        @endunless
-        <a href="{{ route('struk') }}" class="nav-item active">
+        <?php endif; ?>
+        <a href="<?php echo e(route('struk')); ?>" class="nav-item active">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           Galeri Struk
         </a>
-        <a href="{{ route('laporan') }}" class="nav-item">
+        <a href="<?php echo e(route('laporan')); ?>" class="nav-item">
           <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           Laporan
         </a>
-        @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('recycle') }}" class="nav-item">
+        <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+          <a href="<?php echo e(route('recycle')); ?>" class="nav-item">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
             Back Up
           </a>
-        @endunless
+        <?php endif; ?>
       </nav>
 
       <div class="sidebar-logout">
-        <form action="{{ route('logout') }}" method="POST">
-          @csrf
+        <form action="<?php echo e(route('logout')); ?>" method="POST">
+          <?php echo csrf_field(); ?>
           <button type="submit" class="logout-btn">
             <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Log-out
@@ -243,51 +243,51 @@
           <p>Semua bukti transaksi yang telah diunggah. Klik gambar untuk memperbesar, atau gunakan tombol untuk mengedit / menghapus.</p>
         </div>
 
-        @if(session('success'))
-          <div class="flash-success">✅ {{ session('success') }}</div>
-        @endif
+        <?php if(session('success')): ?>
+          <div class="flash-success">✅ <?php echo e(session('success')); ?></div>
+        <?php endif; ?>
 
-        @if($strukList->isEmpty())
+        <?php if($strukList->isEmpty()): ?>
           <div class="empty-state">
             <div class="empty-icon">🧾</div>
             <h3>Belum Ada Struk</h3>
             <p>Upload struk saat menginput Pengeluaran atau Pemasukan untuk melihatnya di sini.</p>
           </div>
-        @else
+        <?php else: ?>
           <div class="struk-grid">
-            @foreach($strukList as $struk)
+            <?php $__currentLoopData = $strukList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $struk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
               <div class="struk-card">
                 <div class="struk-img-container">
-                  <img src="{{ asset('storage/' . $struk->foto) }}"
-                       alt="Struk {{ $struk->uraian }}"
-                       onclick="openLightbox('{{ asset('storage/' . $struk->foto) }}')" />
+                  <img src="<?php echo e(asset('storage/' . $struk->foto)); ?>"
+                       alt="Struk <?php echo e($struk->uraian); ?>"
+                       onclick="openLightbox('<?php echo e(asset('storage/' . $struk->foto)); ?>')" />
                 </div>
                 <div class="struk-info">
-                  <span class="struk-type type-{{ $struk->type }}">{{ $struk->type }}</span>
-                  <div class="struk-date">📅 {{ \Illuminate\Support\Carbon::parse($struk->tanggal)->format('d M Y') }}</div>
-                  <div class="struk-amount">Rp {{ number_format($struk->nominal, 0, ',', '.') }}</div>
-                  <div class="struk-desc">{{ $struk->uraian ?: '—' }}</div>
+                  <span class="struk-type type-<?php echo e($struk->type); ?>"><?php echo e($struk->type); ?></span>
+                  <div class="struk-date">📅 <?php echo e(\Illuminate\Support\Carbon::parse($struk->tanggal)->format('d M Y')); ?></div>
+                  <div class="struk-amount">Rp <?php echo e(number_format($struk->nominal, 0, ',', '.')); ?></div>
+                  <div class="struk-desc"><?php echo e($struk->uraian ?: '—'); ?></div>
                 </div>
                 <div class="struk-actions">
-                  <a href="{{ route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id]) }}" class="btn-edit-foto" style="text-decoration:none;">
+                  <a href="<?php echo e(route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>" class="btn-edit-foto" style="text-decoration:none;">
                     ⬇️ Download
                   </a>
                   <button class="btn-edit-foto"
-                          onclick="openEditModal('{{ strtolower($struk->type) }}', {{ $struk->id }}, '{{ asset('storage/' . $struk->foto) }}')">
+                          onclick="openEditModal('<?php echo e(strtolower($struk->type)); ?>', <?php echo e($struk->id); ?>, '<?php echo e(asset('storage/' . $struk->foto)); ?>')">
                     ✏️ Ganti Foto
                   </button>
                   <form method="POST"
-                        action="{{ route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id]) }}"
+                        action="<?php echo e(route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>"
                         style="flex:1;"
                         onsubmit="return confirm('Yakin hapus struk ini? Data akan masuk ke Back Up.')">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <button type="submit" class="btn-hapus-struk">🗑 Hapus</button>
                   </form>
                 </div>
               </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </div>
-        @endif
+        <?php endif; ?>
       </div>
     </main>
   </div>
@@ -314,7 +314,7 @@
       </div>
 
       <form id="edit-foto-form" method="POST" enctype="multipart/form-data">
-        @csrf
+        <?php echo csrf_field(); ?>
         <input type="file" id="foto_baru" name="foto_baru" accept="image/*" hidden>
         <div class="edit-modal-actions">
           <button type="button" class="btn-cancel-modal" onclick="closeEditModal(null, true)">Batal</button>
@@ -364,3 +364,4 @@
   </script>
 </body>
 </html>
+<?php /**PATH E:\lml\LabMoneyLens\resources\views/struk.blade.php ENDPATH**/ ?>

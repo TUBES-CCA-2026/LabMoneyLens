@@ -49,6 +49,29 @@ class StrukController extends Controller
         return view('struk', compact('strukList'));
     }
 
+    public function download(string $type, int $id)
+    {
+        if (!session()->has('user_id')) {
+            return redirect()->route('login');
+        }
+
+        $path = null;
+
+        if ($type === 'pemasukan') {
+            $record = DB::table('pemasukan')->where('id_pemasukan', $id)->whereNull('deleted_at')->first();
+            $path = $record?->foto_bukti;
+        } elseif ($type === 'pengeluaran') {
+            $record = DB::table('pengeluaran')->where('id_pengeluaran', $id)->whereNull('deleted_at')->first();
+            $path = $record?->foto_struk;
+        }
+
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            return redirect()->route('struk')->with('error', 'File struk tidak ditemukan.');
+        }
+
+        return Storage::disk('public')->download($path, basename($path));
+    }
+
     /**
      * Soft-delete: kirim ke recycle bin
      */

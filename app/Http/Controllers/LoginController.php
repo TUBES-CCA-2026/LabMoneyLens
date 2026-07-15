@@ -40,6 +40,7 @@ class LoginController extends Controller
             'user_id' => $user->id,
             'user_name' => $user->nama,
             'user_role' => $user->role,
+            'user_photo' => $user->foto_profil,
         ]);
 
         return redirect()->route('dashboard');
