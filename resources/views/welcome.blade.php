@@ -712,7 +712,7 @@
                         <a href="{{ route('pengeluaran.edit', $expense->id) }}" class="btn-edit">Edit</a>
                         <span class="sep">|</span>
                         <form method="POST" action="{{ route('pengeluaran.delete', $expense->id) }}" style="display:inline;"
-                              onsubmit="return confirm('Yakin ingin menghapus pengeluaran ini?')">
+                              data-confirm="soft">
                           @csrf
                           <button type="submit" class="btn-hapus">Hapus</button>
                         </form>

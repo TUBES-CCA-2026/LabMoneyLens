@@ -188,14 +188,14 @@
                     <?php if($row->tipe === 'Pemasukan'): ?>
                       <a href="<?php echo e(route('pemasukan.edit', ['id' => $row->id])); ?>" class="btn-edit">Edit</a>
                       <span class="sep">/</span>
-                      <form action="<?php echo e(route('pemasukan.delete', ['id' => $row->id])); ?>" method="POST" style="display:inline">
+                      <form action="<?php echo e(route('pemasukan.delete', ['id' => $row->id])); ?>" method="POST" style="display:inline" data-confirm="soft">
                         <?php echo csrf_field(); ?>
                         <button type="submit" class="btn-hapus">Hapus</button>
                       </form>
                     <?php else: ?>
                       <a href="<?php echo e(route('pengeluaran.edit', ['id' => $row->id])); ?>" class="btn-edit">Edit</a>
                       <span class="sep">/</span>
-                      <form action="<?php echo e(route('pengeluaran.delete', ['id' => $row->id])); ?>" method="POST" style="display:inline">
+                      <form action="<?php echo e(route('pengeluaran.delete', ['id' => $row->id])); ?>" method="POST" style="display:inline" data-confirm="soft">
                         <?php echo csrf_field(); ?>
                         <button type="submit" class="btn-hapus">Hapus</button>
                       </form>
@@ -245,8 +245,8 @@
           <td>${row.tipe}</td>
           <td class="action-cell">
             ${row.tipe === 'Pemasukan'
-              ? `<a href="/pemasukan/edit/${row.id}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pemasukan/delete/${row.id}" method="POST" style="display:inline"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`
-              : `<a href="/pengeluaran/edit/${row.id}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pengeluaran/delete/${row.id}" method="POST" style="display:inline"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`}
+              ? `<a href="/pemasukan/edit/${row.id}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pemasukan/delete/${row.id}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`
+              : `<a href="/pengeluaran/edit/${row.id}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pengeluaran/delete/${row.id}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`}
           </td>
         </tr>`;
       }).join('');

@@ -188,14 +188,14 @@
                     @if($row->tipe === 'Pemasukan')
                       <a href="{{ route('pemasukan.edit', ['id' => $row->id]) }}" class="btn-edit">Edit</a>
                       <span class="sep">/</span>
-                      <form action="{{ route('pemasukan.delete', ['id' => $row->id]) }}" method="POST" style="display:inline">
+                      <form action="{{ route('pemasukan.delete', ['id' => $row->id]) }}" method="POST" style="display:inline" data-confirm="soft">
                         @csrf
                         <button type="submit" class="btn-hapus">Hapus</button>
                       </form>
                     @else
                       <a href="{{ route('pengeluaran.edit', ['id' => $row->id]) }}" class="btn-edit">Edit</a>
                       <span class="sep">/</span>
-                      <form action="{{ route('pengeluaran.delete', ['id' => $row->id]) }}" method="POST" style="display:inline">
+                      <form action="{{ route('pengeluaran.delete', ['id' => $row->id]) }}" method="POST" style="display:inline" data-confirm="soft">
                         @csrf
                         <button type="submit" class="btn-hapus">Hapus</button>
                       </form>
@@ -245,8 +245,8 @@
           <td>${row.tipe}</td>
           <td class="action-cell">
             ${row.tipe === 'Pemasukan'
-              ? `<a href="/pemasukan/edit/${row.id}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pemasukan/delete/${row.id}" method="POST" style="display:inline"><input type="hidden" name="_token" value="{{ csrf_token() }}"><button type="submit" class="btn-hapus">Hapus</button></form>`
-              : `<a href="/pengeluaran/edit/${row.id}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pengeluaran/delete/${row.id}" method="POST" style="display:inline"><input type="hidden" name="_token" value="{{ csrf_token() }}"><button type="submit" class="btn-hapus">Hapus</button></form>`}
+              ? `<a href="/pemasukan/edit/${row.id}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pemasukan/delete/${row.id}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="{{ csrf_token() }}"><button type="submit" class="btn-hapus">Hapus</button></form>`
+              : `<a href="/pengeluaran/edit/${row.id}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pengeluaran/delete/${row.id}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="{{ csrf_token() }}"><button type="submit" class="btn-hapus">Hapus</button></form>`}
           </td>
         </tr>`;
       }).join('');

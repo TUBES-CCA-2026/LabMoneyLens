@@ -673,7 +673,7 @@
                         <a href="{{ route('pemasukan.edit', $income->id) }}" class="btn-edit">Edit</a>
                         <span class="sep">|</span>
                         <form method="POST" action="{{ route('pemasukan.delete', $income->id) }}" style="display:inline;"
-                              onsubmit="return confirm('Yakin ingin menghapus pemasukan ini?')">
+                              data-confirm="soft">
                           @csrf
                           <button type="submit" class="btn-hapus">Hapus</button>
                         </form>

@@ -207,3 +207,103 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
+// ── CUSTOM DELETE CONFIRMATION MODAL (pengganti confirm() bawaan browser) ──
+// Dipakai di semua halaman lewat @vite('resources/js/script.js').
+// Cukup tambahkan atribut data-confirm="soft" atau data-confirm="permanent"
+// pada <form> yang melakukan aksi hapus — modal akan otomatis menangani submit-nya.
+// Dibuat sebagai IIFE terpisah (bukan di dalam DOMContentLoaded di atas) supaya
+// tetap berjalan di semua halaman meski elemen lain (mis. .upload-zone) tidak ada.
+(function () {
+  'use strict';
+
+  const CONFIRM_COPY = {
+    soft: {
+      title: 'Konfirmasi Hapus',
+      message: 'Apakah Anda yakin ingin menghapus data ini?<br><br>Data akan dipindahkan ke Back Up dan masih dapat dipulihkan kembali.'
+    },
+    permanent: {
+      title: 'Konfirmasi Hapus Permanen',
+      message: 'Apakah Anda yakin ingin menghapus permanen data ini?<br><br>Data yang telah dihapus permanen tidak dapat dipulihkan kembali.'
+    }
+  };
+
+  let overlayEl = null;
+  let titleEl, messageEl, cancelBtn, deleteBtn, closeBtn;
+  let pendingForm = null;
+
+  function buildModal() {
+    if (overlayEl) return;
+
+    overlayEl = document.createElement('div');
+    overlayEl.id = 'confirm-modal-overlay';
+    overlayEl.className = 'confirm-modal-overlay';
+    overlayEl.innerHTML = `
+      <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+        <button type="button" class="confirm-modal-close" aria-label="Tutup">&times;</button>
+        <h3 class="confirm-modal-title" id="confirm-modal-title"></h3>
+        <p class="confirm-modal-message"></p>
+        <div class="confirm-modal-actions">
+          <button type="button" class="confirm-modal-btn confirm-modal-cancel">Batal</button>
+          <button type="button" class="confirm-modal-btn confirm-modal-delete">Hapus</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlayEl);
+
+    titleEl   = overlayEl.querySelector('.confirm-modal-title');
+    messageEl = overlayEl.querySelector('.confirm-modal-message');
+    cancelBtn = overlayEl.querySelector('.confirm-modal-cancel');
+    deleteBtn = overlayEl.querySelector('.confirm-modal-delete');
+    closeBtn  = overlayEl.querySelector('.confirm-modal-close');
+
+    cancelBtn.addEventListener('click', closeModal);
+    closeBtn.addEventListener('click', closeModal);
+    overlayEl.addEventListener('click', function (e) {
+      if (e.target === overlayEl) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlayEl.classList.contains('active')) closeModal();
+    });
+
+    deleteBtn.addEventListener('click', function () {
+      const form = pendingForm;
+      closeModal();
+      if (form) {
+        form.dataset.confirmed = 'true';
+        form.submit();
+      }
+    });
+  }
+
+  function closeModal() {
+    if (overlayEl) overlayEl.classList.remove('active');
+    pendingForm = null;
+  }
+
+  function openModal(type, form) {
+    buildModal();
+    const copy = CONFIRM_COPY[type] || CONFIRM_COPY.soft;
+    titleEl.textContent = copy.title;
+    messageEl.innerHTML = copy.message;
+    pendingForm = form;
+    overlayEl.classList.add('active');
+  }
+
+  // Event delegation di level document: otomatis menangkap form yang di-render
+  // ulang lewat AJAX (mis. tabel Laporan yang live-update), tanpa perlu binding manual.
+  document.addEventListener('submit', function (e) {
+    const form = e.target.closest('form[data-confirm]');
+    if (!form) return;
+
+    // Form sudah dikonfirmasi lewat modal → biarkan submit berjalan normal.
+    if (form.dataset.confirmed === 'true') {
+      form.dataset.confirmed = 'false';
+      return;
+    }
+
+    e.preventDefault();
+    const type = form.dataset.confirm === 'permanent' ? 'permanent' : 'soft';
+    openModal(type, form);
+  }, true);
+})();

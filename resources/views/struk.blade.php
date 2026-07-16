@@ -279,7 +279,7 @@
                   <form method="POST"
                         action="{{ route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id]) }}"
                         style="flex:1;"
-                        onsubmit="return confirm('Yakin hapus struk ini? Data akan masuk ke Back Up.')">
+                        data-confirm="soft">
                     @csrf
                     <button type="submit" class="btn-hapus-struk">🗑 Hapus</button>
                   </form>

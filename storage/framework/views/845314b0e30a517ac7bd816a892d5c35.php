@@ -153,7 +153,7 @@
                       <?php echo csrf_field(); ?>
                       <button type="submit" class="btn-restore">Pulih</button>
                     </form>
-                    <form action="<?php echo e(route('recycle.forceDelete', ['type' => strtolower($item->tipe), 'id' => $item->id])); ?>" method="POST" class="action-form">
+                    <form action="<?php echo e(route('recycle.forceDelete', ['type' => strtolower($item->tipe), 'id' => $item->id])); ?>" method="POST" class="action-form" data-confirm="permanent">
                       <?php echo csrf_field(); ?>
                       <button type="submit" class="btn-delete">Hapus</button>
                     </form>
@@ -173,7 +173,7 @@
             <?php echo csrf_field(); ?>
             <button type="submit" class="restore-all-btn">Restore All</button>
           </form>
-          <form action="<?php echo e(route('recycle.emptyTrash')); ?>" method="POST">
+          <form action="<?php echo e(route('recycle.emptyTrash')); ?>" method="POST" data-confirm="permanent">
             <?php echo csrf_field(); ?>
             <button type="submit" class="empty-trash-btn">Empty Trash</button>
           </form>

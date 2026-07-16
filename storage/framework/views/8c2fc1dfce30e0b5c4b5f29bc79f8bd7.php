@@ -712,7 +712,7 @@
                         <a href="<?php echo e(route('pengeluaran.edit', $expense->id)); ?>" class="btn-edit">Edit</a>
                         <span class="sep">|</span>
                         <form method="POST" action="<?php echo e(route('pengeluaran.delete', $expense->id)); ?>" style="display:inline;"
-                              onsubmit="return confirm('Yakin ingin menghapus pengeluaran ini?')">
+                              data-confirm="soft">
                           <?php echo csrf_field(); ?>
                           <button type="submit" class="btn-hapus">Hapus</button>
                         </form>

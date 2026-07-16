@@ -454,3 +454,126 @@ td {
         min-width: 600px;
     }
 }
+
+/* ══════════════════════════════════════════════════════════
+   CUSTOM DELETE CONFIRMATION MODAL
+   Menggantikan popup bawaan browser confirm(). Reusable di
+   seluruh halaman (dimuat lewat resources/js/script.js).
+   ══════════════════════════════════════════════════════════ */
+.confirm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.confirm-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.confirm-modal {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 28px 26px 24px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+    transform: translateY(-12px) scale(0.97);
+    transition: transform 0.2s ease;
+}
+
+.confirm-modal-overlay.active .confirm-modal {
+    transform: translateY(0) scale(1);
+}
+
+.confirm-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: #f1f5f9;
+    color: #64748b;
+    border-radius: 50%;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.confirm-modal-close:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.confirm-modal-title {
+    color: #dc2626;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-right: 24px;
+}
+
+.confirm-modal-message {
+    color: #475569;
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.confirm-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.confirm-modal-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.confirm-modal-cancel {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.confirm-modal-cancel:hover {
+    background: #e2e8f0;
+}
+
+.confirm-modal-delete {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+}
+
+.confirm-modal-delete:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(220, 38, 38, 0.35);
+}
+
+@media (max-width: 480px) {
+    .confirm-modal {
+        max-width: calc(100% - 32px);
+        padding: 24px 20px 20px;
+    }
+}
+

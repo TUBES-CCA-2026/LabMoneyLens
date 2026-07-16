@@ -153,7 +153,7 @@
                       @csrf
                       <button type="submit" class="btn-restore">Pulih</button>
                     </form>
-                    <form action="{{ route('recycle.forceDelete', ['type' => strtolower($item->tipe), 'id' => $item->id]) }}" method="POST" class="action-form">
+                    <form action="{{ route('recycle.forceDelete', ['type' => strtolower($item->tipe), 'id' => $item->id]) }}" method="POST" class="action-form" data-confirm="permanent">
                       @csrf
                       <button type="submit" class="btn-delete">Hapus</button>
                     </form>
@@ -173,7 +173,7 @@
             @csrf
             <button type="submit" class="restore-all-btn">Restore All</button>
           </form>
-          <form action="{{ route('recycle.emptyTrash') }}" method="POST">
+          <form action="{{ route('recycle.emptyTrash') }}" method="POST" data-confirm="permanent">
             @csrf
             <button type="submit" class="empty-trash-btn">Empty Trash</button>
           </form>
