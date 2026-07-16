@@ -129,17 +129,17 @@
         <div class="report-cards">
           <article class="report-card expense-card">
             <span class="report-card-label">Pengeluaran</span>
-            <span class="report-card-value" id="live-report-expense">- <?php echo e(number_format($totalExpense, 0, ',', '.')); ?></span>
+            <span class="report-card-value" id="live-report-expense"><?php echo e(number_format($totalExpense, 0, ',', '.')); ?></span>
             <span class="report-card-note">Total semua pengeluaran</span>
           </article>
           <article class="report-card income-card">
             <span class="report-card-label">Pemasukan</span>
-            <span class="report-card-value" id="live-report-income">+ <?php echo e(number_format($totalIncome, 0, ',', '.')); ?></span>
+            <span class="report-card-value" id="live-report-income"><?php echo e(number_format($totalIncome, 0, ',', '.')); ?></span>
             <span class="report-card-note">Total semua pemasukan</span>
           </article>
           <article class="report-card balance-card">
             <span class="report-card-label">Saldo Bersih</span>
-            <span class="report-card-value" id="live-report-balance"><?php echo e($balance >= 0 ? '+' : '-'); ?> <?php echo e(number_format(abs($balance), 0, ',', '.')); ?></span>
+            <span class="report-card-value" id="live-report-balance"><?php echo e(number_format(abs($balance), 0, ',', '.')); ?></span>
             <span class="report-card-note">Selisih pemasukan dan pengeluaran</span>
           </article>
         </div>
@@ -254,14 +254,13 @@
 
     function renderSummary(data) {
       if (expenseEl) {
-        expenseEl.textContent = '- ' + formatCurrency(data.totalExpense);
+        expenseEl.textContent = formatCurrency(data.totalExpense);
       }
       if (incomeEl) {
-        incomeEl.textContent = '+ ' + formatCurrency(data.totalIncome);
+        incomeEl.textContent = formatCurrency(data.totalIncome);
       }
       if (balanceEl) {
-        const sign = data.balance >= 0 ? '+' : '-';
-        balanceEl.textContent = sign + ' ' + formatCurrency(Math.abs(data.balance));
+        balanceEl.textContent = formatCurrency(Math.abs(data.balance));
       }
     }
 

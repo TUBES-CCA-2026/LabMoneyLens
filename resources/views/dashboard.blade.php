@@ -114,13 +114,13 @@
         <article class="dashboard-card income-card">
           <span class="card-icon up">▲</span>
           <span class="card-title">INCOME</span>
-          <strong class="card-value" id="live-total-income">+ {{ number_format($totalIncome, 0, ',', '.') }}</strong>
+          <strong class="card-value" id="live-total-income">{{ number_format($totalIncome, 0, ',', '.') }}</strong>
         </article>
 
         <article class="dashboard-card expense-card">
           <span class="card-icon down">▼</span>
           <span class="card-title">EXPENSES</span>
-          <strong class="card-value" id="live-total-expense">- {{ number_format($totalExpense, 0, ',', '.') }}</strong>
+          <strong class="card-value" id="live-total-expense">{{ number_format($totalExpense, 0, ',', '.') }}</strong>
         </article>
 
         <article class="dashboard-card balance-card">
@@ -259,10 +259,10 @@
       if (!data) return;
 
       if (totalIncomeEl) {
-        totalIncomeEl.textContent = '+ ' + Number(data.totalIncome).toLocaleString('id-ID');
+        totalIncomeEl.textContent = Number(data.totalIncome).toLocaleString('id-ID');
       }
       if (totalExpenseEl) {
-        totalExpenseEl.textContent = '- ' + Number(data.totalExpense).toLocaleString('id-ID');
+        totalExpenseEl.textContent = Number(data.totalExpense).toLocaleString('id-ID');
       }
       if (balanceEl) {
         balanceEl.textContent = 'Rp ' + Number(data.balance).toLocaleString('id-ID');
