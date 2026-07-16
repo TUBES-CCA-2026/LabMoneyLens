@@ -129,17 +129,17 @@
         <div class="report-cards">
           <article class="report-card expense-card">
             <span class="report-card-label">Pengeluaran</span>
-            <span class="report-card-value" id="live-report-expense">{{ number_format($totalExpense, 0, ',', '.') }}</span>
+            <span class="report-card-value" id="live-report-expense">{{ rupiah($totalExpense) }}</span>
             <span class="report-card-note">Total semua pengeluaran</span>
           </article>
           <article class="report-card income-card">
             <span class="report-card-label">Pemasukan</span>
-            <span class="report-card-value" id="live-report-income">{{ number_format($totalIncome, 0, ',', '.') }}</span>
+            <span class="report-card-value" id="live-report-income">{{ rupiah($totalIncome) }}</span>
             <span class="report-card-note">Total semua pemasukan</span>
           </article>
           <article class="report-card balance-card">
             <span class="report-card-label">Saldo Bersih</span>
-            <span class="report-card-value" id="live-report-balance">{{ number_format(abs($balance), 0, ',', '.') }}</span>
+            <span class="report-card-value" id="live-report-balance">{{ rupiah(abs($balance)) }}</span>
             <span class="report-card-note">Selisih pemasukan dan pengeluaran</span>
           </article>
         </div>
@@ -181,7 +181,7 @@
                 <tr>
                   <td>{{ $row->kategori }}</td>
                   <td>{{ $row->uraian ?? '-' }}</td>
-                  <td>{{ number_format($row->jumlah, 0, ',', '.') }}</td>
+                  <td>{{ rupiah($row->jumlah) }}</td>
                   <td>{{ \Illuminate\Support\Carbon::parse($row->created_at)->format('d/m/Y H:i') }}</td>
                   <td>{{ $row->tipe }}</td>
                   <td class="action-cell">
@@ -225,7 +225,7 @@
     const categorySelect = document.getElementById('category');
 
     function formatCurrency(value) {
-      return Number(value || 0).toLocaleString('id-ID');
+      return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
     }
 
     function renderReportRows(records) {

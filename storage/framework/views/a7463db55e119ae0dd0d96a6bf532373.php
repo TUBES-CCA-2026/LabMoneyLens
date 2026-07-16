@@ -129,17 +129,17 @@
         <div class="report-cards">
           <article class="report-card expense-card">
             <span class="report-card-label">Pengeluaran</span>
-            <span class="report-card-value" id="live-report-expense"><?php echo e(number_format($totalExpense, 0, ',', '.')); ?></span>
+            <span class="report-card-value" id="live-report-expense"><?php echo e(rupiah($totalExpense)); ?></span>
             <span class="report-card-note">Total semua pengeluaran</span>
           </article>
           <article class="report-card income-card">
             <span class="report-card-label">Pemasukan</span>
-            <span class="report-card-value" id="live-report-income"><?php echo e(number_format($totalIncome, 0, ',', '.')); ?></span>
+            <span class="report-card-value" id="live-report-income"><?php echo e(rupiah($totalIncome)); ?></span>
             <span class="report-card-note">Total semua pemasukan</span>
           </article>
           <article class="report-card balance-card">
             <span class="report-card-label">Saldo Bersih</span>
-            <span class="report-card-value" id="live-report-balance"><?php echo e(number_format(abs($balance), 0, ',', '.')); ?></span>
+            <span class="report-card-value" id="live-report-balance"><?php echo e(rupiah(abs($balance))); ?></span>
             <span class="report-card-note">Selisih pemasukan dan pengeluaran</span>
           </article>
         </div>
@@ -181,7 +181,7 @@
                 <tr>
                   <td><?php echo e($row->kategori); ?></td>
                   <td><?php echo e($row->uraian ?? '-'); ?></td>
-                  <td><?php echo e(number_format($row->jumlah, 0, ',', '.')); ?></td>
+                  <td><?php echo e(rupiah($row->jumlah)); ?></td>
                   <td><?php echo e(\Illuminate\Support\Carbon::parse($row->created_at)->format('d/m/Y H:i')); ?></td>
                   <td><?php echo e($row->tipe); ?></td>
                   <td class="action-cell">
@@ -225,7 +225,7 @@
     const categorySelect = document.getElementById('category');
 
     function formatCurrency(value) {
-      return Number(value || 0).toLocaleString('id-ID');
+      return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
     }
 
     function renderReportRows(records) {

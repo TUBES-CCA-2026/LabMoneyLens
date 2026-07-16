@@ -114,19 +114,19 @@
         <article class="dashboard-card income-card">
           <span class="card-icon up">▲</span>
           <span class="card-title">INCOME</span>
-          <strong class="card-value" id="live-total-income">{{ number_format($totalIncome, 0, ',', '.') }}</strong>
+          <strong class="card-value" id="live-total-income">{{ rupiah($totalIncome) }}</strong>
         </article>
 
         <article class="dashboard-card expense-card">
           <span class="card-icon down">▼</span>
           <span class="card-title">EXPENSES</span>
-          <strong class="card-value" id="live-total-expense">{{ number_format($totalExpense, 0, ',', '.') }}</strong>
+          <strong class="card-value" id="live-total-expense">{{ rupiah($totalExpense) }}</strong>
         </article>
 
         <article class="dashboard-card balance-card">
           <span class="card-icon wallet">₿</span>
           <span class="card-title">SALDO</span>
-          <strong class="card-value" id="live-balance">Rp {{ number_format($balance, 0, ',', '.') }}</strong>
+          <strong class="card-value" id="live-balance">{{ rupiah($balance) }}</strong>
         </article>
       </section>
 
@@ -171,7 +171,7 @@
           <div class="chart-placeholder" id="chart-placeholder">
             <div class="chart-y-labels" id="chart-y-labels">
               @foreach($yLabels as $value)
-                <span>Rp {{ number_format($value, 0, ',', '.') }}</span>
+                <span>{{ rupiah($value) }}</span>
               @endforeach
             </div>
             <div class="chart-scrollable">
@@ -209,7 +209,7 @@
                   <p class="recent-label">{{ $item->category }}</p>
                   <p class="recent-date">{{ \Illuminate\Support\Carbon::parse($item->tanggal)->format('d/m/Y') }}</p>
                 </div>
-                <strong>{{ $item->type === 'Pemasukan' ? '+' : '-' }}{{ number_format($item->amount, 0, ',', '.') }}</strong>
+                <strong>{{ rupiah($item->amount) }}</strong>
               </div>
             @empty
               <div class="recent-item empty">Belum ada transaksi.</div>
@@ -259,13 +259,13 @@
       if (!data) return;
 
       if (totalIncomeEl) {
-        totalIncomeEl.textContent = Number(data.totalIncome).toLocaleString('id-ID');
+        totalIncomeEl.textContent = formatRp(data.totalIncome);
       }
       if (totalExpenseEl) {
-        totalExpenseEl.textContent = Number(data.totalExpense).toLocaleString('id-ID');
+        totalExpenseEl.textContent = formatRp(data.totalExpense);
       }
       if (balanceEl) {
-        balanceEl.textContent = 'Rp ' + Number(data.balance).toLocaleString('id-ID');
+        balanceEl.textContent = formatRp(data.balance);
       }
 
       if (recentListEl && Array.isArray(data.recentTransactions)) {
@@ -275,14 +275,13 @@
         }
 
         recentListEl.innerHTML = data.recentTransactions.map(function (item) {
-          const sign = item.type === 'Pemasukan' ? '+' : '-';
-          const amount = Number(item.amount).toLocaleString('id-ID');
+          const amount = formatRp(item.amount);
           return `<div class="recent-item ${item.type === 'Pemasukan' ? 'income-row' : 'expense-row'}">
             <div>
               <p class="recent-label">${item.category}</p>
               <p class="recent-date">${new Date(item.tanggal).toLocaleDateString('id-ID')}</p>
             </div>
-            <strong>${sign}${amount}</strong>
+            <strong>${amount}</strong>
           </div>`;
         }).join('');
       }

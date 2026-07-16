@@ -114,19 +114,19 @@
         <article class="dashboard-card income-card">
           <span class="card-icon up">▲</span>
           <span class="card-title">INCOME</span>
-          <strong class="card-value" id="live-total-income"><?php echo e(number_format($totalIncome, 0, ',', '.')); ?></strong>
+          <strong class="card-value" id="live-total-income"><?php echo e(rupiah($totalIncome)); ?></strong>
         </article>
 
         <article class="dashboard-card expense-card">
           <span class="card-icon down">▼</span>
           <span class="card-title">EXPENSES</span>
-          <strong class="card-value" id="live-total-expense"><?php echo e(number_format($totalExpense, 0, ',', '.')); ?></strong>
+          <strong class="card-value" id="live-total-expense"><?php echo e(rupiah($totalExpense)); ?></strong>
         </article>
 
         <article class="dashboard-card balance-card">
           <span class="card-icon wallet">₿</span>
           <span class="card-title">SALDO</span>
-          <strong class="card-value" id="live-balance">Rp <?php echo e(number_format($balance, 0, ',', '.')); ?></strong>
+          <strong class="card-value" id="live-balance"><?php echo e(rupiah($balance)); ?></strong>
         </article>
       </section>
 
@@ -173,7 +173,7 @@
           <div class="chart-placeholder" id="chart-placeholder">
             <div class="chart-y-labels" id="chart-y-labels">
               <?php $__currentLoopData = $yLabels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <span>Rp <?php echo e(number_format($value, 0, ',', '.')); ?></span>
+                <span><?php echo e(rupiah($value)); ?></span>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
             <div class="chart-scrollable">
@@ -211,7 +211,7 @@
                   <p class="recent-label"><?php echo e($item->category); ?></p>
                   <p class="recent-date"><?php echo e(\Illuminate\Support\Carbon::parse($item->tanggal)->format('d/m/Y')); ?></p>
                 </div>
-                <strong><?php echo e($item->type === 'Pemasukan' ? '+' : '-'); ?><?php echo e(number_format($item->amount, 0, ',', '.')); ?></strong>
+                <strong><?php echo e(rupiah($item->amount)); ?></strong>
               </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
               <div class="recent-item empty">Belum ada transaksi.</div>
@@ -261,13 +261,13 @@
       if (!data) return;
 
       if (totalIncomeEl) {
-        totalIncomeEl.textContent = Number(data.totalIncome).toLocaleString('id-ID');
+        totalIncomeEl.textContent = formatRp(data.totalIncome);
       }
       if (totalExpenseEl) {
-        totalExpenseEl.textContent = Number(data.totalExpense).toLocaleString('id-ID');
+        totalExpenseEl.textContent = formatRp(data.totalExpense);
       }
       if (balanceEl) {
-        balanceEl.textContent = 'Rp ' + Number(data.balance).toLocaleString('id-ID');
+        balanceEl.textContent = formatRp(data.balance);
       }
 
       if (recentListEl && Array.isArray(data.recentTransactions)) {
@@ -277,14 +277,13 @@
         }
 
         recentListEl.innerHTML = data.recentTransactions.map(function (item) {
-          const sign = item.type === 'Pemasukan' ? '+' : '-';
-          const amount = Number(item.amount).toLocaleString('id-ID');
+          const amount = formatRp(item.amount);
           return `<div class="recent-item ${item.type === 'Pemasukan' ? 'income-row' : 'expense-row'}">
             <div>
               <p class="recent-label">${item.category}</p>
               <p class="recent-date">${new Date(item.tanggal).toLocaleDateString('id-ID')}</p>
             </div>
-            <strong>${sign}${amount}</strong>
+            <strong>${amount}</strong>
           </div>`;
         }).join('');
       }
