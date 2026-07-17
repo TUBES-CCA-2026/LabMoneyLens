@@ -568,9 +568,9 @@
 
                 <div class="form-group">
                   <label class="form-label" for="kategori_pengeluaran">
-                    <span class="required-dot"></span> Kategori Pengeluaran (berlaku untuk semua baris)
+                    <span class="required-dot"></span> Kategori Default Pengeluaran
                   </label>
-                  <select class="form-input" id="kategori_pengeluaran" name="id_jenis_pengeluaran" required>
+                  <select class="form-input" id="kategori_pengeluaran">
                     <option value="">— Pilih Kategori —</option>
                     <?php $__currentLoopData = $jenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                       <option value="<?php echo e($j->id); ?>"><?php echo e($j->nama); ?></option>
@@ -582,6 +582,8 @@
               <!-- Item rows: Keterangan + Nominal -->
               <div id="items-container">
                 <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fecaca;">
+                  <!-- Hidden kategori sync -->
+                  <input type="hidden" name="id_jenis_pengeluaran[]" class="row-kategori-sync">
                   <!-- Keterangan -->
                   <div class="form-group span-2">
                     <label class="form-label" for="uraian_0">Keterangan / Uraian</label>
@@ -616,10 +618,16 @@
                 </div>
               </div>
               
-              <button type="button" class="reset-btn" onclick="tambahBaris()" style="width: 100%; margin-bottom: 10px; border-style: dashed; color: #dc2626; border-color: #fca5a5;">
-                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Tambah Baris Item
-              </button>
+              <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button type="button" class="reset-btn" onclick="tambahBaris()" style="flex: 1; border-style: dashed; color: #dc2626; border-color: #fca5a5;">
+                  <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Tambah Baris Item
+                </button>
+                <button type="button" class="reset-btn" onclick="tambahKategori()" style="flex: 1; border-style: dashed; color: #b45309; border-color: #fcd34d;">
+                  <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="17" x2="21" y2="17"/><line x1="17" y1="14" x2="17" y2="21"/></svg>
+                  Tambah Kategori Lain
+                </button>
+              </div>
 
               </div><!-- /form-blocker -->
 
@@ -705,7 +713,7 @@
     </main>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal Notifikasi -->
   <div id="custom-modal" class="custom-modal">
     <div class="modal-content">
       <div class="modal-icon" id="modal-icon"></div>
@@ -714,6 +722,8 @@
       <button class="modal-btn" onclick="closeModal()">Tutup</button>
     </div>
   </div>
+
+
 
   <style>
     .custom-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:9999; justify-content:center; align-items:center; }
@@ -807,11 +817,24 @@
       <?php endif; ?>
     });
 
+    // Daftar kategori dari server (untuk dropdown dinamis)
+    const jenisData = <?php echo json_encode($jenis, 15, 512) ?>;
+
+    // Sync hidden kategori inputs dengan main dropdown
+    function syncKategoriSync() {
+      const val = document.getElementById('kategori_pengeluaran').value;
+      document.querySelectorAll('.row-kategori-sync').forEach(inp => inp.value = val);
+    }
+
+    document.getElementById('kategori_pengeluaran').addEventListener('change', syncKategoriSync);
+
     let rowCount = 1;
     function tambahBaris() {
       const container = document.getElementById('items-container');
+      const currentVal = document.getElementById('kategori_pengeluaran').value;
       const rowHtml = `
         <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fecaca; animation: slideUp 0.3s ease;">
+          <input type="hidden" name="id_jenis_pengeluaran[]" class="row-kategori-sync" value="${currentVal}">
           <div class="form-group span-2">
             <label class="form-label" for="uraian_${rowCount}">Keterangan / Uraian</label>
             <input type="text" class="form-input uraian-input" id="uraian_${rowCount}" name="uraian[]" placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
@@ -826,6 +849,40 @@
             </div>
           </div>
           <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fee2e2; border: 1px solid #fecaca; color: #ef4444; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', rowHtml);
+      rowCount++;
+      updateHapusButtons();
+      attachNominalListeners();
+    }
+
+    function tambahKategori() {
+      const container = document.getElementById('items-container');
+      let optHtml = '<option value="">— Pilih Kategori —</option>';
+      jenisData.forEach(j => { optHtml += `<option value="${j.id}">${j.nama}</option>`; });
+      const rowHtml = `
+        <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fcd34d; animation: slideUp 0.3s ease;">
+          <div class="form-group span-2" style="background:linear-gradient(135deg,rgba(251,191,36,0.08),transparent); border-radius:10px; padding:12px; border:1px dashed #fcd34d;">
+            <label class="form-label" style="color:#b45309;">Kategori Pengeluaran <span style="color:#ef4444;">*</span></label>
+            <select class="form-input" name="id_jenis_pengeluaran[]" required style="border-color:#fde68a;">
+              ${optHtml}
+            </select>
+          </div>
+          <div class="form-group span-2">
+            <label class="form-label" for="uraian_${rowCount}">Keterangan / Uraian</label>
+            <input type="text" class="form-input uraian-input" id="uraian_${rowCount}" name="uraian[]" placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="nominal_${rowCount}">
+              <span class="required-dot"></span> Nominal (IDR)
+            </label>
+            <div class="nominal-wrapper">
+              <span class="nominal-prefix">Rp</span>
+              <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+            </div>
+          </div>
+          <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fef3c7; border: 1px solid #fcd34d; color: #b45309; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
         </div>
       `;
       container.insertAdjacentHTML('beforeend', rowHtml);
@@ -872,6 +929,8 @@
 
     document.addEventListener('DOMContentLoaded', function() {
       attachNominalListeners();
+      // Sync awal: set nilai default kategori ke hidden inputs
+      syncKategoriSync();
     });
   </script>
 </body>

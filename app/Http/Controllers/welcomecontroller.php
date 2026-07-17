@@ -45,7 +45,8 @@ class welcomecontroller extends Controller
             'uraian.*' => 'nullable|string|max:255',
             'nominal' => 'required|array',
             'nominal.*' => 'required|numeric|min:1',
-            'id_jenis_pengeluaran' => 'required|integer',
+            'id_jenis_pengeluaran' => 'required|array',
+            'id_jenis_pengeluaran.*' => 'required|integer',
             'receipt_image' => 'required|image|max:5120',
         ]);
 
@@ -66,11 +67,11 @@ class welcomecontroller extends Controller
         }
 
         $itemsCount = count($data['nominal']);
-        $id_jenis = $data['id_jenis_pengeluaran'];
         
         for ($i = 0; $i < $itemsCount; $i++) {
             $nominal = $data['nominal'][$i];
             $uraian = $data['uraian'][$i] ?? '';
+            $id_jenis = $data['id_jenis_pengeluaran'][$i];
 
             // Cek apakah entri serupa ada di Recycle Bin (deleted)
             $existsInRecycle = DB::table('pengeluaran')

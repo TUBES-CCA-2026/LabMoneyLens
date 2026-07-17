@@ -575,10 +575,16 @@
                 </div>
               </div>
               
-              <button type="button" class="reset-btn" onclick="tambahBaris()" style="width: 100%; margin-bottom: 10px; border-style: dashed; color: #059669; border-color: #a7f3d0;">
-                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Tambah Baris Item
-              </button>
+              <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button type="button" class="reset-btn" onclick="tambahBaris()" style="flex: 1; border-style: dashed; color: #059669; border-color: #a7f3d0;">
+                  <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Tambah Baris Item
+                </button>
+                <button type="button" class="reset-btn" onclick="bukaModalKategori()" style="flex: 1; border-style: dashed; color: #0d9488; border-color: #5eead4;">
+                  <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>
+                  Tambah Kategori
+                </button>
+              </div>
 
               </div><!-- /form-blocker -->
 
@@ -664,13 +670,35 @@
     </main>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal Notifikasi -->
   <div id="custom-modal" class="custom-modal">
     <div class="modal-content">
       <div class="modal-icon" id="modal-icon"></div>
       <h2 id="modal-title"></h2>
       <p id="modal-message"></p>
       <button class="modal-btn" onclick="closeModal()">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Kategori -->
+  <div id="modal-kategori" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#fff; border-radius:20px; padding:32px 28px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(13,148,136,.2); animation:slideUp .3s ease;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="font-size:18px; font-weight:800; color:#0f766e;">➕ Tambah Kategori Penerimaan</h3>
+        <button onclick="tutupModalKategori()" style="background:none; border:none; font-size:22px; color:#94a3b8; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+      <p style="font-size:12px; color:#64748b; margin-bottom:18px;">Kategori baru akan langsung tersedia di dropdown pilihan kategori.</p>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px;">
+        <label style="font-size:11px; font-weight:700; color:#0f766e; text-transform:uppercase; letter-spacing:0.6px;">Nama Kategori <span style="color:#ef4444;">*</span></label>
+        <input type="text" id="input-kategori-pemasukan" placeholder="Contoh: Dana Hibah, Sumbangan..." maxlength="100"
+               style="padding:11px 14px; border:2px solid #ccf0ee; border-radius:10px; font-size:13px; font-family:inherit; color:#0f766e; outline:none; width:100%; transition:all .2s;"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();simpanKategoriPemasukan();}" />
+        <span id="kategori-error-pemasukan" style="font-size:11px; color:#ef4444; display:none;"></span>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button onclick="tutupModalKategori()" style="flex:1; padding:12px; border-radius:10px; border:2px solid #e2e8f0; background:transparent; color:#64748b; font-size:13px; font-weight:600; cursor:pointer;">Batal</button>
+        <button id="btn-simpan-kategori-pemasukan" onclick="simpanKategoriPemasukan()" style="flex:2; padding:12px; border-radius:10px; border:none; background:linear-gradient(135deg,#0d9488,#059669); color:#fff; font-size:13px; font-weight:700; cursor:pointer;">Simpan Kategori</button>
+      </div>
     </div>
   </div>
 
@@ -828,6 +856,75 @@
       nominalInputs.forEach(input => {
         input.removeEventListener('input', updateTotal);
         input.addEventListener('input', updateTotal);
+      });
+    }
+
+    // ── Modal Tambah Kategori Pemasukan ──
+    function bukaModalKategori() {
+      document.getElementById('modal-kategori').style.display = 'flex';
+      document.getElementById('input-kategori-pemasukan').value = '';
+      document.getElementById('kategori-error-pemasukan').style.display = 'none';
+      setTimeout(() => document.getElementById('input-kategori-pemasukan').focus(), 100);
+    }
+
+    function tutupModalKategori() {
+      document.getElementById('modal-kategori').style.display = 'none';
+    }
+
+    document.getElementById('modal-kategori').addEventListener('click', function(e) {
+      if (e.target === this) tutupModalKategori();
+    });
+
+    function simpanKategoriPemasukan() {
+      const input = document.getElementById('input-kategori-pemasukan');
+      const errEl = document.getElementById('kategori-error-pemasukan');
+      const btn = document.getElementById('btn-simpan-kategori-pemasukan');
+      const nama = input.value.trim();
+
+      if (!nama) {
+        errEl.textContent = 'Nama kategori tidak boleh kosong.';
+        errEl.style.display = 'block';
+        input.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Menyimpan...';
+      errEl.style.display = 'none';
+
+      fetch('<?php echo e(route("pemasukan.kategori.store")); ?>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ nama_jenis: nama }),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          // Tambah ke dropdown
+          const select = document.getElementById('kategori_penerimaan');
+          const opt = document.createElement('option');
+          opt.value = data.id;
+          opt.textContent = data.nama;
+          opt.selected = true;
+          select.appendChild(opt);
+          tutupModalKategori();
+          showModal('Berhasil', 'Kategori "' + data.nama + '" berhasil ditambahkan.', '✅');
+        } else {
+          errEl.textContent = data.message || 'Gagal menyimpan kategori.';
+          errEl.style.display = 'block';
+        }
+      })
+      .catch(() => {
+        errEl.textContent = 'Terjadi kesalahan. Coba lagi.';
+        errEl.style.display = 'block';
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Simpan Kategori';
       });
     }
   </script>
