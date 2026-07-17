@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Profil — LabMoneyLens</title>
   @vite(['resources/css/style.css','resources/css/dashboard.css','resources/js/script.js'])
   <style>
@@ -114,5 +115,47 @@
       </section>
     </main>
   </div>
+
+  <script>
+    (function() {
+      function initProfilePreview() {
+        const fotoInput = document.getElementById('foto_profil');
+        const avatarPreview = document.querySelector('.profile-avatar-preview');
+        
+        if (fotoInput && avatarPreview && !fotoInput.dataset.previewBound) {
+          fotoInput.dataset.previewBound = "true";
+          fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                // Update top circle preview
+                avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Preview Foto Profil" />`;
+                
+                // Update file picker icon
+                const pickerIcon = document.querySelector('.file-picker-icon');
+                if(pickerIcon) {
+                  pickerIcon.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" />`;
+                }
+                
+                // Update file picker text
+                const pickerText = document.querySelector('.file-picker-text strong');
+                if(pickerText) {
+                  pickerText.textContent = file.name;
+                }
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        }
+      }
+
+      // Eksekusi langsung jika halaman diload normal
+      initProfilePreview();
+      
+      // Jika menggunakan Turbo
+      document.addEventListener("turbo:load", initProfilePreview);
+    })();
+  </script>
 </body>
 </html>

@@ -45,8 +45,7 @@ class welcomecontroller extends Controller
             'uraian.*' => 'nullable|string|max:255',
             'nominal' => 'required|array',
             'nominal.*' => 'required|numeric|min:1',
-            'id_jenis_pengeluaran' => 'required|array',
-            'id_jenis_pengeluaran.*' => 'required|integer',
+            'id_jenis_pengeluaran' => 'required|integer',
             'receipt_image' => 'required|image|max:5120',
         ]);
 
@@ -67,10 +66,11 @@ class welcomecontroller extends Controller
         }
 
         $itemsCount = count($data['nominal']);
+        $id_jenis = $data['id_jenis_pengeluaran'];
+        
         for ($i = 0; $i < $itemsCount; $i++) {
             $nominal = $data['nominal'][$i];
             $uraian = $data['uraian'][$i] ?? '';
-            $id_jenis = $data['id_jenis_pengeluaran'][$i];
 
             // Cek apakah entri serupa ada di Recycle Bin (deleted)
             $existsInRecycle = DB::table('pengeluaran')
@@ -112,6 +112,12 @@ class welcomecontroller extends Controller
             ->whereNull('deleted_at')
             ->update(['deleted_at' => now()]);
 
+        // Jika dihapus dari halaman laporan, kembali ke laporan
+        $referer = request()->headers->get('referer', '');
+        if (str_contains($referer, '/laporan')) {
+            return redirect()->route('laporan')->with('success', 'Pengeluaran dihapus.');
+        }
+
         return redirect()->route('welcome')->with('success', 'Pengeluaran dihapus.');
     }
 
@@ -121,27 +127,32 @@ class welcomecontroller extends Controller
             return redirect()->route('login');
         }
 
-        $expense = DB::table('pengeluaran')
+        $baseItem = DB::table('pengeluaran')->where('id_pengeluaran', $id)->first();
+        if (!$baseItem) {
+            return redirect()->route('welcome')->with('error', 'Pengeluaran tidak ditemukan.');
+        }
+
+        $expenses = DB::table('pengeluaran')
             ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
             ->select(
                 'pengeluaran.id_pengeluaran as id',
                 'jenis_pengeluaran.nama_jenis as kategori',
                 'pengeluaran.nominal as jumlah',
                 'pengeluaran.tanggal as tanggal',
+                'pengeluaran.uraian as uraian',
+                'pengeluaran.foto_struk as foto_struk',
                 'pengeluaran.id_jenis_pengeluaran as id_jenis_pengeluaran',
                 'pengeluaran.is_confirmed as is_confirmed'
             )
-            ->where('pengeluaran.id_pengeluaran', $id)
+            ->where('pengeluaran.created_at', $baseItem->created_at)
             ->whereNull('pengeluaran.deleted_at')
-            ->first();
+            ->get();
 
-        if (!$expense) {
-            return redirect()->route('welcome')->with('error', 'Pengeluaran tidak ditemukan.');
-        }
+        $expense = $expenses->first();
 
         $jenis = DB::table('jenis_pengeluaran')->select('id_jenis_pengeluaran as id', 'nama_jenis as nama')->get();
 
-        return view('pengeluaran_edit', compact('expense', 'jenis'));
+        return view('pengeluaran_edit', compact('expense', 'expenses', 'jenis'));
     }
 
     public function update(Request $request, $id)
@@ -152,42 +163,70 @@ class welcomecontroller extends Controller
 
         $data = $request->validate([
             'tanggal' => 'required|date',
-            'nominal' => 'required|numeric|min:0',
+            'id_pengeluaran' => 'array',
+            'uraian' => 'array',
+            'uraian.*' => 'nullable|string|max:255',
+            'nominal' => 'required|array',
+            'nominal.*' => 'required|numeric|min:0',
             'id_jenis_pengeluaran' => 'required|integer',
         ]);
 
-        // Get old expense amount
-        $oldExpense = DB::table('pengeluaran')
-            ->where('id_pengeluaran', $id)
-            ->whereNull('deleted_at')
-            ->first();
+        $baseItem = DB::table('pengeluaran')->where('id_pengeluaran', $id)->first();
+        if (!$baseItem) return redirect()->route('welcome')->with('error', 'Pengeluaran tidak ditemukan.');
 
-        if (!$oldExpense) {
-            return redirect()->route('welcome')->with('error', 'Pengeluaran tidak ditemukan.');
+        $groupIds = DB::table('pengeluaran')
+            ->where('created_at', $baseItem->created_at)
+            ->whereNull('deleted_at')
+            ->pluck('id_pengeluaran')->toArray();
+
+        $submittedIds = $request->input('id_pengeluaran', []);
+        
+        $deletedIds = array_diff($groupIds, $submittedIds);
+        if (!empty($deletedIds)) {
+            DB::table('pengeluaran')->whereIn('id_pengeluaran', $deletedIds)->update(['deleted_at' => now()]);
         }
 
         // Validasi pengeluaran tidak boleh melebihi saldo yang dimiliki
-        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->sum('nominal');
-        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->sum('nominal');
-        $currentBalance = $totalIncome - $totalExpense;
-        $maxAllowedExpense = $currentBalance + $oldExpense->nominal; // Saldo + pengeluaran lama
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+        $totalExpenseOther = DB::table('pengeluaran')
+            ->where('is_confirmed', 1)
+            ->whereNull('deleted_at')
+            ->whereNotIn('id_pengeluaran', $groupIds)
+            ->sum('nominal');
+            
+        $currentBalance = $totalIncome - $totalExpenseOther;
+        $newTotalNominal = array_sum($data['nominal']);
 
-        if ($data['nominal'] > $maxAllowedExpense) {
-            return redirect()->route('pengeluaran.edit', $id)->with('error', 'Pengeluaran tidak boleh melebihi saldo. Saldo tersedia: Rp ' . number_format($maxAllowedExpense, 0, ',', '.'));
+        if ($newTotalNominal > $currentBalance) {
+            return redirect()->route('pengeluaran.edit', $id)->with('error', 'Pengeluaran tidak boleh melebihi saldo. Saldo tersedia: Rp ' . number_format($currentBalance, 0, ',', '.'));
         }
 
-        $updated = DB::table('pengeluaran')
-            ->where('id_pengeluaran', $id)
-            ->whereNull('deleted_at')
-            ->update([
-                'tanggal' => $data['tanggal'],
-                'nominal' => $data['nominal'],
-                'id_jenis_pengeluaran' => $data['id_jenis_pengeluaran'],
-                'updated_at' => now(),
-            ]);
+        for ($i = 0; $i < count($data['nominal']); $i++) {
+            $itemId = $submittedIds[$i] ?? null;
+            $nominal = $data['nominal'][$i];
+            $uraian = $data['uraian'][$i] ?? '';
 
-        if (!$updated) {
-            return redirect()->route('welcome')->with('error', 'Pengeluaran tidak dapat diperbarui.');
+            if ($itemId && in_array($itemId, $groupIds)) {
+                DB::table('pengeluaran')->where('id_pengeluaran', $itemId)->update([
+                    'tanggal' => $data['tanggal'],
+                    'uraian' => $uraian,
+                    'nominal' => $nominal,
+                    'id_jenis_pengeluaran' => $data['id_jenis_pengeluaran'],
+                    'updated_at' => now(),
+                ]);
+            } else {
+                DB::table('pengeluaran')->insert([
+                    'tanggal' => $data['tanggal'],
+                    'uraian' => $uraian,
+                    'nominal' => $nominal,
+                    'foto_struk' => $baseItem->foto_struk,
+                    'id_jenis_pengeluaran' => $data['id_jenis_pengeluaran'],
+                    'id_user' => session('user_id'),
+                    'is_confirmed' => 1,
+                    'created_at' => $baseItem->created_at,
+                    'updated_at' => now(),
+                ]);
+            }
         }
 
         return redirect()->route('welcome')->with('success', 'Pengeluaran berhasil diperbarui.');

@@ -20,6 +20,10 @@ class LaporanController extends Controller
         $month = $query['month'];
         $category = $query['category'];
 
+        $groupedRecords = $records->groupBy(function($item) {
+            return $item->created_at . '|' . $item->kategori . '|' . $item->tipe;
+        });
+
         $recentRecords = $records->sortByDesc('created_at')->values()->take(10);
 
         if ($request->query('export') === 'csv') {
@@ -70,6 +74,7 @@ class LaporanController extends Controller
         $categories->prepend('Semua');
 
         return view('laporan', compact(
+            'groupedRecords',
             'records',
             'recentRecords',
             'totalIncome',
@@ -92,20 +97,33 @@ class LaporanController extends Controller
         $pemasukan = $query['pemasukan'];
         $pengeluaran = $query['pengeluaran'];
 
+        $groupedRecords = $records->groupBy(function($item) {
+            return $item->created_at . '|' . $item->kategori . '|' . $item->tipe;
+        });
+
+        $formattedGroups = [];
+        foreach ($groupedRecords as $group) {
+            $first = $group->first();
+            $formattedGroups[] = [
+                'kategori' => $first->kategori,
+                'tipe' => $first->tipe,
+                'created_at' => \Illuminate\Support\Carbon::parse($first->created_at)->toIso8601String(),
+                'total' => (float) $group->sum('jumlah'),
+                'items' => $group->map(function ($row) {
+                    return [
+                        'id' => $row->id,
+                        'uraian' => $row->uraian,
+                        'jumlah' => (float) $row->jumlah,
+                    ];
+                })->values()
+            ];
+        }
+
         return response()->json([
             'totalIncome' => (float) $pemasukan->sum('jumlah'),
             'totalExpense' => (float) $pengeluaran->sum('jumlah'),
             'balance' => (float) ($pemasukan->sum('jumlah') - $pengeluaran->sum('jumlah')),
-            'records' => $records->map(function ($row) {
-                return [
-                    'id' => $row->id,
-                    'kategori' => $row->kategori,
-                    'uraian' => $row->uraian,
-                    'jumlah' => (float) $row->jumlah,
-                    'created_at' => \Illuminate\Support\Carbon::parse($row->created_at)->toIso8601String(),
-                    'tipe' => $row->tipe,
-                ];
-            })->values(),
+            'groupedRecords' => $formattedGroups,
         ]);
     }
 

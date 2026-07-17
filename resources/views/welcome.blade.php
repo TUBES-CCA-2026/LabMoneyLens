@@ -529,6 +529,16 @@
               </div>
               <button type="button" class="upload-row-btn" onclick="document.getElementById('receipt_image').click()">Pilih File</button>
             </div>
+
+            <!-- Preview Foto Struk -->
+            <div id="preview-container" style="display:none; margin-bottom:20px; background: linear-gradient(135deg, #ffffff 0%, #fff9f9 100%); border: 2px solid #fecaca; border-radius: 14px; padding: 16px; text-align: center;">
+              <div style="font-size: 12px; font-weight: 700; color: #991b1b; margin-bottom: 12px;">✅ Foto Struk Tersimpan</div>
+              <img id="preview-image" src="" alt="Preview Struk" style="max-width: 100%; max-height: 300px; border-radius: 10px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);">
+              <div style="margin-top: 12px; display: flex; gap: 10px;">
+                <button type="button" class="reset-btn" onclick="clearPreview()" style="flex: 1; border-color: #ef4444; color: #ef4444;">🗑 Hapus Foto</button>
+              </div>
+            </div>
+
             <div id="upload-required-notice" style="display:none; background:#fee2e2; border:1.5px solid #fecaca; border-radius:10px; padding:10px 16px; margin-bottom:16px; font-size:12px; color:#991b1b; font-weight:600;">
               ⚠️ Foto struk harus diunggah terlebih dahulu sebelum form dapat diisi.
             </div>
@@ -547,26 +557,36 @@
                   <button type="button" onclick="document.getElementById('receipt_image').click()" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">📎 Pilih File Struk</button>
                 </div>
 
-              <div class="form-group span-2" style="margin-bottom: 20px;">
-                <label class="form-label" for="tanggal">
-                  <span class="required-dot"></span> Tanggal Transaksi (berlaku untuk semua baris)
-                </label>
-                <input type="date" class="form-input" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}" required />
+              <!-- Tanggal & Kategori (Fixed) -->
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="tanggal">
+                    <span class="required-dot"></span> Tanggal Transaksi (berlaku untuk semua baris)
+                  </label>
+                  <input type="date" class="form-input" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="kategori_pengeluaran">
+                    <span class="required-dot"></span> Kategori Pengeluaran (berlaku untuk semua baris)
+                  </label>
+                  <select class="form-input" id="kategori_pengeluaran" name="id_jenis_pengeluaran" required>
+                    <option value="">— Pilih Kategori —</option>
+                    @foreach($jenis as $j)
+                      <option value="{{ $j->id }}">{{ $j->nama }}</option>
+                    @endforeach
+                  </select>
+                </div>
               </div>
-              
+
+              <!-- Item rows: Keterangan + Nominal -->
               <div id="items-container">
                 <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fecaca;">
-                  <!-- Kategori -->
-                  <div class="form-group">
-                    <label class="form-label" for="id_jenis_pengeluaran_0">
-                      <span class="required-dot"></span> Kategori Pengeluaran
-                    </label>
-                    <select class="form-input" id="id_jenis_pengeluaran_0" name="id_jenis_pengeluaran[]" required>
-                      <option value="">— Pilih Kategori —</option>
-                      @foreach($jenis as $j)
-                        <option value="{{ $j->id }}">{{ $j->nama }}</option>
-                      @endforeach
-                    </select>
+                  <!-- Keterangan -->
+                  <div class="form-group span-2">
+                    <label class="form-label" for="uraian_0">Keterangan / Uraian</label>
+                    <input type="text" class="form-input uraian-input" id="uraian_0" name="uraian[]"
+                           placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
                   </div>
 
                   <!-- Nominal -->
@@ -576,19 +596,23 @@
                     </label>
                     <div class="nominal-wrapper">
                       <span class="nominal-prefix">Rp</span>
-                      <input type="number" class="form-input with-prefix" id="nominal_0"
+                      <input type="number" class="form-input with-prefix nominal-input" id="nominal_0"
                              name="nominal[]" placeholder="0" min="1" required />
                     </div>
                   </div>
-
-                  <!-- Keterangan -->
-                  <div class="form-group span-2">
-                    <label class="form-label" for="uraian_0">Keterangan / Uraian</label>
-                    <input type="text" class="form-input" id="uraian_0" name="uraian[]"
-                           placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
-                  </div>
                   
                   <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
+                </div>
+              </div>
+
+              <!-- Total Section -->
+              <div class="form-group span-2" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.04) 100%); border: 2px solid #fecaca; border-radius: 12px; padding: 16px 18px; margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                  <span style="font-size: 13px; font-weight: 700; color: #7f1d1d; text-transform: uppercase; letter-spacing: 0.5px;">Total Pengeluaran</span>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 12px; font-weight: 600; color: #dc2626;">Rp</span>
+                    <span id="total-nominal" style="font-size: 18px; font-weight: 800; color: #dc2626;">0</span>
+                  </div>
                 </div>
               </div>
               
@@ -707,14 +731,37 @@
     // Upload filename preview
     const receiptInput = document.getElementById('receipt_image');
     const formOverlay = document.getElementById('form-overlay');
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
 
     receiptInput.addEventListener('change', function() {
       if (this.files[0]) {
-        const name = this.files[0].name;
+        const file = this.files[0];
+        const name = file.name;
+        
+        // Validate file size (5MB = 5242880 bytes)
+        if (file.size > 5242880) {
+          alert('Ukuran file tidak boleh lebih dari 5MB');
+          this.value = '';
+          previewContainer.style.display = 'none';
+          formOverlay.style.display = 'flex';
+          return;
+        }
+        
+        // Update upload row status
         document.getElementById('upload-filename').textContent = '✅ ' + name;
         document.getElementById('upload-filename').style.color = '#16a34a';
         document.getElementById('upload-row').style.borderColor = '#16a34a';
         document.getElementById('upload-row').style.background = 'rgba(220,252,231,0.5)';
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImage.src = e.target.result;
+          previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+        
         // Hide overlay to unlock form
         formOverlay.style.display = 'none';
       } else {
@@ -722,9 +769,20 @@
         document.getElementById('upload-filename').style.color = '';
         document.getElementById('upload-row').style.borderColor = '';
         document.getElementById('upload-row').style.background = '';
+        previewContainer.style.display = 'none';
         formOverlay.style.display = 'flex';
       }
     });
+
+    function clearPreview() {
+      receiptInput.value = '';
+      previewContainer.style.display = 'none';
+      document.getElementById('upload-filename').textContent = '📎 Upload Foto Struk Dulu *';
+      document.getElementById('upload-filename').style.color = '';
+      document.getElementById('upload-row').style.borderColor = '';
+      document.getElementById('upload-row').style.background = '';
+      formOverlay.style.display = 'flex';
+    }
 
     document.getElementById('upload-row').addEventListener('click', function(e) {
       if (!e.target.classList.contains('upload-row-btn')) {
@@ -754,16 +812,9 @@
       const container = document.getElementById('items-container');
       const rowHtml = `
         <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fecaca; animation: slideUp 0.3s ease;">
-          <div class="form-group">
-            <label class="form-label" for="id_jenis_pengeluaran_${rowCount}">
-              <span class="required-dot"></span> Kategori Pengeluaran
-            </label>
-            <select class="form-input" id="id_jenis_pengeluaran_${rowCount}" name="id_jenis_pengeluaran[]" required>
-              <option value="">— Pilih Kategori —</option>
-              @foreach($jenis as $j)
-                <option value="{{ $j->id }}">{{ $j->nama }}</option>
-              @endforeach
-            </select>
+          <div class="form-group span-2">
+            <label class="form-label" for="uraian_${rowCount}">Keterangan / Uraian</label>
+            <input type="text" class="form-input uraian-input" id="uraian_${rowCount}" name="uraian[]" placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
           </div>
           <div class="form-group">
             <label class="form-label" for="nominal_${rowCount}">
@@ -771,12 +822,8 @@
             </label>
             <div class="nominal-wrapper">
               <span class="nominal-prefix">Rp</span>
-              <input type="number" class="form-input with-prefix" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+              <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
             </div>
-          </div>
-          <div class="form-group span-2">
-            <label class="form-label" for="uraian_${rowCount}">Keterangan / Uraian</label>
-            <input type="text" class="form-input" id="uraian_${rowCount}" name="uraian[]" placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
           </div>
           <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fee2e2; border: 1px solid #fecaca; color: #ef4444; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
         </div>
@@ -784,12 +831,14 @@
       container.insertAdjacentHTML('beforeend', rowHtml);
       rowCount++;
       updateHapusButtons();
+      attachNominalListeners();
     }
 
     function hapusBaris(btn) {
       const row = btn.closest('.item-row');
       row.remove();
       updateHapusButtons();
+      updateTotal();
     }
 
     function updateHapusButtons() {
@@ -801,6 +850,29 @@
         btns.forEach(b => b.style.display = 'none');
       }
     }
+
+    function updateTotal() {
+      const nominalInputs = document.querySelectorAll('.nominal-input');
+      let total = 0;
+      nominalInputs.forEach(input => {
+        const value = parseInt(input.value) || 0;
+        total += value;
+      });
+      const totalElement = document.getElementById('total-nominal');
+      totalElement.textContent = total.toLocaleString('id-ID');
+    }
+
+    function attachNominalListeners() {
+      const nominalInputs = document.querySelectorAll('.nominal-input');
+      nominalInputs.forEach(input => {
+        input.removeEventListener('input', updateTotal);
+        input.addEventListener('input', updateTotal);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      attachNominalListeners();
+    });
   </script>
 </body>
 </html>

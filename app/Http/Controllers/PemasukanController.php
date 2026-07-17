@@ -44,8 +44,7 @@ class PemasukanController extends Controller
             'uraian.*' => 'nullable|string|max:255',
             'nominal' => 'required|array',
             'nominal.*' => 'required|numeric|min:0',
-            'id_jenis_penerimaan' => 'required|array',
-            'id_jenis_penerimaan.*' => 'required|integer',
+            'id_jenis_penerimaan' => 'required|integer',
             'receipt_image' => 'required|image|max:5120',
         ]);
 
@@ -66,10 +65,11 @@ class PemasukanController extends Controller
         }
 
         $itemsCount = count($data['nominal']);
+        $id_jenis = $data['id_jenis_penerimaan'];
+        
         for ($i = 0; $i < $itemsCount; $i++) {
             $nominal = $data['nominal'][$i];
             $uraian = $data['uraian'][$i] ?? '';
-            $id_jenis = $data['id_jenis_penerimaan'][$i];
 
             // Cek apakah entri serupa ada di Recycle Bin (deleted)
             $existsInRecycle = DB::table('pemasukan')
@@ -105,7 +105,12 @@ class PemasukanController extends Controller
             return redirect()->route('login');
         }
 
-        $income = DB::table('pemasukan')
+        $baseItem = DB::table('pemasukan')->where('id_pemasukan', $id)->first();
+        if (!$baseItem) {
+            return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak ditemukan.');
+        }
+
+        $incomes = DB::table('pemasukan')
             ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
             ->select(
                 'pemasukan.id_pemasukan as id',
@@ -113,19 +118,18 @@ class PemasukanController extends Controller
                 'pemasukan.nominal as jumlah',
                 'pemasukan.tanggal as tanggal',
                 'pemasukan.uraian as uraian',
+                'pemasukan.foto_bukti as foto_struk',
                 'pemasukan.id_jenis_penerimaan as id_jenis_penerimaan'
             )
-            ->where('pemasukan.id_pemasukan', $id)
+            ->where('pemasukan.created_at', $baseItem->created_at)
             ->whereNull('pemasukan.deleted_at')
-            ->first();
+            ->get();
 
-        if (!$income) {
-            return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak ditemukan.');
-        }
+        $income = $incomes->first();
 
         $jenis = DB::table('jenis_penerimaan')->select('id_jenis_penerimaan as id', 'nama_jenis as nama')->get();
 
-        return view('pemasukan_edit', compact('income', 'jenis'));
+        return view('pemasukan_edit', compact('income', 'incomes', 'jenis'));
     }
 
     public function update(Request $request, $id)
@@ -136,24 +140,55 @@ class PemasukanController extends Controller
 
         $data = $request->validate([
             'tanggal' => 'required|date',
-            'uraian' => 'nullable|string|max:255',
-            'nominal' => 'required|numeric|min:0',
+            'id_pemasukan' => 'array',
+            'uraian' => 'array',
+            'uraian.*' => 'nullable|string|max:255',
+            'nominal' => 'required|array',
+            'nominal.*' => 'required|numeric|min:0',
             'id_jenis_penerimaan' => 'required|integer',
         ]);
 
-        $updated = DB::table('pemasukan')
-            ->where('id_pemasukan', $id)
-            ->whereNull('deleted_at')
-            ->update([
-                'tanggal' => $data['tanggal'],
-                'uraian' => $data['uraian'] ?? '',
-                'nominal' => $data['nominal'],
-                'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
-                'updated_at' => now(),
-            ]);
+        $baseItem = DB::table('pemasukan')->where('id_pemasukan', $id)->first();
+        if (!$baseItem) return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak ditemukan.');
 
-        if (!$updated) {
-            return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak dapat diperbarui.');
+        $groupIds = DB::table('pemasukan')
+            ->where('created_at', $baseItem->created_at)
+            ->whereNull('deleted_at')
+            ->pluck('id_pemasukan')->toArray();
+
+        $submittedIds = $request->input('id_pemasukan', []);
+        
+        $deletedIds = array_diff($groupIds, $submittedIds);
+        if (!empty($deletedIds)) {
+            DB::table('pemasukan')->whereIn('id_pemasukan', $deletedIds)->update(['deleted_at' => now()]);
+        }
+
+        for ($i = 0; $i < count($data['nominal']); $i++) {
+            $itemId = $submittedIds[$i] ?? null;
+            $nominal = $data['nominal'][$i];
+            $uraian = $data['uraian'][$i] ?? '';
+
+            if ($itemId && in_array($itemId, $groupIds)) {
+                DB::table('pemasukan')->where('id_pemasukan', $itemId)->update([
+                    'tanggal' => $data['tanggal'],
+                    'uraian' => $uraian,
+                    'nominal' => $nominal,
+                    'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
+                    'updated_at' => now(),
+                ]);
+            } else {
+                DB::table('pemasukan')->insert([
+                    'tanggal' => $data['tanggal'],
+                    'uraian' => $uraian,
+                    'nominal' => $nominal,
+                    'foto_bukti' => $baseItem->foto_bukti,
+                    'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
+                    'id_user' => session('user_id'),
+                    'is_confirmed' => 1,
+                    'created_at' => $baseItem->created_at,
+                    'updated_at' => now(),
+                ]);
+            }
         }
 
         return redirect()->route('pemasukan')->with('success', 'Pemasukan berhasil diperbarui.');
@@ -169,6 +204,12 @@ class PemasukanController extends Controller
             ->where('id_pemasukan', $id)
             ->whereNull('deleted_at')
             ->update(['deleted_at' => now()]);
+
+        // Jika dihapus dari halaman laporan, kembali ke laporan
+        $referer = request()->headers->get('referer', '');
+        if (str_contains($referer, '/laporan')) {
+            return redirect()->route('laporan')->with('success', 'Pemasukan dihapus.');
+        }
 
         return redirect()->route('pemasukan')->with('success', 'Pemasukan dihapus.');
     }

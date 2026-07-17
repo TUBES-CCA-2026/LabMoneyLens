@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Galeri Struk — Dashboard</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>Galeri Struk — LabMoneyLens</title>
   @vite(['resources/css/style.css','resources/js/script.js'])
   
   <style>
@@ -18,12 +19,89 @@
       .sidebar.active { transform: translateX(0) !important; }
       .sidebar-overlay { opacity: 0 !important; transition: opacity 0.3s ease !important; }
       .sidebar-overlay.active { display: block !important; opacity: 1 !important; }
+      .filter-section { flex-direction: column; }
+      .filter-group { width: 100%; }
+      .filter-input, .filter-select { width: 100%; min-width: auto; max-width: 100%; }
+      .btn-apply-filter { width: 100%; }
     }
 
     .galeri-wrapper { padding: 28px 32px; max-width: 1200px; margin: 0 auto; }
     .galeri-header { margin-bottom: 28px; }
     .galeri-header h2 { font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
     .galeri-header p { color: #64748b; font-size: 14px; }
+
+    .filter-buttons {
+      display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 10px 18px; border: 2px solid #e2e8f0; background: #fff;
+      border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+      color: #64748b; transition: all 0.2s ease; font-family: inherit;
+    }
+    .filter-btn:hover { border-color: #cbd5e1; }
+    .filter-btn.active {
+      background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+      color: #fff; border-color: #0d9488;
+    }
+
+    .filter-section {
+      display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-end; flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex; flex-direction: column; gap: 6px;
+      flex: 0 1 auto;
+    }
+    .filter-label {
+      font-size: 11px; font-weight: 700; color: #0d9488; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .filter-input, .filter-select {
+      padding: 10px 14px; border: 2px solid #ccf0ee; border-radius: 10px;
+      font-size: 13px; font-family: inherit; color: #0f766e; background: #fff;
+      outline: none; transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .filter-input::placeholder {
+      color: #cbd5e1;
+    }
+    .filter-input[type="month"] {
+      color-scheme: light;
+    }
+    .filter-input[type="month"]::placeholder {
+      color: #cbd5e1;
+    }
+    .filter-input::-webkit-calendar-picker-indicator {
+      cursor: pointer; color: #0d9488;
+    }
+    .filter-input::-webkit-outer-spin-button,
+    .filter-input::-webkit-inner-spin-button {
+      -webkit-appearance: none; margin: 0;
+    }
+    .filter-input:hover, .filter-select:hover {
+      border-color: #a5e8e3; box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.08);
+    }
+    .filter-input:focus, .filter-select:focus {
+      border-color: #0d9488; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15);
+    }
+    .filter-input {
+      min-width: 200px;
+      max-width: 300px;
+      width: auto;
+    }
+    .filter-select {
+      min-width: 220px;
+      max-width: 350px;
+      width: auto;
+    }
+    .btn-apply-filter {
+      padding: 10px 24px; background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+      color: #fff; border: none; border-radius: 10px; font-size: 13px;
+      font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+    }
+    .btn-apply-filter:hover {
+      background: linear-gradient(135deg, #0a6d6a 0%, #083d39 100%);
+      transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13, 148, 136, 0.3);
+    }
 
     .flash-success {
       background: linear-gradient(135deg, #dcfce7, #bbf7d0);
@@ -190,6 +268,25 @@
           <div class="flash-success">✅ {{ session('success') }}</div>
         @endif
 
+        @if(!$strukList->isEmpty())
+          <div class="filter-section">
+            <div class="filter-group">
+              <label class="filter-label">Bulan</label>
+              <input type="month" id="filter-bulan" class="filter-input" placeholder="Pilih bulan">
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Kategori</label>
+              <select id="filter-kategori" class="filter-select">
+                <option value="">Semua</option>
+                @foreach($allKategori as $kat)
+                  <option value="kategori-{{ strtolower(str_replace(' ', '-', $kat)) }}">{{ $kat }}</option>
+                @endforeach
+              </select>
+            </div>
+            <button class="btn-apply-filter" onclick="applyFilter()">Apply Filter</button>
+          </div>
+        @endif
+
         @if($strukList->isEmpty())
           <div class="empty-state">
             <div class="empty-icon">🧾</div>
@@ -199,7 +296,7 @@
         @else
           <div class="struk-grid">
             @foreach($strukList as $struk)
-              <div class="struk-card">
+              <div class="struk-card" data-category="{{ $struk->type }}" data-kategori="{{ strtolower(str_replace(' ', '-', $struk->kategori)) }}" data-tanggal="{{ $struk->tanggal }}">
                 <div class="struk-img-container">
                   <img src="{{ asset('storage/' . $struk->foto) }}"
                        alt="Struk {{ $struk->uraian }}"
@@ -207,6 +304,7 @@
                 </div>
                 <div class="struk-info">
                   <span class="struk-type type-{{ $struk->type }}">{{ $struk->type }}</span>
+                  <div style="font-size: 11px; color: #0d9488; font-weight: 600; margin-bottom: 6px;">🏷️ {{ $struk->kategori }}</div>
                   <div class="struk-date">📅 {{ \Illuminate\Support\Carbon::parse($struk->tanggal)->format('d M Y') }}</div>
                   <div class="struk-amount">Rp {{ number_format($struk->nominal, 0, ',', '.') }}</div>
                   <div class="struk-desc">{{ $struk->uraian ?: '—' }}</div>
@@ -304,6 +402,52 @@
         document.getElementById('btn-save-foto').disabled = false;
       }
     });
+
+    // ── Filter Struk ──
+    function applyFilter() {
+      const bulanInput = document.getElementById('filter-bulan').value;
+      const kategoriInput = document.getElementById('filter-kategori').value;
+      const cards = document.querySelectorAll('.struk-card');
+      
+      cards.forEach(card => {
+        const cardTanggal = card.getAttribute('data-tanggal'); // Format: YYYY-MM-DD
+        const cardKategori = card.getAttribute('data-kategori');
+        
+        let bulanMatch = true;
+        let kategoriMatch = true;
+        
+        // Filter berdasarkan bulan
+        if (bulanInput) {
+          const bulan = bulanInput; // Format: YYYY-MM
+          bulanMatch = cardTanggal.startsWith(bulan);
+        }
+        
+        // Filter berdasarkan kategori
+        if (kategoriInput) {
+          if (kategoriInput.startsWith('kategori-')) {
+            const filterKategori = kategoriInput.replace('kategori-', '');
+            kategoriMatch = cardKategori === filterKategori;
+          }
+        }
+        
+        if (bulanMatch && kategoriMatch) {
+          card.style.display = '';
+          card.style.animation = 'fadeIn 0.3s ease';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Add fadeIn animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>

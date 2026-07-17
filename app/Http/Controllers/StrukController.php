@@ -15,38 +15,57 @@ class StrukController extends Controller
         $pemasukan = Pemasukan::whereNotNull('foto_bukti')
             ->where('foto_bukti', '!=', '')
             ->whereNull('deleted_at')
+            ->with('jenisPenerimaan')
             ->get()
-            ->map(function($item) {
+            ->groupBy('foto_bukti')
+            ->map(function($group) {
+                $first = $group->first();
+                $count = $group->count();
+                $uraian = $count > 1 ? $count . ' Item (Termasuk: ' . $first->uraian . ')' : $first->uraian;
                 return (object) [
-                    'id' => $item->id_pemasukan,
+                    'id' => $first->id_pemasukan,
                     'type' => 'Pemasukan',
-                    'tanggal' => $item->tanggal,
-                    'uraian' => $item->uraian,
-                    'nominal' => $item->nominal,
-                    'foto' => $item->foto_bukti,
+                    'kategori' => $count > 1 ? 'Gabungan Kategori' : ($first->jenisPenerimaan?->nama_jenis ?? 'Lainnya'),
+                    'tanggal' => $first->tanggal,
+                    'uraian' => $uraian,
+                    'nominal' => $group->sum('nominal'),
+                    'foto' => $first->foto_bukti,
                 ];
-            });
+            })
+            ->values();
 
         $pengeluaran = Pengeluaran::whereNotNull('foto_struk')
             ->where('foto_struk', '!=', '')
             ->whereNull('deleted_at')
+            ->with('jenisPengeluaran')
             ->get()
-            ->map(function($item) {
+            ->groupBy('foto_struk')
+            ->map(function($group) {
+                $first = $group->first();
+                $count = $group->count();
+                $uraian = $count > 1 ? $count . ' Item (Termasuk: ' . $first->uraian . ')' : $first->uraian;
                 return (object) [
-                    'id' => $item->id_pengeluaran,
+                    'id' => $first->id_pengeluaran,
                     'type' => 'Pengeluaran',
-                    'tanggal' => $item->tanggal,
-                    'uraian' => $item->uraian,
-                    'nominal' => $item->nominal,
-                    'foto' => $item->foto_struk,
+                    'kategori' => $count > 1 ? 'Gabungan Kategori' : ($first->jenisPengeluaran?->nama_jenis ?? 'Lainnya'),
+                    'tanggal' => $first->tanggal,
+                    'uraian' => $uraian,
+                    'nominal' => $group->sum('nominal'),
+                    'foto' => $first->foto_struk,
                 ];
-            });
+            })
+            ->values();
 
         $strukList = $pemasukan->concat($pengeluaran)
             ->sortByDesc('tanggal')
             ->values();
 
-        return view('struk', compact('strukList'));
+        // Get all categories
+        $allKategoriPengeluaran = DB::table('jenis_pengeluaran')->where('isAktif', true)->pluck('nama_jenis')->sort();
+        $allKategoriPenerimaan = DB::table('jenis_penerimaan')->where('isAktif', true)->pluck('nama_jenis')->sort();
+        $allKategori = $allKategoriPengeluaran->merge($allKategoriPenerimaan)->unique()->sort();
+
+        return view('struk', compact('strukList', 'allKategori'));
     }
 
     public function download(string $type, int $id)

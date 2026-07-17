@@ -1,7 +1,7 @@
-<div id="sidebar-overlay" class="sidebar-overlay"></div>
+<div id="sidebar-overlay" class="sidebar-overlay" data-turbo-permanent></div>
 
 <!-- Sidebar -->
-<aside class="sidebar">
+<aside id="main-sidebar" class="sidebar" data-turbo-permanent>
   <a href="{{ route('profile') }}" class="sidebar-user" style="display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit;">
     <div class="avatar">
       @if(!empty(session('user_photo')))
