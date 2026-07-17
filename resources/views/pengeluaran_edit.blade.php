@@ -45,37 +45,7 @@
       <span class="hamburger-line"></span>
     </button>
 
-    <!-- ── Sidebar Overlay ── -->
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-    <aside class="sidebar">
-      <div class="sidebar-user">
-        <div class="avatar">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        </div>
-        <div>
-          <div class="sidebar-username">{{ session('user_name', 'USERNAME') }}</div>
-          <div class="sidebar-role">{{ session('user_role', 'Administrator') }}</div>
-        </div>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="{{ route('dashboard') }}" class="nav-item">Dashboard</a>
-        @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('welcome') }}" class="nav-item active">Pengeluaran</a>
-          <a href="{{ route('pemasukan') }}" class="nav-item">Pemasukan</a>
-        @endunless
-        <a href="{{ route('struk') }}" class="nav-item">Galeri Struk</a>
-        <a href="{{ route('laporan') }}" class="nav-item">Laporan</a>
-        @unless(session('user_role') == 'Kepala Lab')
-          <a href="{{ route('recycle') }}" class="nav-item">Back Up</a>
-        @endunless
-      </nav>
-      <div class="sidebar-logout">
-        <form action="{{ route('logout') }}" method="POST">
-          @csrf
-          <button type="submit" class="logout-btn">Log-out</button>
-        </form>
-      </div>
-    </aside>
+    @include('includes.sidebar')
     <main class="main">
       <section class="input-panel">
         <h2 class="panel-title">Edit Pengeluaran</h2>

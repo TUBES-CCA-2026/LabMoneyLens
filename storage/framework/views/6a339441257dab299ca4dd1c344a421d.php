@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profil — LabMoneyLens</title>
-  @vite(['resources/css/style.css','resources/css/dashboard.css','resources/js/script.js'])
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/css/dashboard.css','resources/js/script.js']); ?>
   <style>
     @media (max-width: 1024px) {
       .hamburger-menu {
@@ -42,7 +42,7 @@
       <span class="hamburger-line"></span>
     </button>
 
-    @include('includes.sidebar')
+    <?php echo $__env->make('includes.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <main class="main">
       <section class="profile-card">
@@ -56,37 +56,52 @@
 
         <div class="profile-hero">
           <div class="profile-avatar-preview">
-            @if(!empty(session('user_photo')))
-              <img src="{{ asset('storage/' . session('user_photo')) }}" alt="Foto Profil" />
-            @else
+            <?php if(!empty(session('user_photo'))): ?>
+              <img src="<?php echo e(asset('storage/' . session('user_photo'))); ?>" alt="Foto Profil" />
+            <?php else: ?>
               <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-            @endif
+            <?php endif; ?>
           </div>
           <div>
-            <h3>{{ $user->nama }}</h3>
+            <h3><?php echo e($user->nama); ?></h3>
             <p>Perubahan profil akan diterapkan setelah Anda menekan tombol simpan.</p>
           </div>
         </div>
 
-        @if(session('success'))
+        <?php if(session('success')): ?>
           <div class="alert-success">
-            {{ session('success') }}
-          </div>
-        @endif
+            <?php echo e(session('success')); ?>
 
-        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="profile-form">
-          @csrf
+          </div>
+        <?php endif; ?>
+
+        <form action="<?php echo e(route('profile.update')); ?>" method="POST" enctype="multipart/form-data" class="profile-form">
+          <?php echo csrf_field(); ?>
 
           <div class="form-group">
             <label class="form-label" for="nama">Nama</label>
-            <input type="text" class="form-input" id="nama" name="nama" value="{{ old('nama', $user->nama) }}" required>
-            @error('nama')<small style="color:#dc2626;">{{ $message }}</small>@enderror
+            <input type="text" class="form-input" id="nama" name="nama" value="<?php echo e(old('nama', $user->nama)); ?>" required>
+            <?php $__errorArgs = ['nama'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><small style="color:#dc2626;"><?php echo e($message); ?></small><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="password">Password Baru</label>
             <input type="password" class="form-input" id="password" name="password" placeholder="Kosongkan jika tidak ingin ubah">
-            @error('password')<small style="color:#dc2626;">{{ $message }}</small>@enderror
+            <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><small style="color:#dc2626;"><?php echo e($message); ?></small><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
 
           <div class="form-group">
@@ -104,7 +119,14 @@
               </span>
               <input type="file" id="foto_profil" name="foto_profil" accept="image/*">
             </label>
-            @error('foto_profil')<small style="color:#dc2626;">{{ $message }}</small>@enderror
+            <?php $__errorArgs = ['foto_profil'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><small style="color:#dc2626;"><?php echo e($message); ?></small><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
 
           <div class="form-actions span-2">
@@ -116,3 +138,4 @@
   </div>
 </body>
 </html>
+<?php /**PATH D:\TubesWeb\LabMoneyLens\resources\views/profile.blade.php ENDPATH**/ ?>
