@@ -100,6 +100,10 @@ class StrukController extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         if ($type === 'pemasukan') {
             DB::table('pemasukan')
                 ->where('id_pemasukan', $id)
@@ -122,6 +126,10 @@ class StrukController extends Controller
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
         }
 
         $request->validate([

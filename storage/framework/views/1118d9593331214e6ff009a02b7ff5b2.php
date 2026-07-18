@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>Galeri Struk — LabMoneyLens</title>
-  @vite(['resources/css/style.css','resources/js/script.js'])
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/js/script.js']); ?>
   
   <style>
     @media (max-width: 1024px) {
@@ -255,7 +255,7 @@
       <span class="hamburger-line"></span>
     </button>
 
-    @include('includes.sidebar')
+    <?php echo $__env->make('includes.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <main class="main">
       <div class="galeri-wrapper">
@@ -264,11 +264,11 @@
           <p>Semua bukti transaksi yang telah diunggah. Klik gambar untuk memperbesar, atau gunakan tombol untuk mengedit / menghapus.</p>
         </div>
 
-        @if(session('success'))
-          <div class="flash-success">✅ {{ session('success') }}</div>
-        @endif
+        <?php if(session('success')): ?>
+          <div class="flash-success">✅ <?php echo e(session('success')); ?></div>
+        <?php endif; ?>
 
-        @if(!$strukList->isEmpty())
+        <?php if(!$strukList->isEmpty()): ?>
           <div class="filter-section">
             <div class="filter-group">
               <label class="filter-label">Bulan</label>
@@ -278,59 +278,59 @@
               <label class="filter-label">Kategori</label>
               <select id="filter-kategori" class="filter-select">
                 <option value="">Semua</option>
-                @foreach($allKategori as $kat)
-                  <option value="kategori-{{ strtolower(str_replace(' ', '-', $kat)) }}">{{ $kat }}</option>
-                @endforeach
+                <?php $__currentLoopData = $allKategori; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $kat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <option value="kategori-<?php echo e(strtolower(str_replace(' ', '-', $kat))); ?>"><?php echo e($kat); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
               </select>
             </div>
             <button class="btn-apply-filter" onclick="applyFilter()">Apply Filter</button>
           </div>
-        @endif
+        <?php endif; ?>
 
-        @if($strukList->isEmpty())
+        <?php if($strukList->isEmpty()): ?>
           <div class="empty-state">
             <div class="empty-icon">🧾</div>
             <h3>Belum Ada Struk</h3>
             <p>Upload struk saat menginput Pengeluaran atau Pemasukan untuk melihatnya di sini.</p>
           </div>
-        @else
+        <?php else: ?>
           <div class="struk-grid">
-            @foreach($strukList as $struk)
-              <div class="struk-card" data-category="{{ $struk->type }}" data-kategori="{{ strtolower(str_replace(' ', '-', $struk->kategori)) }}" data-tanggal="{{ $struk->tanggal }}">
+            <?php $__currentLoopData = $strukList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $struk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <div class="struk-card" data-category="<?php echo e($struk->type); ?>" data-kategori="<?php echo e(strtolower(str_replace(' ', '-', $struk->kategori))); ?>" data-tanggal="<?php echo e($struk->tanggal); ?>">
                 <div class="struk-img-container">
-                  <img src="{{ asset('storage/' . $struk->foto) }}"
-                       alt="Struk {{ $struk->uraian }}"
-                       onclick="openLightbox('{{ asset('storage/' . $struk->foto) }}')" />
+                  <img src="<?php echo e(asset('storage/' . $struk->foto)); ?>"
+                       alt="Struk <?php echo e($struk->uraian); ?>"
+                       onclick="openLightbox('<?php echo e(asset('storage/' . $struk->foto)); ?>')" />
                 </div>
                 <div class="struk-info">
-                  <span class="struk-type type-{{ $struk->type }}">{{ $struk->type }}</span>
-                  <div style="font-size: 11px; color: #0d9488; font-weight: 600; margin-bottom: 6px;">🏷️ {{ $struk->kategori }}</div>
-                  <div class="struk-date">📅 {{ \Illuminate\Support\Carbon::parse($struk->tanggal)->format('d M Y') }}</div>
-                  <div class="struk-amount">Rp {{ number_format($struk->nominal, 0, ',', '.') }}</div>
-                  <div class="struk-desc">{{ $struk->uraian ?: '—' }}</div>
+                  <span class="struk-type type-<?php echo e($struk->type); ?>"><?php echo e($struk->type); ?></span>
+                  <div style="font-size: 11px; color: #0d9488; font-weight: 600; margin-bottom: 6px;">🏷️ <?php echo e($struk->kategori); ?></div>
+                  <div class="struk-date">📅 <?php echo e(\Illuminate\Support\Carbon::parse($struk->tanggal)->format('d M Y')); ?></div>
+                  <div class="struk-amount">Rp <?php echo e(number_format($struk->nominal, 0, ',', '.')); ?></div>
+                  <div class="struk-desc"><?php echo e($struk->uraian ?: '—'); ?></div>
                 </div>
                 <div class="struk-actions">
-                  <a href="{{ route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id]) }}" class="btn-edit-foto" style="text-decoration:none; text-align:center; @if(session('user_role') == 'Kepala Lab') flex:1; @endif">
+                  <a href="<?php echo e(route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>" class="btn-edit-foto" style="text-decoration:none; text-align:center; <?php if(session('user_role') == 'Kepala Lab'): ?> flex:1; <?php endif; ?>">
                     ⬇️ Download
                   </a>
-                  @unless(session('user_role') == 'Kepala Lab')
+                  <?php if (! (session('user_role') == 'Kepala Lab')): ?>
                     <button class="btn-edit-foto"
-                            onclick="openEditModal('{{ strtolower($struk->type) }}', {{ $struk->id }}, '{{ asset('storage/' . $struk->foto) }}')">
+                            onclick="openEditModal('<?php echo e(strtolower($struk->type)); ?>', <?php echo e($struk->id); ?>, '<?php echo e(asset('storage/' . $struk->foto)); ?>')">
                       ✏️ Ganti Foto
                     </button>
                     <form method="POST"
-                          action="{{ route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id]) }}"
+                          action="<?php echo e(route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>"
                           style="flex:1;"
                           data-confirm="soft">
-                      @csrf
+                      <?php echo csrf_field(); ?>
                       <button type="submit" class="btn-hapus-struk">🗑 Hapus</button>
                     </form>
-                  @endunless
+                  <?php endif; ?>
                 </div>
               </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </div>
-        @endif
+        <?php endif; ?>
       </div>
     </main>
   </div>
@@ -357,7 +357,7 @@
       </div>
 
       <form id="edit-foto-form" method="POST" enctype="multipart/form-data">
-        @csrf
+        <?php echo csrf_field(); ?>
         <input type="file" id="foto_baru" name="foto_baru" accept="image/*" hidden>
         <div class="edit-modal-actions">
           <button type="button" class="btn-cancel-modal" onclick="closeEditModal(null, true)">Batal</button>
@@ -453,3 +453,4 @@
   </script>
 </body>
 </html>
+<?php /**PATH D:\Documents\Iclabs\LabML\LabMoneyLens\resources\views/struk.blade.php ENDPATH**/ ?>

@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>Laporan — Dashboard</title>
-  @vite(['resources/css/style.css','resources/css/laporan.css','resources/js/script.js'])
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/css/laporan.css','resources/js/script.js']); ?>
   
   <!-- Inline mobile hamburger styling as backup -->
   <style>
@@ -47,7 +47,7 @@
       <span class="hamburger-line"></span>
     </button>
 
-    @include('includes.sidebar')
+    <?php echo $__env->make('includes.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <main class="main">
       <section class="report-panel">
@@ -57,45 +57,45 @@
             <p class="panel-subtitle">Laporan berdasarkan pemasukan dan pengeluaran yang sudah diinput.</p>
           </div>
 
-          @if($records->isEmpty())
+          <?php if($records->isEmpty()): ?>
             <span class="download-btn" style="pointer-events:none; opacity:0.6;">Unduh</span>
-          @else
-            <a href="{{ route('laporan', array_merge(request()->query(), ['export' => 'csv'])) }}" class="download-btn">Unduh</a>
-          @endif
+          <?php else: ?>
+            <a href="<?php echo e(route('laporan', array_merge(request()->query(), ['export' => 'csv']))); ?>" class="download-btn">Unduh</a>
+          <?php endif; ?>
         </div>
 
         <div class="report-cards">
           <article class="report-card expense-card">
             <span class="report-card-label">Pengeluaran</span>
-            <span class="report-card-value" id="live-report-expense">{{ rupiah($totalExpense) }}</span>
+            <span class="report-card-value" id="live-report-expense"><?php echo e(rupiah($totalExpense)); ?></span>
             <span class="report-card-note">Total semua pengeluaran</span>
           </article>
           <article class="report-card income-card">
             <span class="report-card-label">Pemasukan</span>
-            <span class="report-card-value" id="live-report-income">{{ rupiah($totalIncome) }}</span>
+            <span class="report-card-value" id="live-report-income"><?php echo e(rupiah($totalIncome)); ?></span>
             <span class="report-card-note">Total semua pemasukan</span>
           </article>
           <article class="report-card balance-card">
             <span class="report-card-label">Saldo Bersih</span>
-            <span class="report-card-value" id="live-report-balance">{{ rupiah(abs($balance)) }}</span>
+            <span class="report-card-value" id="live-report-balance"><?php echo e(rupiah(abs($balance))); ?></span>
             <span class="report-card-note">Selisih pemasukan dan pengeluaran</span>
           </article>
         </div>
 
         <!-- Preview removed; actions merged into main records table below -->
 
-        <form method="get" action="{{ route('laporan') }}" class="filter-form">
+        <form method="get" action="<?php echo e(route('laporan')); ?>" class="filter-form">
           <div class="form-group">
             <label class="form-label" for="month">Bulan</label>
-            <input type="month" class="form-input" id="month" name="month" value="{{ $month }}" />
+            <input type="month" class="form-input" id="month" name="month" value="<?php echo e($month); ?>" />
           </div>
 
           <div class="form-group">
             <label class="form-label" for="category">Kategori</label>
             <select class="form-input" id="category" name="category">
-              @foreach($categories as $item)
-                <option value="{{ strtolower($item) }}" {{ ($category ?? 'semua') === strtolower($item) ? 'selected' : '' }}>{{ $item }}</option>
-              @endforeach
+              <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e(strtolower($item)); ?>" <?php echo e(($category ?? 'semua') === strtolower($item) ? 'selected' : ''); ?>><?php echo e($item); ?></option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
           </div>
 
@@ -112,59 +112,59 @@
                 <th>Tanggal & Waktu</th>
                 <th>Jenis</th>
                 <th>Total (IDR)</th>
-                @unless(session('user_role') == 'Kepala Lab')
+                <?php if (! (session('user_role') == 'Kepala Lab')): ?>
                   <th>Aksi</th>
-                @endunless
+                <?php endif; ?>
               </tr>
             </thead>
             <tbody id="live-report-body">
-              @forelse($groupedRecords as $group)
-                @php
+              <?php $__empty_1 = true; $__currentLoopData = $groupedRecords; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php
                   $first = $group->first();
                   $count = $group->count();
                   $total = $group->sum('jumlah');
                   $tipe = $first->tipe;
                   $kategori = $first->kategori;
                   $tanggal = \Illuminate\Support\Carbon::parse($first->created_at)->format('d/m/Y H:i');
-                @endphp
-                @foreach($group as $index => $row)
+                ?>
+                <?php $__currentLoopData = $group; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                   <tr>
-                    @if($index === 0)
-                      <td rowspan="{{ $count }}">{{ $kategori }}</td>
-                    @endif
-                    <td>{{ $row->uraian ?? '-' }}</td>
-                    <td>{{ rupiah($row->jumlah) }}</td>
-                    @if($index === 0)
-                      <td rowspan="{{ $count }}">{{ $tanggal }}</td>
-                      <td rowspan="{{ $count }}">{{ $tipe }}</td>
-                      <td rowspan="{{ $count }}">{{ rupiah($total) }}</td>
-                      @unless(session('user_role') == 'Kepala Lab')
-                        <td class="action-cell" rowspan="{{ $count }}">
-                          @if($tipe === 'Pemasukan')
-                            <a href="{{ route('pemasukan.edit', ['id' => $first->id]) }}" class="btn-edit">Edit</a>
+                    <?php if($index === 0): ?>
+                      <td rowspan="<?php echo e($count); ?>"><?php echo e($kategori); ?></td>
+                    <?php endif; ?>
+                    <td><?php echo e($row->uraian ?? '-'); ?></td>
+                    <td><?php echo e(rupiah($row->jumlah)); ?></td>
+                    <?php if($index === 0): ?>
+                      <td rowspan="<?php echo e($count); ?>"><?php echo e($tanggal); ?></td>
+                      <td rowspan="<?php echo e($count); ?>"><?php echo e($tipe); ?></td>
+                      <td rowspan="<?php echo e($count); ?>"><?php echo e(rupiah($total)); ?></td>
+                      <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+                        <td class="action-cell" rowspan="<?php echo e($count); ?>">
+                          <?php if($tipe === 'Pemasukan'): ?>
+                            <a href="<?php echo e(route('pemasukan.edit', ['id' => $first->id])); ?>" class="btn-edit">Edit</a>
                             <span class="sep">/</span>
-                            <form action="{{ route('pemasukan.delete', ['id' => $first->id]) }}" method="POST" style="display:inline" data-confirm="soft">
-                              @csrf
+                            <form action="<?php echo e(route('pemasukan.delete', ['id' => $first->id])); ?>" method="POST" style="display:inline" data-confirm="soft">
+                              <?php echo csrf_field(); ?>
                               <button type="submit" class="btn-hapus">Hapus</button>
                             </form>
-                          @else
-                            <a href="{{ route('pengeluaran.edit', ['id' => $first->id]) }}" class="btn-edit">Edit</a>
+                          <?php else: ?>
+                            <a href="<?php echo e(route('pengeluaran.edit', ['id' => $first->id])); ?>" class="btn-edit">Edit</a>
                             <span class="sep">/</span>
-                            <form action="{{ route('pengeluaran.delete', ['id' => $first->id]) }}" method="POST" style="display:inline" data-confirm="soft">
-                              @csrf
+                            <form action="<?php echo e(route('pengeluaran.delete', ['id' => $first->id])); ?>" method="POST" style="display:inline" data-confirm="soft">
+                              <?php echo csrf_field(); ?>
                               <button type="submit" class="btn-hapus">Hapus</button>
                             </form>
-                          @endif
+                          <?php endif; ?>
                         </td>
-                      @endunless
-                    @endif
+                      <?php endif; ?>
+                    <?php endif; ?>
                   </tr>
-                @endforeach
-              @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
-                  <td colspan="{{ session('user_role') == 'Kepala Lab' ? 6 : 7 }}">Tidak ada data laporan untuk filter ini.</td>
+                  <td colspan="<?php echo e(session('user_role') == 'Kepala Lab' ? 6 : 7); ?>">Tidak ada data laporan untuk filter ini.</td>
                 </tr>
-              @endforelse
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
@@ -182,7 +182,7 @@
     const monthInput = document.getElementById('month');
     const categorySelect = document.getElementById('category');
 
-    const isKepalaLab = {{ session('user_role') === 'Kepala Lab' ? 'true' : 'false' }};
+    const isKepalaLab = <?php echo e(session('user_role') === 'Kepala Lab' ? 'true' : 'false'); ?>;
 
     function formatCurrency(value) {
       return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
@@ -228,9 +228,9 @@
             if (!isKepalaLab) {
               html += `<td class="action-cell" rowspan="${count}">`;
               if (tipe === 'Pemasukan') {
-                html += `<a href="/pemasukan/edit/${firstId}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pemasukan/delete/${firstId}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="{{ csrf_token() }}"><button type="submit" class="btn-hapus">Hapus</button></form>`;
+                html += `<a href="/pemasukan/edit/${firstId}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pemasukan/delete/${firstId}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`;
               } else {
-                html += `<a href="/pengeluaran/edit/${firstId}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pengeluaran/delete/${firstId}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="{{ csrf_token() }}"><button type="submit" class="btn-hapus">Hapus</button></form>`;
+                html += `<a href="/pengeluaran/edit/${firstId}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pengeluaran/delete/${firstId}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`;
               }
               html += `</td>`;
             }
@@ -258,7 +258,7 @@
       if (monthInput && monthInput.value) params.set('month', monthInput.value);
       if (categorySelect && categorySelect.value) params.set('category', categorySelect.value);
 
-      fetch('{{ route('laporan.liveData') }}?' + params.toString(), {
+      fetch('<?php echo e(route('laporan.liveData')); ?>?' + params.toString(), {
         headers: { 'Accept': 'application/json' }
       })
         .then(function (res) { return res.ok ? res.json() : null; })
@@ -278,3 +278,4 @@
   </script>
 </body>
 </html>
+<?php /**PATH D:\Documents\Iclabs\LabML\LabMoneyLens\resources\views/laporan.blade.php ENDPATH**/ ?>

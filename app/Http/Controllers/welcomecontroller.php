@@ -13,6 +13,10 @@ class welcomecontroller extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $expenses = DB::table('pengeluaran')
             ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
             ->select(
@@ -37,6 +41,10 @@ class welcomecontroller extends Controller
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
         }
 
         $data = $request->validate([
@@ -108,6 +116,10 @@ class welcomecontroller extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         DB::table('pengeluaran')
             ->where('id_pengeluaran', $id)
             ->whereNull('deleted_at')
@@ -126,6 +138,10 @@ class welcomecontroller extends Controller
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
         }
 
         $baseItem = DB::table('pengeluaran')->where('id_pengeluaran', $id)->first();
@@ -160,6 +176,10 @@ class welcomecontroller extends Controller
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
         }
 
         $data = $request->validate([

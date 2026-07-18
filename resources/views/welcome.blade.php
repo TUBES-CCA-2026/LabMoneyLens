@@ -509,6 +509,17 @@
           </div>
 
           <div class="form-card-body">
+            @if ($errors->any())
+              <div style="background-color: #fee2e2; border: 1.5px solid #fecaca; border-radius: 12px; padding: 16px; margin-bottom: 20px; color: #991b1b; font-size: 13px;">
+                <strong style="display: block; margin-bottom: 8px;">⚠️ Gagal Menyimpan:</strong>
+                <ul style="margin: 0; padding-left: 20px;">
+                  @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+            @endif
+
             <!-- Saldo warning bar -->
             <div class="saldo-info">
               <span class="saldo-info-icon">⚠️</span>

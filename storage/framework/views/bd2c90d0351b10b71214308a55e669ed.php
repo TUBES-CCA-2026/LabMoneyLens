@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>Dashboard — LabMoneyLens</title>
-  @vite(['resources/css/style.css','resources/css/dashboard.css','resources/js/script.js'])
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/css/dashboard.css','resources/js/script.js']); ?>
   
   <!-- Inline mobile hamburger styling as backup -->
   <style>
@@ -46,26 +46,26 @@
       <span class="hamburger-line"></span>
     </button>
 
-    @include('includes.sidebar')
+    <?php echo $__env->make('includes.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <main class="main dashboard-main">
       <section class="dashboard-cards">
         <article class="dashboard-card income-card">
           <span class="card-icon up">▲</span>
           <span class="card-title">INCOME</span>
-          <strong class="card-value" id="live-total-income">{{ rupiah($totalIncome) }}</strong>
+          <strong class="card-value" id="live-total-income"><?php echo e(rupiah($totalIncome)); ?></strong>
         </article>
 
         <article class="dashboard-card expense-card">
           <span class="card-icon down">▼</span>
           <span class="card-title">EXPENSES</span>
-          <strong class="card-value" id="live-total-expense">{{ rupiah($totalExpense) }}</strong>
+          <strong class="card-value" id="live-total-expense"><?php echo e(rupiah($totalExpense)); ?></strong>
         </article>
 
         <article class="dashboard-card balance-card">
           <span class="card-icon wallet">₿</span>
           <span class="card-title">SALDO</span>
-          <strong class="card-value" id="live-balance">{{ rupiah($balance) }}</strong>
+          <strong class="card-value" id="live-balance"><?php echo e(rupiah($balance)); ?></strong>
         </article>
       </section>
 
@@ -76,28 +76,30 @@
             <!-- ── Semester Filter Dropdown ── -->
             <div class="semester-filter" id="semester-filter">
               <button class="semester-btn" id="semester-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
-                <span id="semester-label">Semester {{ $selectedSemester == 1 ? 'Genap' : 'Ganjil' }} {{ $selectedYear }}</span>
+                <span id="semester-label">Semester <?php echo e($selectedSemester == 1 ? 'Genap' : 'Ganjil'); ?> <?php echo e($selectedYear); ?></span>
                 <svg class="semester-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <div class="semester-dropdown" id="semester-dropdown" role="listbox" aria-label="Pilih Semester">
-                @foreach($availableYears as $yr)
-                  <div class="semester-group-label">{{ $yr }}</div>
-                  <div class="semester-option {{ $selectedYear == $yr && $selectedSemester == 1 ? 'active' : '' }}"
-                       data-year="{{ $yr }}" data-sem="1" role="option"
-                       aria-selected="{{ $selectedYear == $yr && $selectedSemester == 1 ? 'true' : 'false' }}">
-                    Genap &mdash; Jan s/d Jun {{ $yr }}
+                <?php $__currentLoopData = $availableYears; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $yr): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <div class="semester-group-label"><?php echo e($yr); ?></div>
+                  <div class="semester-option <?php echo e($selectedYear == $yr && $selectedSemester == 1 ? 'active' : ''); ?>"
+                       data-year="<?php echo e($yr); ?>" data-sem="1" role="option"
+                       aria-selected="<?php echo e($selectedYear == $yr && $selectedSemester == 1 ? 'true' : 'false'); ?>">
+                    Genap &mdash; Jan s/d Jun <?php echo e($yr); ?>
+
                   </div>
-                  <div class="semester-option {{ $selectedYear == $yr && $selectedSemester == 2 ? 'active' : '' }}"
-                       data-year="{{ $yr }}" data-sem="2" role="option"
-                       aria-selected="{{ $selectedYear == $yr && $selectedSemester == 2 ? 'true' : 'false' }}">
-                    Ganjil &mdash; Jul s/d Des {{ $yr }}
+                  <div class="semester-option <?php echo e($selectedYear == $yr && $selectedSemester == 2 ? 'active' : ''); ?>"
+                       data-year="<?php echo e($yr); ?>" data-sem="2" role="option"
+                       aria-selected="<?php echo e($selectedYear == $yr && $selectedSemester == 2 ? 'true' : 'false'); ?>">
+                    Ganjil &mdash; Jul s/d Des <?php echo e($yr); ?>
+
                   </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
               </div>
             </div>
           </div>
 
-          @php
+          <?php
             $maxExpenseTotal = max($expenseCategories->max('total'), 1);
             $labelStep = ceil($maxExpenseTotal / 8 / 100000) * 100000;
             $maxAxis = max($labelStep * 8, $maxExpenseTotal);
@@ -105,27 +107,27 @@
             for ($i = 8; $i >= 0; $i--) {
                 $yLabels[] = $i * $labelStep;
             }
-          @endphp
+          ?>
 
           <div class="chart-placeholder" id="chart-placeholder">
             <div class="chart-y-labels" id="chart-y-labels">
-              @foreach($yLabels as $value)
-                <span>{{ rupiah($value) }}</span>
-              @endforeach
+              <?php $__currentLoopData = $yLabels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <span><?php echo e(rupiah($value)); ?></span>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
             <div class="chart-scrollable">
               <div class="chart-bars" id="chart-bars">
-                @foreach($expenseCategories as $category)
+                <?php $__currentLoopData = $expenseCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                   <div class="chart-bar">
-                    <div class="bar-fill" style="height: {{ ($category->total / $maxAxis) * 100 }}%;"></div>
+                    <div class="bar-fill" style="height: <?php echo e(($category->total / $maxAxis) * 100); ?>%;"></div>
                   </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
               </div>
               <div class="chart-base-line"></div>
               <div class="chart-x-labels" id="chart-x-labels">
-                @foreach($expenseCategories as $category)
-                  <span>{{ $category->category }}</span>
-                @endforeach
+                <?php $__currentLoopData = $expenseCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <span><?php echo e($category->category); ?></span>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
               </div>
             </div>
           </div>
@@ -142,17 +144,17 @@
             <h3>RECENT</h3>
           </div>
           <div class="recent-list">
-            @forelse($recentTransactions as $item)
-              <div class="recent-item {{ $item->type === 'Pemasukan' ? 'income-row' : 'expense-row' }}">
+            <?php $__empty_1 = true; $__currentLoopData = $recentTransactions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+              <div class="recent-item <?php echo e($item->type === 'Pemasukan' ? 'income-row' : 'expense-row'); ?>">
                 <div>
-                  <p class="recent-label">{{ $item->category }}</p>
-                  <p class="recent-date">{{ \Illuminate\Support\Carbon::parse($item->tanggal)->format('d/m/Y') }}</p>
+                  <p class="recent-label"><?php echo e($item->category); ?></p>
+                  <p class="recent-date"><?php echo e(\Illuminate\Support\Carbon::parse($item->tanggal)->format('d/m/Y')); ?></p>
                 </div>
-                <strong>{{ rupiah($item->amount) }}</strong>
+                <strong><?php echo e(rupiah($item->amount)); ?></strong>
               </div>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
               <div class="recent-item empty">Belum ada transaksi.</div>
-            @endforelse
+            <?php endif; ?>
           </div>
         </article>
       </section>
@@ -317,3 +319,4 @@
   </script>
 </body>
 </html>
+<?php /**PATH D:\Documents\Iclabs\LabML\LabMoneyLens\resources\views/dashboard.blade.php ENDPATH**/ ?>

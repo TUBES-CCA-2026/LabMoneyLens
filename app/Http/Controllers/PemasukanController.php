@@ -13,6 +13,10 @@ class PemasukanController extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $incomes = DB::table('pemasukan')
             ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
             ->select(
@@ -36,6 +40,10 @@ class PemasukanController extends Controller
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
         }
 
         $data = $request->validate([
@@ -106,6 +114,10 @@ class PemasukanController extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $baseItem = DB::table('pemasukan')->where('id_pemasukan', $id)->first();
         if (!$baseItem) {
             return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak ditemukan.');
@@ -137,6 +149,10 @@ class PemasukanController extends Controller
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
         }
 
         $data = $request->validate([
@@ -201,6 +217,10 @@ class PemasukanController extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         DB::table('pemasukan')
             ->where('id_pemasukan', $id)
             ->whereNull('deleted_at')
@@ -213,5 +233,42 @@ class PemasukanController extends Controller
         }
 
         return redirect()->route('pemasukan')->with('success', 'Pemasukan dihapus.');
+    }
+
+    public function storeKategori(Request $request)
+    {
+        if (!session()->has('user_id')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $data = $request->validate([
+            'nama_jenis' => 'required|string|max:255',
+        ]);
+
+        // Cek duplikat
+        $exists = DB::table('jenis_penerimaan')
+            ->where('nama_jenis', $data['nama_jenis'])
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['success' => false, 'message' => 'Kategori sudah ada.']);
+        }
+
+        $id = DB::table('jenis_penerimaan')->insertGetId([
+            'nama_jenis' => $data['nama_jenis'],
+            'isAktif' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'id' => $id,
+            'nama' => $data['nama_jenis'],
+        ]);
     }
 }

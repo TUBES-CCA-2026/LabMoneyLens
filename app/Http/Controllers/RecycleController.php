@@ -14,6 +14,10 @@ class RecycleController extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $deletedIncome = DB::table('pemasukan')
             ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
             ->select(
@@ -56,6 +60,10 @@ class RecycleController extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         if ($type === 'pemasukan') {
             DB::table('pemasukan')
                 ->where('id_pemasukan', $id)
@@ -75,6 +83,10 @@ class RecycleController extends Controller
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
         }
 
         if ($type === 'pemasukan') {
@@ -98,6 +110,10 @@ class RecycleController extends Controller
             return redirect()->route('login');
         }
 
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
         DB::table('pemasukan')->whereNotNull('deleted_at')->update(['deleted_at' => null]);
         DB::table('pengeluaran')->whereNotNull('deleted_at')->update(['deleted_at' => null]);
 
@@ -108,6 +124,10 @@ class RecycleController extends Controller
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
         }
 
         DB::table('pemasukan')->whereNotNull('deleted_at')->delete();

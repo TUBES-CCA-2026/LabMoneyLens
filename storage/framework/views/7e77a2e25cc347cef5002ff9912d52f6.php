@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>Pemasukan — LabMoneyLens</title>
-  @vite(['resources/css/style.css','resources/css/welcome.css','resources/js/script.js'])
-  <script>window.receiptParseUrl = "{{ route('receipt.parse') }}";</script>
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/css/welcome.css','resources/js/script.js']); ?>
+  <script>window.receiptParseUrl = "<?php echo e(route('receipt.parse')); ?>";</script>
 
   <style>
     /* ── Override layout: centered main ── */
@@ -445,18 +445,18 @@
       <span class="hamburger-line"></span>
     </button>
 
-    @include('includes.sidebar')
+    <?php echo $__env->make('includes.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <!-- Main Content -->
     <main class="main">
       <div class="page-wrapper">
 
         <!-- Page Hero -->
-        @php
+        <?php
           $totalIncome  = \Illuminate\Support\Facades\DB::table('pemasukan')->where('is_confirmed',1)->whereNull('deleted_at')->sum('nominal');
           $totalExpense = \Illuminate\Support\Facades\DB::table('pengeluaran')->where('is_confirmed',1)->whereNull('deleted_at')->sum('nominal');
           $saldo = $totalIncome - $totalExpense;
-        @endphp
+        ?>
         <div class="page-hero">
           <div class="page-hero-info">
             <h1>💰 Input Pemasukan</h1>
@@ -464,7 +464,7 @@
           </div>
           <div class="hero-balance-badge">
             <div class="badge-label">Saldo Saat Ini</div>
-            <div class="badge-value">Rp {{ number_format($saldo, 0, ',', '.') }}</div>
+            <div class="badge-value">Rp <?php echo e(number_format($saldo, 0, ',', '.')); ?></div>
           </div>
         </div>
 
@@ -481,16 +481,16 @@
           </div>
 
           <div class="form-card-body">
-            @if ($errors->any())
+            <?php if($errors->any()): ?>
               <div style="background-color: #fee2e2; border: 1.5px solid #fecaca; border-radius: 12px; padding: 16px; margin-bottom: 20px; color: #991b1b; font-size: 13px;">
                 <strong style="display: block; margin-bottom: 8px;">⚠️ Gagal Menyimpan:</strong>
                 <ul style="margin: 0; padding-left: 20px;">
-                  @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                  @endforeach
+                  <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ul>
               </div>
-            @endif
+            <?php endif; ?>
 
             <!-- Upload Zone (horizontal compact) - WAJIB PERTAMA -->
             <div class="upload-row" id="upload-row" role="button" tabindex="0" aria-label="Unggah foto struk">
@@ -513,8 +513,8 @@
               </div>
             </div>
 
-            <form id="receipt_form" method="POST" action="{{ route('pemasukan.store') }}" enctype="multipart/form-data" class="input-form">
-              @csrf
+            <form id="receipt_form" method="POST" action="<?php echo e(route('pemasukan.store')); ?>" enctype="multipart/form-data" class="input-form">
+              <?php echo csrf_field(); ?>
               <input type="file" id="receipt_image" name="receipt_image" accept="image/*" hidden>
               <input type="hidden" id="receipt_type" name="type" value="pemasukan">
 
@@ -533,7 +533,7 @@
                   <label class="form-label" for="tanggal">
                     <span class="required-dot"></span> Tanggal Transaksi (berlaku untuk semua baris)
                   </label>
-                  <input type="date" class="form-input" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}" required />
+                  <input type="date" class="form-input" id="tanggal" name="tanggal" value="<?php echo e(date('Y-m-d')); ?>" required />
                 </div>
 
                 <div class="form-group">
@@ -542,9 +542,9 @@
                   </label>
                   <select class="form-input" id="kategori_penerimaan">
                     <option value="">— Pilih Kategori —</option>
-                    @foreach($jenis as $j)
-                      <option value="{{ $j->id }}">{{ $j->nama }}</option>
-                    @endforeach
+                    <?php $__currentLoopData = $jenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                      <option value="<?php echo e($j->id); ?>"><?php echo e($j->nama); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </select>
                 </div>
               </div>
@@ -620,7 +620,7 @@
         <div class="table-section">
           <div class="table-section-header">
             <h3>📋 Riwayat Pemasukan</h3>
-            <span class="entry-count">{{ count($incomes) }} entri</span>
+            <span class="entry-count"><?php echo e(count($incomes)); ?> entri</span>
           </div>
           <div class="table-wrap">
             <table>
@@ -635,48 +635,48 @@
                 </tr>
               </thead>
               <tbody>
-                @forelse($incomes as $i => $income)
+                <?php $__empty_1 = true; $__currentLoopData = $incomes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $income): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                   <tr>
-                    <td>{{ $i + 1 }}</td>
-                    <td>{{ \Carbon\Carbon::parse($income->tanggal)->format('d M Y') }}</td>
-                    <td>{{ $income->kategori }}</td>
+                    <td><?php echo e($i + 1); ?></td>
+                    <td><?php echo e(\Carbon\Carbon::parse($income->tanggal)->format('d M Y')); ?></td>
+                    <td><?php echo e($income->kategori); ?></td>
                     <td>
-                      @if(!empty($income->uraian ?? ''))
-                        <span style="color:#374151;">{{ $income->uraian }}</span>
-                      @else
+                      <?php if(!empty($income->uraian ?? '')): ?>
+                        <span style="color:#374151;"><?php echo e($income->uraian); ?></span>
+                      <?php else: ?>
                         <span style="color:#94a3b8;font-style:italic;">—</span>
-                      @endif
+                      <?php endif; ?>
                     </td>
                     <td>
-                      <span style="font-weight:700;color:#059669;">+ Rp {{ number_format($income->jumlah, 0, ',', '.') }}</span>
+                      <span style="font-weight:700;color:#059669;">+ Rp <?php echo e(number_format($income->jumlah, 0, ',', '.')); ?></span>
                     </td>
                     <td>
                       <div class="action-cell">
-                        <a href="{{ route('pemasukan.edit', $income->id) }}" class="btn-edit">Edit</a>
+                        <a href="<?php echo e(route('pemasukan.edit', $income->id)); ?>" class="btn-edit">Edit</a>
                         <span class="sep">|</span>
-                        <form method="POST" action="{{ route('pemasukan.delete', $income->id) }}" style="display:inline;"
+                        <form method="POST" action="<?php echo e(route('pemasukan.delete', $income->id)); ?>" style="display:inline;"
                               data-confirm="soft">
-                          @csrf
+                          <?php echo csrf_field(); ?>
                           <button type="submit" class="btn-hapus">Hapus</button>
                         </form>
                       </div>
                     </td>
                   </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                   <tr>
                     <td colspan="6" style="text-align:center;padding:32px;color:#94a3b8;font-style:italic;">
                       Belum ada data pemasukan.
                     </td>
                   </tr>
-                @endforelse
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
-          @if(count($incomes) > 0)
+          <?php if(count($incomes) > 0): ?>
             <div class="laporan-tip">
-              Lihat ringkasan lengkap dan ekspor data di halaman <a href="{{ route('laporan') }}">Laporan</a>.
+              Lihat ringkasan lengkap dan ekspor data di halaman <a href="<?php echo e(route('laporan')); ?>">Laporan</a>.
             </div>
-          @endif
+          <?php endif; ?>
         </div>
 
       </div>
@@ -781,18 +781,18 @@
     document.getElementById('custom-modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
 
     document.addEventListener('DOMContentLoaded', function() {
-      @if(session('error'))
-        showModal('Gagal', '{{ session("error") }}', '❌');
-      @elseif(session('success'))
-        showModal('Berhasil', '{{ session("success") }}', '✅');
-      @endif
+      <?php if(session('error')): ?>
+        showModal('Gagal', '<?php echo e(session("error")); ?>', '❌');
+      <?php elseif(session('success')): ?>
+        showModal('Berhasil', '<?php echo e(session("success")); ?>', '✅');
+      <?php endif; ?>
       attachNominalListeners();
       // Sync awal: set nilai default kategori ke hidden inputs
       syncKategoriSync();
     });
 
     // Daftar kategori dari server (untuk dropdown dinamis)
-    const jenisData = @json($jenis);
+    const jenisData = <?php echo json_encode($jenis, 15, 512) ?>;
 
     // Sync hidden kategori inputs dengan main dropdown
     function syncKategoriSync() {
@@ -902,4 +902,4 @@
     }
   </script>
 </body>
-</html>
+</html><?php /**PATH D:\Documents\Iclabs\LabML\LabMoneyLens\resources\views/pemasukan.blade.php ENDPATH**/ ?>
