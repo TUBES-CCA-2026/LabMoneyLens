@@ -60,12 +60,11 @@ class StrukController extends Controller
             ->sortByDesc('tanggal')
             ->values();
 
-        // Get all categories
-        $allKategoriPengeluaran = DB::table('jenis_pengeluaran')->where('isAktif', true)->pluck('nama_jenis')->sort();
-        $allKategoriPenerimaan = DB::table('jenis_penerimaan')->where('isAktif', true)->pluck('nama_jenis')->sort();
-        $allKategori = $allKategoriPengeluaran->merge($allKategoriPenerimaan)->unique()->sort();
+        // Get all active categories per transaction type
+        $kategoriPengeluaran = DB::table('jenis_pengeluaran')->where('isAktif', true)->pluck('nama_jenis')->sort()->values();
+        $kategoriPemasukan = DB::table('jenis_penerimaan')->where('isAktif', true)->pluck('nama_jenis')->sort()->values();
 
-        return view('struk', compact('strukList', 'allKategori'));
+        return view('struk', compact('strukList', 'kategoriPemasukan', 'kategoriPengeluaran'));
     }
 
     public function download(string $type, int $id)
