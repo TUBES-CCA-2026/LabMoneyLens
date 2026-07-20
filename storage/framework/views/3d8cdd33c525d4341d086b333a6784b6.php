@@ -682,6 +682,11 @@
             </style>
             <?php echo e($incomes->links('pagination::bootstrap-4')); ?>
 
+            <?php if($incomes->hasMorePages()): ?>
+              <div style="margin-top: 8px; display:flex; justify-content:flex-end; gap:8px;">
+                <a href="<?php echo e($incomes->nextPageUrl()); ?>" class="btn-page-next" style="padding:8px 14px; background:#0d9488; color:#fff; border-radius:8px; text-decoration:none;">Next</a>
+              </div>
+            <?php endif; ?>
           </div>
           <?php if(count($incomes) > 0): ?>
             <div class="laporan-tip">

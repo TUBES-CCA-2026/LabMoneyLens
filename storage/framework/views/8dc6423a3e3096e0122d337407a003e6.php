@@ -268,7 +268,7 @@
         }
       }
 
-      if (totalItems <= itemsPerPage) {
+      if (totalItems < itemsPerPage) {
         paginationContainer.innerHTML = '';
         return;
       }

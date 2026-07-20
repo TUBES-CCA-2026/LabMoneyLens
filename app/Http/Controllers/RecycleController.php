@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
 
 class RecycleController extends Controller
@@ -44,12 +45,25 @@ class RecycleController extends Controller
             ->whereNotNull('pengeluaran.deleted_at')
             ->get();
 
-        $records = $deletedIncome->concat($deletedExpense)
+        $recordsCollection = $deletedIncome->concat($deletedExpense)
             ->sortByDesc('deleted_at')
             ->values();
 
-        $totalItems = $records->count();
-        $totalValue = $records->sum('jumlah');
+        $totalItems = $recordsCollection->count();
+        $totalValue = $recordsCollection->sum('jumlah');
+
+        $perPage = 10;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $records = new LengthAwarePaginator(
+            $recordsCollection->forPage($currentPage, $perPage),
+            $totalItems,
+            $perPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'query' => request()->query(),
+            ]
+        );
 
         return view('recycle', compact('records', 'totalItems', 'totalValue'));
     }

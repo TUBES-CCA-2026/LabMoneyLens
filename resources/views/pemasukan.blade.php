@@ -681,6 +681,11 @@
               .page-item.disabled .page-link { color: #94a3b8; background: #f8fafc; cursor: not-allowed; border-color: #e2e8f0; }
             </style>
             {{ $incomes->links('pagination::bootstrap-4') }}
+            @if($incomes->hasMorePages())
+              <div style="margin-top: 8px; display:flex; justify-content:flex-end; gap:8px;">
+                <a href="{{ $incomes->nextPageUrl() }}" class="btn-page-next" style="padding:8px 14px; background:#0d9488; color:#fff; border-radius:8px; text-decoration:none;">Next</a>
+              </div>
+            @endif
           </div>
           @if(count($incomes) > 0)
             <div class="laporan-tip">

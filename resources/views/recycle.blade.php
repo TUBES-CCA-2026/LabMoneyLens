@@ -109,6 +109,18 @@
             </tbody>
           </table>
         </div>
+        @if($records->hasPages())
+          <div style="margin-top: 20px; padding: 0 20px;">
+            <style>
+              .pagination { display: flex; list-style: none; padding: 0; margin: 0; justify-content: flex-end; gap: 4px; }
+              .page-item .page-link { display: block; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f766e; text-decoration: none; font-size: 13px; background: #fff; transition: all 0.2s ease; }
+              .page-item .page-link:hover { background: #f1f5f9; }
+              .page-item.active .page-link { background: #0d9488; color: #fff; border-color: #0d9488; }
+              .page-item.disabled .page-link { color: #94a3b8; background: #f8fafc; cursor: not-allowed; border-color: #e2e8f0; }
+            </style>
+            {{ $records->links('pagination::bootstrap-4') }}
+          </div>
+        @endif
 
         <div class="recycle-actions">
           <form action="{{ route('recycle.restoreAll') }}" method="POST">
