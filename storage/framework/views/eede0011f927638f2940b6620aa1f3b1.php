@@ -310,20 +310,22 @@
                   <div class="struk-desc"><?php echo e($struk->uraian ?: '—'); ?></div>
                 </div>
                 <div class="struk-actions">
-                  <a href="<?php echo e(route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>" class="btn-edit-foto" style="text-decoration:none;">
+                  <a href="<?php echo e(route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>" class="btn-edit-foto" style="text-decoration:none; text-align:center; <?php if(session('user_role') == 'Kepala Lab'): ?> flex:1; <?php endif; ?>">
                     ⬇️ Download
                   </a>
-                  <button class="btn-edit-foto"
-                          onclick="openEditModal('<?php echo e(strtolower($struk->type)); ?>', <?php echo e($struk->id); ?>, '<?php echo e(asset('storage/' . $struk->foto)); ?>')">
-                    ✏️ Ganti Foto
-                  </button>
-                  <form method="POST"
-                        action="<?php echo e(route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>"
-                        style="flex:1;"
-                        data-confirm="soft">
-                    <?php echo csrf_field(); ?>
-                    <button type="submit" class="btn-hapus-struk">🗑 Hapus</button>
-                  </form>
+                  <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+                    <button class="btn-edit-foto"
+                            onclick="openEditModal('<?php echo e(strtolower($struk->type)); ?>', <?php echo e($struk->id); ?>, '<?php echo e(asset('storage/' . $struk->foto)); ?>')">
+                      ✏️ Ganti Foto
+                    </button>
+                    <form method="POST"
+                          action="<?php echo e(route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>"
+                          style="flex:1;"
+                          data-confirm="soft">
+                      <?php echo csrf_field(); ?>
+                      <button type="submit" class="btn-hapus-struk">🗑 Hapus</button>
+                    </form>
+                  <?php endif; ?>
                 </div>
               </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

@@ -293,6 +293,48 @@
       padding-left: 38px;
     }
 
+    /* ── Nominal + Kuantiti side by side ── */
+    .nominal-qty-group {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .qty-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .qty-input {
+      width: 80px;
+      padding: 11px 10px;
+      border: 2px solid #fecaca;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #7f1d1d;
+      background: #ffffff;
+      outline: none;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .qty-input:hover { border-color: #fca5a5; }
+    .qty-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    }
+
+    .qty-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #991b1b;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
     /* ── Saldo info bar ── */
     .saldo-info {
       background: linear-gradient(135deg, #fff1f2 0%, #fff5f5 100%);
@@ -581,7 +623,7 @@
                   <label class="form-label" for="kategori_pengeluaran">
                     <span class="required-dot"></span> Kategori Default Pengeluaran
                   </label>
-                  <select class="form-input" id="kategori_pengeluaran">
+                  <select class="form-input" id="kategori_pengeluaran" required>
                     <option value="">— Pilih Kategori —</option>
                     @foreach($jenis as $j)
                       <option value="{{ $j->id }}">{{ $j->nama }}</option>
@@ -597,20 +639,27 @@
                   <input type="hidden" name="id_jenis_pengeluaran[]" class="row-kategori-sync">
                   <!-- Keterangan -->
                   <div class="form-group span-2">
-                    <label class="form-label" for="uraian_0">Keterangan / Uraian</label>
+                    <label class="form-label" for="uraian_0"><span class="required-dot"></span> Keterangan / Uraian</label>
                     <input type="text" class="form-input uraian-input" id="uraian_0" name="uraian[]"
-                           placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" />
+                           placeholder="Contoh: Pembelian reagen kimia, ATK..." maxlength="255" required />
                   </div>
 
-                  <!-- Nominal -->
+                  <!-- Nominal + Kuantiti -->
                   <div class="form-group">
                     <label class="form-label" for="nominal_0">
                       <span class="required-dot"></span> Nominal (IDR)
                     </label>
-                    <div class="nominal-wrapper">
-                      <span class="nominal-prefix">Rp</span>
-                      <input type="number" class="form-input with-prefix nominal-input" id="nominal_0"
-                             name="nominal[]" placeholder="0" min="1" required />
+                    <div class="nominal-qty-group">
+                      <div class="nominal-wrapper">
+                        <span class="nominal-prefix">Rp</span>
+                        <input type="number" class="form-input with-prefix nominal-input" id="nominal_0"
+                               name="nominal[]" placeholder="0" min="1" required />
+                      </div>
+                      <div class="qty-wrapper">
+                        <span class="qty-label">Qty</span>
+                        <input type="number" class="qty-input kuantiti-input" id="kuantiti_0"
+                               name="kuantiti[]" placeholder="1" min="1" value="1" required />
+                      </div>
                     </div>
                   </div>
                   
@@ -712,6 +761,16 @@
                 @endforelse
               </tbody>
             </table>
+          </div>
+          <div style="margin-top: 20px; padding: 0 20px;">
+            <style>
+              .pagination { display: flex; list-style: none; padding: 0; margin: 0; justify-content: flex-end; gap: 4px; }
+              .page-item .page-link { display: block; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f766e; text-decoration: none; font-size: 13px; background: #fff; transition: all 0.2s ease; }
+              .page-item .page-link:hover { background: #f1f5f9; }
+              .page-item.active .page-link { background: #0d9488; color: #fff; border-color: #0d9488; }
+              .page-item.disabled .page-link { color: #94a3b8; background: #f8fafc; cursor: not-allowed; border-color: #e2e8f0; }
+            </style>
+            {{ $expenses->links('pagination::bootstrap-4') }}
           </div>
           @if(count($expenses) > 0)
             <div class="laporan-tip">
@@ -854,9 +913,15 @@
             <label class="form-label" for="nominal_${rowCount}">
               <span class="required-dot"></span> Nominal (IDR)
             </label>
-            <div class="nominal-wrapper">
-              <span class="nominal-prefix">Rp</span>
-              <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+            <div class="nominal-qty-group">
+              <div class="nominal-wrapper">
+                <span class="nominal-prefix">Rp</span>
+                <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+              </div>
+              <div class="qty-wrapper">
+                <span class="qty-label">Qty</span>
+                <input type="number" class="qty-input kuantiti-input" id="kuantiti_${rowCount}" name="kuantiti[]" placeholder="1" min="1" value="1" />
+              </div>
             </div>
           </div>
           <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fee2e2; border: 1px solid #fecaca; color: #ef4444; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
@@ -888,9 +953,15 @@
             <label class="form-label" for="nominal_${rowCount}">
               <span class="required-dot"></span> Nominal (IDR)
             </label>
-            <div class="nominal-wrapper">
-              <span class="nominal-prefix">Rp</span>
-              <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+            <div class="nominal-qty-group">
+              <div class="nominal-wrapper">
+                <span class="nominal-prefix">Rp</span>
+                <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+              </div>
+              <div class="qty-wrapper">
+                <span class="qty-label">Qty</span>
+                <input type="number" class="qty-input kuantiti-input" id="kuantiti_${rowCount}" name="kuantiti[]" placeholder="1" min="1" value="1" />
+              </div>
             </div>
           </div>
           <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fef3c7; border: 1px solid #fcd34d; color: #b45309; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
@@ -920,19 +991,21 @@
     }
 
     function updateTotal() {
-      const nominalInputs = document.querySelectorAll('.nominal-input');
+      const rows = document.querySelectorAll('.item-row');
       let total = 0;
-      nominalInputs.forEach(input => {
-        const value = parseInt(input.value) || 0;
-        total += value;
+      rows.forEach(row => {
+        const nominalInput = row.querySelector('.nominal-input');
+        const kuantitiInput = row.querySelector('.kuantiti-input');
+        const nominal = parseInt(nominalInput?.value) || 0;
+        const kuantiti = parseInt(kuantitiInput?.value) || 1;
+        total += nominal * kuantiti;
       });
       const totalElement = document.getElementById('total-nominal');
       totalElement.textContent = total.toLocaleString('id-ID');
     }
 
     function attachNominalListeners() {
-      const nominalInputs = document.querySelectorAll('.nominal-input');
-      nominalInputs.forEach(input => {
+      document.querySelectorAll('.nominal-input, .kuantiti-input').forEach(input => {
         input.removeEventListener('input', updateTotal);
         input.addEventListener('input', updateTotal);
       });
@@ -942,6 +1015,14 @@
       attachNominalListeners();
       // Sync awal: set nilai default kategori ke hidden inputs
       syncKategoriSync();
+      // Validasi kuantiti tidak boleh 0 atau kurang
+      document.getElementById('items-container').addEventListener('input', function(e) {
+        if (e.target.classList.contains('kuantiti-input')) {
+          if (parseInt(e.target.value) < 1 || e.target.value === '') {
+            e.target.value = 1;
+          }
+        }
+      });
     });
   </script>
 </body>

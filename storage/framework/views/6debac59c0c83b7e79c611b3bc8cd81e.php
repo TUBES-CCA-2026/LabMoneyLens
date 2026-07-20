@@ -112,7 +112,9 @@
                 <th>Tanggal & Waktu</th>
                 <th>Jenis</th>
                 <th>Total (IDR)</th>
-                <th>Aksi</th>
+                <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+                  <th>Aksi</th>
+                <?php endif; ?>
               </tr>
             </thead>
             <tbody id="live-report-body">
@@ -136,29 +138,31 @@
                       <td rowspan="<?php echo e($count); ?>"><?php echo e($tanggal); ?></td>
                       <td rowspan="<?php echo e($count); ?>"><?php echo e($tipe); ?></td>
                       <td rowspan="<?php echo e($count); ?>"><?php echo e(rupiah($total)); ?></td>
-                      <td class="action-cell" rowspan="<?php echo e($count); ?>">
-                        <?php if($tipe === 'Pemasukan'): ?>
-                          <a href="<?php echo e(route('pemasukan.edit', ['id' => $first->id])); ?>" class="btn-edit">Edit</a>
-                          <span class="sep">/</span>
-                          <form action="<?php echo e(route('pemasukan.delete', ['id' => $first->id])); ?>" method="POST" style="display:inline" data-confirm="soft">
-                            <?php echo csrf_field(); ?>
-                            <button type="submit" class="btn-hapus">Hapus</button>
-                          </form>
-                        <?php else: ?>
-                          <a href="<?php echo e(route('pengeluaran.edit', ['id' => $first->id])); ?>" class="btn-edit">Edit</a>
-                          <span class="sep">/</span>
-                          <form action="<?php echo e(route('pengeluaran.delete', ['id' => $first->id])); ?>" method="POST" style="display:inline" data-confirm="soft">
-                            <?php echo csrf_field(); ?>
-                            <button type="submit" class="btn-hapus">Hapus</button>
-                          </form>
-                        <?php endif; ?>
-                      </td>
+                      <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+                        <td class="action-cell" rowspan="<?php echo e($count); ?>">
+                          <?php if($tipe === 'Pemasukan'): ?>
+                            <a href="<?php echo e(route('pemasukan.edit', ['id' => $first->id])); ?>" class="btn-edit">Edit</a>
+                            <span class="sep">/</span>
+                            <form action="<?php echo e(route('pemasukan.delete', ['id' => $first->id])); ?>" method="POST" style="display:inline" data-confirm="soft">
+                              <?php echo csrf_field(); ?>
+                              <button type="submit" class="btn-hapus">Hapus</button>
+                            </form>
+                          <?php else: ?>
+                            <a href="<?php echo e(route('pengeluaran.edit', ['id' => $first->id])); ?>" class="btn-edit">Edit</a>
+                            <span class="sep">/</span>
+                            <form action="<?php echo e(route('pengeluaran.delete', ['id' => $first->id])); ?>" method="POST" style="display:inline" data-confirm="soft">
+                              <?php echo csrf_field(); ?>
+                              <button type="submit" class="btn-hapus">Hapus</button>
+                            </form>
+                          <?php endif; ?>
+                        </td>
+                      <?php endif; ?>
                     <?php endif; ?>
                   </tr>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
               <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
-                  <td colspan="6">Tidak ada data laporan untuk filter ini.</td>
+                  <td colspan="<?php echo e(session('user_role') == 'Kepala Lab' ? 6 : 7); ?>">Tidak ada data laporan untuk filter ini.</td>
                 </tr>
               <?php endif; ?>
             </tbody>
@@ -178,6 +182,12 @@
     const monthInput = document.getElementById('month');
     const categorySelect = document.getElementById('category');
 
+    const isKepalaLab = <?php echo e(session('user_role') === 'Kepala Lab' ? 'true' : 'false'); ?>;
+
+    let allGroupedRecords = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
     function formatCurrency(value) {
       return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
     }
@@ -186,11 +196,15 @@
       if (!body) return;
 
       if (!groupedRecords || !groupedRecords.length) {
-        body.innerHTML = '<tr><td colspan="7">Tidak ada data laporan untuk filter ini.</td></tr>';
+        body.innerHTML = `<tr><td colspan="${isKepalaLab ? 6 : 7}" style="text-align:center;padding:20px;">Tidak ada data laporan untuk filter ini.</td></tr>`;
         return;
       }
 
-      body.innerHTML = groupedRecords.map(function (group) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedRecords = groupedRecords.slice(startIndex, endIndex);
+
+      body.innerHTML = paginatedRecords.map(function (group) {
         const count = group.items.length;
         const total = formatCurrency(group.total);
         const kategori = group.kategori;
@@ -219,19 +233,79 @@
             html += `<td rowspan="${count}">${tanggal}</td>`;
             html += `<td rowspan="${count}">${tipe}</td>`;
             html += `<td rowspan="${count}">${total}</td>`;
-            html += `<td class="action-cell" rowspan="${count}">`;
-            if (tipe === 'Pemasukan') {
-              html += `<a href="/pemasukan/edit/${firstId}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pemasukan/delete/${firstId}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`;
-            } else {
-              html += `<a href="/pengeluaran/edit/${firstId}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pengeluaran/delete/${firstId}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`;
+            if (!isKepalaLab) {
+              html += `<td class="action-cell" rowspan="${count}">`;
+              if (tipe === 'Pemasukan') {
+                html += `<a href="/pemasukan/edit/${firstId}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pemasukan/delete/${firstId}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`;
+              } else {
+                html += `<a href="/pengeluaran/edit/${firstId}" class="btn-edit">Edit</a><span class="sep">/</span><form action="/pengeluaran/delete/${firstId}" method="POST" style="display:inline" data-confirm="soft"><input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>"><button type="submit" class="btn-hapus">Hapus</button></form>`;
+              }
+              html += `</td>`;
             }
-            html += `</td>`;
           }
           html += '</tr>';
         });
         return html;
       }).join('');
     }
+
+    function renderPagination(totalItems) {
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      let paginationContainer = document.getElementById('client-pagination');
+      
+      if (!paginationContainer) {
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'client-pagination';
+        paginationContainer.style.display = 'flex';
+        paginationContainer.style.justifyContent = 'center';
+        paginationContainer.style.gap = '10px';
+        paginationContainer.style.marginTop = '20px';
+        paginationContainer.style.padding = '10px 20px';
+        // Insert after table-wrap
+        const tableWrap = document.querySelector('.table-wrap');
+        if (tableWrap) {
+          tableWrap.parentNode.insertBefore(paginationContainer, tableWrap.nextSibling);
+        }
+      }
+
+      if (totalItems <= itemsPerPage) {
+        paginationContainer.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+      
+      // Prev Button
+      if (currentPage > 1) {
+        html += `<button onclick="goToPage(${currentPage - 1})" style="padding:8px 12px; border:1px solid #cbd5e1; background:#fff; color:#0f766e; border-radius:6px; cursor:pointer;">&laquo; Prev</button>`;
+      } else {
+        html += `<button disabled style="padding:8px 12px; border:1px solid #e2e8f0; background:#f8fafc; color:#94a3b8; border-radius:6px; cursor:not-allowed;">&laquo; Prev</button>`;
+      }
+
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+          html += `<button style="padding:8px 14px; border:1px solid #0d9488; background:#0d9488; color:#fff; border-radius:6px; font-weight:bold;">${i}</button>`;
+        } else {
+          html += `<button onclick="goToPage(${i})" style="padding:8px 14px; border:1px solid #cbd5e1; background:#fff; color:#0f766e; border-radius:6px; cursor:pointer;">${i}</button>`;
+        }
+      }
+
+      // Next Button
+      if (currentPage < totalPages) {
+        html += `<button onclick="goToPage(${currentPage + 1})" style="padding:8px 12px; border:1px solid #cbd5e1; background:#fff; color:#0f766e; border-radius:6px; cursor:pointer;">Next &raquo;</button>`;
+      } else {
+        html += `<button disabled style="padding:8px 12px; border:1px solid #e2e8f0; background:#f8fafc; color:#94a3b8; border-radius:6px; cursor:not-allowed;">Next &raquo;</button>`;
+      }
+
+      paginationContainer.innerHTML = html;
+    }
+
+    window.goToPage = function(page) {
+      currentPage = page;
+      renderReportRows(allGroupedRecords);
+      renderPagination(allGroupedRecords.length);
+    };
 
     function renderSummary(data) {
       if (expenseEl) {
@@ -245,7 +319,8 @@
       }
     }
 
-    function refreshReport() {
+    function refreshReport(resetPage = false) {
+      if (resetPage) currentPage = 1;
       const params = new URLSearchParams();
       if (monthInput && monthInput.value) params.set('month', monthInput.value);
       if (categorySelect && categorySelect.value) params.set('category', categorySelect.value);
@@ -257,15 +332,25 @@
         .then(function (data) {
           if (!data) return;
           renderSummary(data);
-          renderReportRows(data.groupedRecords || []);
+          allGroupedRecords = data.groupedRecords || [];
+          
+          // Re-calculate page if somehow total pages is less than current page
+          const maxPage = Math.ceil(allGroupedRecords.length / itemsPerPage);
+          if (currentPage > maxPage && maxPage > 0) currentPage = maxPage;
+          
+          renderReportRows(allGroupedRecords);
+          renderPagination(allGroupedRecords.length);
         })
         .catch(function (err) {
           console.warn('Polling laporan gagal:', err);
         });
     }
 
+    if (monthInput) monthInput.addEventListener('change', () => refreshReport(true));
+    if (categorySelect) categorySelect.addEventListener('change', () => refreshReport(true));
+
     refreshReport();
-    setInterval(refreshReport, 4000);
+    setInterval(() => refreshReport(false), 4000);
   })();
   </script>
 </body>

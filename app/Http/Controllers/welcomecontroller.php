@@ -29,7 +29,7 @@ class welcomecontroller extends Controller
             )
             ->whereNull('pengeluaran.deleted_at')
             ->orderBy('pengeluaran.tanggal', 'desc')
-            ->get();
+            ->paginate(5);
 
         $jenis = DB::table('jenis_pengeluaran')->select('id_jenis_pengeluaran as id', 'nama_jenis as nama')->get();
 
@@ -48,17 +48,26 @@ class welcomecontroller extends Controller
         }
 
         $data = $request->validate([
-            'tanggal' => 'required|date',
-            'uraian' => 'array',
-            'uraian.*' => 'nullable|string|max:255',
-            'nominal' => 'required|array',
-            'nominal.*' => 'required|numeric|min:1',
-            'id_jenis_pengeluaran' => 'required|array',
-            'id_jenis_pengeluaran.*' => 'required|integer',
-            'receipt_image' => 'required|image|max:5120',
+            'tanggal'               => 'required|date',
+            'uraian'                => 'array',
+            'uraian.*'              => 'nullable|string|max:255',
+            'nominal'               => 'required|array',
+            'nominal.*'             => 'required|numeric|min:1',
+            'kuantiti'              => 'array',
+            'kuantiti.*'            => 'nullable|integer|min:1',
+            'id_jenis_pengeluaran'  => 'required|array',
+            'id_jenis_pengeluaran.*'=> 'required|integer',
+            'receipt_image'         => 'required|image|max:5120',
         ]);
 
-        $totalNominal = array_sum($data['nominal']);
+        // Hitung total nominal dengan mempertimbangkan kuantiti
+        $totalNominal = 0;
+        $itemsCount = count($data['nominal']);
+        for ($i = 0; $i < $itemsCount; $i++) {
+            $kuantiti = isset($data['kuantiti'][$i]) ? (int)$data['kuantiti'][$i] : 1;
+            $kuantiti = max(1, $kuantiti);
+            $totalNominal += $data['nominal'][$i] * $kuantiti;
+        }
 
         // Validasi pengeluaran tidak boleh melebihi saldo yang dimiliki
         $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
@@ -74,11 +83,11 @@ class welcomecontroller extends Controller
             $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
         }
 
-        $itemsCount = count($data['nominal']);
-        
         for ($i = 0; $i < $itemsCount; $i++) {
-            $nominal = $data['nominal'][$i];
-            $uraian = $data['uraian'][$i] ?? '';
+            $kuantiti = isset($data['kuantiti'][$i]) ? (int)$data['kuantiti'][$i] : 1;
+            $kuantiti = max(1, $kuantiti);
+            $nominal  = $data['nominal'][$i] * $kuantiti;
+            $uraian   = $data['uraian'][$i] ?? '';
             $id_jenis = $data['id_jenis_pengeluaran'][$i];
 
             // Cek apakah entri serupa ada di Recycle Bin (deleted)
@@ -94,15 +103,15 @@ class welcomecontroller extends Controller
             }
 
             DB::table('pengeluaran')->insert([
-                'tanggal' => $data['tanggal'],
-                'uraian' => $uraian,
-                'nominal' => $nominal,
-                'foto_struk' => $receiptPath,
+                'tanggal'              => $data['tanggal'],
+                'uraian'               => $uraian,
+                'nominal'              => $nominal,
+                'foto_struk'           => $receiptPath,
                 'id_jenis_pengeluaran' => $id_jenis,
-                'id_user' => session('user_id'),
-                'is_confirmed' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'id_user'              => session('user_id'),
+                'is_confirmed'         => 1,
+                'created_at'           => now(),
+                'updated_at'           => now(),
             ]);
         }
 
@@ -120,10 +129,14 @@ class welcomecontroller extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        DB::table('pengeluaran')
-            ->where('id_pengeluaran', $id)
-            ->whereNull('deleted_at')
-            ->update(['deleted_at' => now()]);
+        $item = DB::table('pengeluaran')->where('id_pengeluaran', $id)->first();
+        
+        if ($item) {
+            DB::table('pengeluaran')
+                ->where('created_at', $item->created_at)
+                ->whereNull('deleted_at')
+                ->update(['deleted_at' => now()]);
+        }
 
         // Jika dihapus dari halaman laporan, kembali ke laporan
         $referer = request()->headers->get('referer', '');
@@ -183,13 +196,15 @@ class welcomecontroller extends Controller
         }
 
         $data = $request->validate([
-            'tanggal' => 'required|date',
-            'id_pengeluaran' => 'array',
-            'uraian' => 'array',
-            'uraian.*' => 'nullable|string|max:255',
-            'nominal' => 'required|array',
-            'nominal.*' => 'required|numeric|min:0',
-            'id_jenis_pengeluaran' => 'required|integer',
+            'tanggal'               => 'required|date',
+            'id_pengeluaran'        => 'array',
+            'uraian'                => 'array',
+            'uraian.*'              => 'nullable|string|max:255',
+            'nominal'               => 'required|array',
+            'nominal.*'             => 'required|numeric|min:0',
+            'kuantiti'              => 'array',
+            'kuantiti.*'            => 'nullable|integer|min:1',
+            'id_jenis_pengeluaran'  => 'required|integer',
         ]);
 
         $baseItem = DB::table('pengeluaran')->where('id_pengeluaran', $id)->first();
@@ -223,29 +238,31 @@ class welcomecontroller extends Controller
         }
 
         for ($i = 0; $i < count($data['nominal']); $i++) {
-            $itemId = $submittedIds[$i] ?? null;
-            $nominal = $data['nominal'][$i];
-            $uraian = $data['uraian'][$i] ?? '';
+            $itemId   = $submittedIds[$i] ?? null;
+            $kuantiti = isset($data['kuantiti'][$i]) ? (int)$data['kuantiti'][$i] : 1;
+            $kuantiti = max(1, $kuantiti);
+            $nominal  = $data['nominal'][$i] * $kuantiti;
+            $uraian   = $data['uraian'][$i] ?? '';
 
             if ($itemId && in_array($itemId, $groupIds)) {
                 DB::table('pengeluaran')->where('id_pengeluaran', $itemId)->update([
-                    'tanggal' => $data['tanggal'],
-                    'uraian' => $uraian,
-                    'nominal' => $nominal,
+                    'tanggal'              => $data['tanggal'],
+                    'uraian'               => $uraian,
+                    'nominal'              => $nominal,
                     'id_jenis_pengeluaran' => $data['id_jenis_pengeluaran'],
-                    'updated_at' => now(),
+                    'updated_at'           => now(),
                 ]);
             } else {
                 DB::table('pengeluaran')->insert([
-                    'tanggal' => $data['tanggal'],
-                    'uraian' => $uraian,
-                    'nominal' => $nominal,
-                    'foto_struk' => $baseItem->foto_struk,
+                    'tanggal'              => $data['tanggal'],
+                    'uraian'               => $uraian,
+                    'nominal'              => $nominal,
+                    'foto_struk'           => $baseItem->foto_struk,
                     'id_jenis_pengeluaran' => $data['id_jenis_pengeluaran'],
-                    'id_user' => session('user_id'),
-                    'is_confirmed' => 1,
-                    'created_at' => $baseItem->created_at,
-                    'updated_at' => now(),
+                    'id_user'              => session('user_id'),
+                    'is_confirmed'         => 1,
+                    'created_at'           => $baseItem->created_at,
+                    'updated_at'           => now(),
                 ]);
             }
         }

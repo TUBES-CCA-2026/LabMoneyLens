@@ -16,59 +16,66 @@ if (!_turboLoaded) {
 }
 
 // ── HAMBURGER MENU TOGGLE ──
-function initHamburgerMenu() {
-    const hamburger = document.getElementById("hamburger-menu");
-    const sidebar = document.querySelector(".sidebar");
-    const overlay = document.getElementById("sidebar-overlay");
-    const app = document.querySelector(".app");
+function getSidebar() { return document.querySelector(".sidebar"); }
+function getOverlay() { return document.getElementById("sidebar-overlay"); }
+function getHamburger() { return document.getElementById("hamburger-menu"); }
 
-    if (!hamburger || hamburger.dataset.initialized) return;
-    hamburger.dataset.initialized = "true";
-
-    function closeSidebar() {
-        hamburger.classList.remove("active");
+function closeSidebar() {
+    const hamburger = getHamburger();
+    const sidebar = getSidebar();
+    const overlay = getOverlay();
+    if (hamburger) hamburger.classList.remove("active");
+    if (sidebar) {
         sidebar.classList.remove("active");
-        overlay.classList.remove("active");
-        // Backup: Reset inline style
         sidebar.style.transform = "translateX(-100%)";
     }
+    if (overlay) overlay.classList.remove("active");
+}
 
-    function isMobile() {
-        return window.innerWidth <= 1024;
+function isMobile() {
+    return window.innerWidth <= 1024;
+}
+
+// Gunakan event delegation agar selalu berfungsi walau elemen di-replace Turbo
+document.addEventListener("click", function (e) {
+    const hamburger = e.target.closest("#hamburger-menu");
+    if (hamburger) {
+        e.stopPropagation();
+        const sidebar = getSidebar();
+        const overlay = getOverlay();
+        hamburger.classList.toggle("active");
+        if (sidebar) {
+            sidebar.classList.toggle("active");
+            sidebar.style.transform = sidebar.classList.contains("active")
+                ? "translateX(0)"
+                : "translateX(-100%)";
+        }
+        if (overlay) overlay.classList.toggle("active");
+        return;
     }
 
-    hamburger.addEventListener("click", (e) => {
-        e.stopPropagation();
-        hamburger.classList.toggle("active");
-        sidebar.classList.toggle("active");
-        overlay.classList.toggle("active");
-        // Backup: Apply inline style for transform
-        if (sidebar.classList.contains("active")) {
-            sidebar.style.transform = "translateX(0)";
-        } else {
-            sidebar.style.transform = "translateX(-100%)";
-        }
-    });
+    // Klik overlay → tutup sidebar
+    if (e.target.closest("#sidebar-overlay")) {
+        closeSidebar();
+        return;
+    }
 
-    overlay.addEventListener("click", closeSidebar);
+    // Klik nav-item di mobile → tutup sidebar
+    if (e.target.closest(".nav-item") && isMobile()) {
+        closeSidebar();
+        return;
+    }
 
-    // Hanya tutup sidebar di mobile saat klik nav-item
-    document.querySelectorAll(".nav-item").forEach((item) => {
-        item.addEventListener("click", () => {
-            if (isMobile()) {
-                closeSidebar();
-            }
-        });
-    });
+    // Klik logout di mobile → tutup sidebar
+    if (e.target.closest(".sidebar-logout") && isMobile()) {
+        closeSidebar();
+        return;
+    }
+});
 
-    // Hanya tutup sidebar di mobile saat logout
-    document
-        .querySelector(".sidebar-logout")
-        ?.addEventListener("click", () => {
-            if (isMobile()) {
-                closeSidebar();
-            }
-        });
+// Tetap ada initHamburgerMenu agar kompatibel dengan turbo:load call
+function initHamburgerMenu() {
+    // Tidak perlu melakukan apa-apa; event delegation sudah terpasang di atas
 }
 
 // ── SATU turbo:load untuk semuanya ──

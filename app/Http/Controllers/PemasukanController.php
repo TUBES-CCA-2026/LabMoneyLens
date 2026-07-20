@@ -29,7 +29,7 @@ class PemasukanController extends Controller
             )
             ->whereNull('pemasukan.deleted_at')
             ->orderBy('pemasukan.tanggal', 'desc')
-            ->get();
+            ->paginate(5);
 
         $jenis = DB::table('jenis_penerimaan')->select('id_jenis_penerimaan as id', 'nama_jenis as nama')->get();
 
@@ -221,10 +221,14 @@ class PemasukanController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        DB::table('pemasukan')
-            ->where('id_pemasukan', $id)
-            ->whereNull('deleted_at')
-            ->update(['deleted_at' => now()]);
+        $item = DB::table('pemasukan')->where('id_pemasukan', $id)->first();
+        
+        if ($item) {
+            DB::table('pemasukan')
+                ->where('created_at', $item->created_at)
+                ->whereNull('deleted_at')
+                ->update(['deleted_at' => now()]);
+        }
 
         // Jika dihapus dari halaman laporan, kembali ke laporan
         $referer = request()->headers->get('referer', '');

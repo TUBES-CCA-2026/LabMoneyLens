@@ -9,73 +9,102 @@
   
   <!-- Inline mobile hamburger styling as backup -->
   <style>
-    /* ── Override layout: centered main ── */
+    /* ── Override layout ── */
     .main {
-      flex-direction: column;
-      align-items: center;
+      flex-direction: row;
+      align-items: flex-start;
       padding: 32px 24px;
       gap: 28px;
       overflow-y: auto;
+      height: 100vh;
     }
 
     .page-wrapper {
       width: 100%;
-      max-width: 800px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 28px;
+      align-items: flex-start;
+    }
+
+    /* ── Sticky photo panel ── */
+    .struk-panel {
+      position: sticky;
+      top: 24px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 16px;
     }
 
-    /* ── Page Header ── */
-    .page-hero {
-      background: linear-gradient(135deg, #0f766e 0%, #0d9488 60%, #10b981 100%);
+    .struk-card {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border: 2px solid #fca5a5;
       border-radius: 20px;
-      padding: 28px 32px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.1);
+    }
+
+    .struk-card-header {
+      background: linear-gradient(90deg, #fef2f2 0%, #fee2e2 100%);
+      border-bottom: 2px solid #fca5a5;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      box-shadow: 0 8px 24px rgba(13, 148, 136, 0.25);
+      gap: 10px;
     }
 
-    .page-hero-info h1 {
-      font-size: 24px;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.3px;
-    }
-
-    .page-hero-info p {
-      font-size: 13px;
-      color: rgba(255,255,255,0.8);
-      margin-top: 6px;
-      line-height: 1.5;
-    }
-
-    .hero-balance-badge {
-      background: rgba(255,255,255,0.18);
-      border: 1.5px solid rgba(255,255,255,0.3);
-      border-radius: 16px;
-      padding: 14px 22px;
-      text-align: center;
-      backdrop-filter: blur(8px);
-      white-space: nowrap;
+    .struk-card-header .struk-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
 
-    .hero-balance-badge .badge-label {
-      font-size: 10px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.75);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
+    .struk-card-header .struk-icon svg {
+      width: 16px; height: 16px; stroke: #fff; fill: none;
     }
 
-    .hero-balance-badge .badge-value {
-      font-size: 20px;
+    .struk-card-header span {
+      font-size: 12px;
       font-weight: 800;
-      color: #fff;
-      margin-top: 4px;
+      color: #b91c1c;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .struk-img-wrap {
+      padding: 16px;
+      text-align: center;
+    }
+
+    .struk-img-wrap img {
+      width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.12);
+    }
+
+    .struk-no-photo {
+      padding: 32px 16px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .struk-no-photo svg {
+      width: 48px; height: 48px; stroke: #cbd5e1; fill: none; margin-bottom: 10px;
+    }
+
+    /* ── Form panel ── */
+    .form-panel {
+      min-width: 0;
     }
 
     /* ── Form Card ── */
@@ -129,81 +158,6 @@
 
     .form-card-body {
       padding: 28px;
-    }
-
-    /* ── Upload zone (compact horizontal) ── */
-    .upload-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      background: linear-gradient(135deg, rgba(224,247,245,0.4) 0%, transparent 100%);
-      border: 2px dashed rgba(13, 148, 136, 0.35);
-      border-radius: 14px;
-      padding: 16px 20px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      margin-bottom: 24px;
-    }
-
-    .upload-row:hover {
-      border-color: #0d9488;
-      background: rgba(224,247,245,0.6);
-    }
-
-    .upload-row-icon {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, #e0f7f5 0%, #ccfbf1 100%);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .upload-row-icon svg {
-      width: 22px;
-      height: 22px;
-      stroke: #0d9488;
-      fill: none;
-    }
-
-    .upload-row-text {
-      flex: 1;
-    }
-
-    .upload-row-text strong {
-      font-size: 13px;
-      font-weight: 700;
-      color: #0f766e;
-      display: block;
-    }
-
-    .upload-row-text span {
-      font-size: 11px;
-      color: #64748b;
-      margin-top: 2px;
-      display: block;
-    }
-
-    .upload-row-btn {
-      background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 8px 18px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .upload-row-btn:hover {
-      background: linear-gradient(135deg, #0a7065 0%, #047857 100%);
-      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
-      transform: translateY(-1px);
     }
 
     /* ── Form Grid ── */
@@ -293,6 +247,48 @@
       padding-left: 38px;
     }
 
+    /* ── Nominal + Kuantiti side by side ── */
+    .nominal-qty-group {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .qty-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .qty-input {
+      width: 80px;
+      padding: 11px 10px;
+      border: 2px solid #ccf0ee;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #0f766e;
+      background: #ffffff;
+      outline: none;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .qty-input:hover { border-color: #a5e8e3; }
+    .qty-input:focus {
+      border-color: #0d9488;
+      box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+    }
+
+    .qty-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0f766e;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
     /* ── Form Actions ── */
     .form-actions {
       display: flex;
@@ -360,62 +356,6 @@
       color: #475569;
     }
 
-    /* ── Table Section ── */
-    .table-section {
-      background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
-      border-radius: 20px;
-      border: 2px solid #e0f7f5;
-      box-shadow: 0 4px 16px rgba(13, 148, 136, 0.08);
-      overflow: hidden;
-    }
-
-    .table-section-header {
-      background: linear-gradient(90deg, #f0fdf9 0%, #ecfdf5 100%);
-      border-bottom: 2px solid #e0f7f5;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .table-section-header h3 {
-      font-size: 14px;
-      font-weight: 800;
-      color: #0f766e;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
-    .table-section-header .entry-count {
-      font-size: 12px;
-      font-weight: 600;
-      color: #0d9488;
-      background: rgba(13, 148, 136, 0.1);
-      padding: 4px 12px;
-      border-radius: 20px;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    /* ── Helper tip ── */
-    .laporan-tip {
-      text-align: center;
-      font-size: 12px;
-      color: #64748b;
-      padding: 16px;
-    }
-
-    .laporan-tip a {
-      color: #0d9488;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    .laporan-tip a:hover { text-decoration: underline; }
-
     /* ── Responsive ── */
     @media (max-width: 1024px) {
       .hamburger-menu { display: flex !important; }
@@ -428,11 +368,22 @@
       .sidebar.active { transform: translateX(0) !important; }
     }
 
+    @media (max-width: 900px) {
+      .page-wrapper {
+        grid-template-columns: 1fr;
+      }
+      .struk-panel {
+        position: static;
+      }
+      .main {
+        flex-direction: column;
+        height: auto;
+      }
+    }
+
     @media (max-width: 700px) {
       .form-grid { grid-template-columns: 1fr; }
       .form-grid .span-2 { grid-column: span 1; }
-      .page-hero { flex-direction: column; align-items: flex-start; }
-      .hero-balance-badge { align-self: stretch; }
     }
   </style>
 </head>
@@ -448,110 +399,137 @@
     @include('includes.sidebar')
     <main class="main">
       <div class="page-wrapper">
-        <div class="form-card" style="max-width: 600px; margin: 0 auto; margin-top: 4vh;">
-          <div class="form-card-header">
-            <div class="header-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
-              <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+
+        <!-- ── Kolom Kiri: Foto Struk (Sticky) ── -->
+        <div class="struk-panel">
+          <div class="struk-card">
+            <div class="struk-card-header">
+              <div class="struk-icon">
+                <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              </div>
+              <span>Foto Struk / Kwitansi</span>
             </div>
-            <div>
-              <h2>Edit Data Pengeluaran</h2>
-              <p>Semua field bertanda <span style="color:#ef4444;font-weight:700;">●</span> wajib diisi</p>
+            <div class="struk-img-wrap">
+              @if($expense->foto_struk)
+                <img src="{{ asset('storage/' . $expense->foto_struk) }}" alt="Foto Struk Pengeluaran">
+                <p style="margin-top:10px; font-size:11px; color:#94a3b8;">📎 Tersimpan di server</p>
+              @else
+                <div class="struk-no-photo">
+                  <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                  <p>Tidak ada foto struk</p>
+                </div>
+              @endif
             </div>
-          </div>
-
-          <div class="form-card-body">
-            @if($expense->foto_struk)
-            <div id="preview-container" style="margin-bottom:24px; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #fca5a5; border-radius: 14px; padding: 16px; text-align: center;">
-              <div style="font-size: 12px; font-weight: 700; color: #b91c1c; margin-bottom: 12px;">✅ Foto Struk / Kwitansi (Tersimpan)</div>
-              <img src="{{ asset('storage/' . $expense->foto_struk) }}" alt="Preview Struk" style="max-width: 100%; max-height: 250px; border-radius: 10px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);">
-            </div>
-            @endif
-
-            <form method="POST" action="{{ route('pengeluaran.update', ['id' => $expense->id]) }}" class="input-form">
-              @csrf
-
-              <!-- Tanggal & Kategori -->
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label" for="tanggal">
-                    <span class="required-dot"></span> Tanggal Transaksi
-                  </label>
-                  <input type="date" class="form-input" id="tanggal" name="tanggal" required value="{{ \Illuminate\Support\Carbon::parse($expense->tanggal)->format('Y-m-d') }}" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="id_jenis_pengeluaran">
-                    <span class="required-dot"></span> Kategori Pengeluaran
-                  </label>
-                  <select class="form-input" id="id_jenis_pengeluaran" name="id_jenis_pengeluaran" required>
-                    <option value="">— Pilih Kategori —</option>
-                    @foreach($jenis as $j)
-                      <option value="{{ $j->id }}" {{ $expense->id_jenis_pengeluaran == $j->id ? 'selected' : '' }}>{{ $j->nama }}</option>
-                    @endforeach
-                  </select>
-                </div>
-              </div>
-
-              <!-- Item rows: Keterangan + Nominal -->
-              <div id="items-container" style="margin-top: 18px;">
-                @foreach($expenses as $index => $item)
-                <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fca5a5;">
-                  <input type="hidden" name="id_pengeluaran[]" value="{{ $item->id }}">
-                  
-                  <!-- Keterangan -->
-                  <div class="form-group span-2">
-                    <label class="form-label" for="uraian_{{ $index }}">Keterangan / Uraian</label>
-                    <input type="text" class="form-input uraian-input" id="uraian_{{ $index }}" name="uraian[]"
-                           placeholder="Contoh: Beli alat tulis, bayar listrik..." maxlength="255" value="{{ $item->uraian }}" />
-                  </div>
-
-                  <!-- Nominal -->
-                  <div class="form-group span-2">
-                    <label class="form-label" for="nominal_{{ $index }}">
-                      <span class="required-dot"></span> Nominal (IDR)
-                    </label>
-                    <div class="nominal-wrapper">
-                      <span class="nominal-prefix">Rp</span>
-                      <input type="number" class="form-input with-prefix nominal-input" id="nominal_{{ $index }}" name="nominal[]" placeholder="0" min="0" required value="{{ $item->jumlah }}" />
-                    </div>
-                  </div>
-                  
-                  @if($index > 0)
-                  <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
-                  @else
-                  <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
-                  @endif
-                </div>
-                @endforeach
-              </div>
-
-              <!-- Total Section -->
-              <div class="form-group span-2" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.04) 100%); border: 2px solid #fca5a5; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-                  <span style="font-size: 13px; font-weight: 700; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.5px;">Total Pengeluaran</span>
-                  <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 12px; font-weight: 600; color: #dc2626;">Rp</span>
-                    <span id="total-nominal" style="font-size: 18px; font-weight: 800; color: #dc2626;">0</span>
-                  </div>
-                </div>
-              </div>
-              
-              <button type="button" class="reset-btn" onclick="tambahBaris()" style="width: 100%; margin-bottom: 20px; border-style: dashed; color: #dc2626; border-color: #fca5a5;">
-                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Tambah Baris Item
-              </button>
-
-              <!-- Actions -->
-              <div class="form-actions">
-                <a href="{{ route('welcome') }}" class="reset-btn" style="text-decoration: none; flex: 1; display: flex; text-align: center;">Batal</a>
-                <button id="save-btn" class="save-btn" type="submit" style="flex: 1; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);">
-                  <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                  Simpan Perubahan
-                </button>
-              </div>
-            </form>
           </div>
         </div>
+
+        <!-- ── Kolom Kanan: Form Edit ── -->
+        <div class="form-panel">
+          <div class="form-card">
+            <div class="form-card-header">
+              <div class="header-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </div>
+              <div>
+                <h2>Edit Data Pengeluaran</h2>
+                <p>Semua field bertanda <span style="color:#ef4444;font-weight:700;">●</span> wajib diisi</p>
+              </div>
+            </div>
+
+            <div class="form-card-body">
+              <form method="POST" action="{{ route('pengeluaran.update', ['id' => $expense->id]) }}" class="input-form">
+                @csrf
+
+                <!-- Tanggal & Kategori -->
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="tanggal">
+                      <span class="required-dot"></span> Tanggal Transaksi
+                    </label>
+                    <input type="date" class="form-input" id="tanggal" name="tanggal" required value="{{ \Illuminate\Support\Carbon::parse($expense->tanggal)->format('Y-m-d') }}" />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="id_jenis_pengeluaran">
+                      <span class="required-dot"></span> Kategori Pengeluaran
+                    </label>
+                    <select class="form-input" id="id_jenis_pengeluaran" name="id_jenis_pengeluaran" required>
+                      <option value="">— Pilih Kategori —</option>
+                      @foreach($jenis as $j)
+                        <option value="{{ $j->id }}" {{ $expense->id_jenis_pengeluaran == $j->id ? 'selected' : '' }}>{{ $j->nama }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Item rows: Keterangan + Nominal + Kuantiti -->
+                <div id="items-container" style="margin-top: 18px;">
+                  @foreach($expenses as $index => $item)
+                  <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fca5a5;">
+                    <input type="hidden" name="id_pengeluaran[]" value="{{ $item->id }}">
+
+                    <!-- Keterangan -->
+                    <div class="form-group span-2">
+                      <label class="form-label" for="uraian_{{ $index }}">Keterangan / Uraian</label>
+                      <input type="text" class="form-input uraian-input" id="uraian_{{ $index }}" name="uraian[]"
+                             placeholder="Contoh: Beli alat tulis, bayar listrik..." maxlength="255" value="{{ $item->uraian }}" />
+                    </div>
+
+                    <!-- Nominal + Kuantiti -->
+                    <div class="form-group span-2">
+                      <label class="form-label" for="nominal_{{ $index }}">
+                        <span class="required-dot"></span> Nominal (IDR)
+                      </label>
+                      <div class="nominal-qty-group">
+                        <div class="nominal-wrapper">
+                          <span class="nominal-prefix">Rp</span>
+                          <input type="number" class="form-input with-prefix nominal-input" id="nominal_{{ $index }}" name="nominal[]" placeholder="0" min="1" required value="{{ $item->jumlah }}" />
+                        </div>
+                        <div class="qty-wrapper">
+                          <span class="qty-label">Qty</span>
+                          <input type="number" class="qty-input kuantiti-input" id="kuantiti_{{ $index }}" name="kuantiti[]" placeholder="1" min="1" value="1" required />
+                        </div>
+                      </div>
+                    </div>
+
+                    @if($index > 0)
+                    <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
+                    @else
+                    <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
+                    @endif
+                  </div>
+                  @endforeach
+                </div>
+
+                <!-- Total Section -->
+                <div class="form-group span-2" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.04) 100%); border: 2px solid #fca5a5; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                    <span style="font-size: 13px; font-weight: 700; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.5px;">Total Pengeluaran</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span style="font-size: 12px; font-weight: 600; color: #dc2626;">Rp</span>
+                      <span id="total-nominal" style="font-size: 18px; font-weight: 800; color: #dc2626;">0</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" class="reset-btn" onclick="tambahBaris()" style="width: 100%; margin-bottom: 20px; border-style: dashed; color: #dc2626; border-color: #fca5a5;">
+                  <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Tambah Baris Item
+                </button>
+
+                <!-- Actions -->
+                <div class="form-actions">
+                  <a href="{{ route('welcome') }}" class="reset-btn" style="text-decoration: none; flex: 1; display: flex; text-align: center;">Batal</a>
+                  <button id="save-btn" class="save-btn" type="submit" style="flex: 1; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);">
+                    <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Simpan Perubahan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
@@ -575,9 +553,15 @@
           <label class="form-label" for="nominal_${rowCount}">
             <span class="required-dot"></span> Nominal (IDR)
           </label>
-          <div class="nominal-wrapper">
-            <span class="nominal-prefix">Rp</span>
-            <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+          <div class="nominal-qty-group">
+            <div class="nominal-wrapper">
+              <span class="nominal-prefix">Rp</span>
+              <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+            </div>
+            <div class="qty-wrapper">
+              <span class="qty-label">Qty</span>
+              <input type="number" class="qty-input kuantiti-input" id="kuantiti_${rowCount}" name="kuantiti[]" placeholder="1" min="1" value="1" required />
+            </div>
           </div>
         </div>
         <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
@@ -585,9 +569,10 @@
       
       container.appendChild(newRow);
       
-      // Re-bind calculation to new input
-      const newNominalInput = newRow.querySelector('.nominal-input');
-      newNominalInput.addEventListener('input', calculateTotal);
+      // Re-bind calculation to new inputs
+      newRow.querySelectorAll('.nominal-input, .kuantiti-input').forEach(inp => {
+        inp.addEventListener('input', calculateTotal);
+      });
       
       updateHapusButtons();
       rowCount++;
@@ -611,19 +596,29 @@
     }
 
     function calculateTotal() {
-      const nominalInputs = document.querySelectorAll('.nominal-input');
+      const rows = document.querySelectorAll('.item-row');
       let total = 0;
-      nominalInputs.forEach(input => {
-        const val = parseFloat(input.value);
-        if (!isNaN(val)) total += val;
+      rows.forEach(row => {
+        const nominalInput = row.querySelector('.nominal-input');
+        const kuantitiInput = row.querySelector('.kuantiti-input');
+        const nominal = parseFloat(nominalInput?.value) || 0;
+        const kuantiti = parseInt(kuantitiInput?.value) || 1;
+        total += nominal * kuantiti;
       });
       document.getElementById('total-nominal').textContent = total.toLocaleString('id-ID');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      const nominalInputs = document.querySelectorAll('.nominal-input');
-      nominalInputs.forEach(input => {
+      document.querySelectorAll('.nominal-input, .kuantiti-input').forEach(input => {
         input.addEventListener('input', calculateTotal);
+      });
+      // Validasi kuantiti tidak boleh 0 atau kurang
+      document.getElementById('items-container').addEventListener('input', function(e) {
+        if (e.target.classList.contains('kuantiti-input')) {
+          if (parseInt(e.target.value) < 1 || e.target.value === '') {
+            e.target.value = 1;
+          }
+        }
       });
       calculateTotal();
       updateHapusButtons();
