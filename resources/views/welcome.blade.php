@@ -528,7 +528,7 @@
         @endphp
         <div class="page-hero">
           <div class="page-hero-info">
-            <h1>🧾 Input Pengeluaran</h1>
+            <h1>Input Pengeluaran</h1>
             <p>Catat pengeluaran baru secara manual atau scan foto struk belanja.<br>Pengeluaran tidak boleh melebihi saldo yang tersedia.</p>
           </div>
           <div class="hero-balance-badge">
@@ -564,7 +564,6 @@
 
             <!-- Saldo warning bar -->
             <div class="saldo-info">
-              <span class="saldo-info-icon">⚠️</span>
               <div class="saldo-info-text">
                 Saldo saat ini: <strong>Rp {{ number_format($saldo, 0, ',', '.') }}</strong>.
                 Pengeluaran tidak boleh melebihi nominal ini.
@@ -577,7 +576,7 @@
                 <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               </div>
               <div class="upload-row-text">
-                <strong id="upload-filename">📎 Upload Foto Struk Dulu <span style="color:#ef4444">*</span></strong>
+                <strong id="upload-filename">Upload Foto Struk Dulu <span style="color:#ef4444">*</span></strong>
                 <span>Struk wajib diunggah sebelum mengisi form. Format: JPG, PNG, WEBP — Maks. 5MB.</span>
               </div>
               <button type="button" class="upload-row-btn" onclick="document.getElementById('receipt_image').click()">Pilih File</button>
@@ -771,11 +770,7 @@
               .page-item.disabled .page-link { color: #94a3b8; background: #f8fafc; cursor: not-allowed; border-color: #e2e8f0; }
             </style>
             {{ $expenses->links('pagination::bootstrap-4') }}
-            @if($expenses->hasMorePages())
-              <div style="margin-top: 8px; display:flex; justify-content:flex-end; gap:8px;">
-                <a href="{{ $expenses->nextPageUrl() }}" class="btn-page-next" style="padding:8px 14px; background:#dc2626; color:#fff; border-radius:8px; text-decoration:none;">Next</a>
-              </div>
-            @endif
+
           </div>
           @if(count($expenses) > 0)
             <div class="laporan-tip">
@@ -850,7 +845,7 @@
         // Hide overlay to unlock form
         formOverlay.style.display = 'none';
       } else {
-        document.getElementById('upload-filename').textContent = '📎 Upload Foto Struk Dulu *';
+        document.getElementById('upload-filename').textContent = 'Upload Foto Struk Dulu *';
         document.getElementById('upload-filename').style.color = '';
         document.getElementById('upload-row').style.borderColor = '';
         document.getElementById('upload-row').style.background = '';
@@ -862,7 +857,7 @@
     function clearPreview() {
       receiptInput.value = '';
       previewContainer.style.display = 'none';
-      document.getElementById('upload-filename').textContent = '📎 Upload Foto Struk Dulu *';
+      document.getElementById('upload-filename').textContent = 'Upload Foto Struk Dulu *';
       document.getElementById('upload-filename').style.color = '';
       document.getElementById('upload-row').style.borderColor = '';
       document.getElementById('upload-row').style.background = '';

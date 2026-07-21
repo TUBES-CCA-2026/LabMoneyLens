@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>Profil — LabMoneyLens</title>
   <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/css/dashboard.css','resources/js/script.js']); ?>
   <style>
@@ -111,6 +112,19 @@ unset($__errorArgs, $__bag); ?>
 
           <div class="form-group span-2">
             <label class="form-label" for="foto_profil">Foto Profil</label>
+            
+            <!-- Preview Container -->
+            <div id="foto_preview_container" style="display: none; align-items: center; gap: 16px; padding: 12px 14px; border: 2px dashed #0d9488; border-radius: 14px; background: linear-gradient(135deg, rgba(224, 247, 245, 0.7) 0%, rgba(255, 255, 255, 0.95) 100%); margin-bottom: 12px;">
+              <img id="foto_preview_img" src="" alt="Preview Foto" style="width: 60px; height: 60px; object-fit: cover; border-radius: 10px; border: 1px solid #dff5f2; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.15);">
+              <div style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1;">
+                <strong id="foto_preview_name" style="font-size: 13px; color: #0f766e; word-break: break-all;">Nama file</strong>
+                <small id="foto_preview_size" style="font-size: 11px; color: #0d9488;">Ukuran file</small>
+                <button type="button" id="btn_cancel_foto" style="align-self: flex-start; background: none; border: none; color: #dc2626; font-size: 11px; cursor: pointer; padding: 0; margin-top: 4px; font-weight: 600; display: flex; align-items: center; gap: 3px;">
+                  <span>✕</span> Hapus Pilihan
+                </button>
+              </div>
+            </div>
+
             <label class="file-picker" for="foto_profil">
               <span class="file-picker-icon">📷</span>
               <span class="file-picker-text">
@@ -136,6 +150,75 @@ unset($__errorArgs, $__bag); ?>
       </section>
     </main>
   </div>
+
+  <script>
+    (function() {
+      function initProfilePreview() {
+        const fotoInput = document.getElementById('foto_profil');
+        const avatarPreview = document.querySelector('.profile-avatar-preview');
+        const previewContainer = document.getElementById('foto_preview_container');
+        const previewImg = document.getElementById('foto_preview_img');
+        const previewName = document.getElementById('foto_preview_name');
+        const previewSize = document.getElementById('foto_preview_size');
+        const btnCancel = document.getElementById('btn_cancel_foto');
+        const filePicker = document.querySelector('.file-picker');
+        
+        if (fotoInput && avatarPreview && !fotoInput.dataset.previewBound) {
+          fotoInput.dataset.previewBound = "true";
+          
+          const originalAvatarHTML = avatarPreview.innerHTML;
+          
+          fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+              const reader = new FileReader();
+              reader.onload = function(event) {
+                // Update top circle preview
+                avatarPreview.innerHTML = `<img src="${event.target.result}" alt="Preview Foto Profil" />`;
+                
+                // Update preview container
+                if (previewContainer && previewImg && previewName && previewSize && filePicker) {
+                  previewImg.src = event.target.result;
+                  previewName.textContent = file.name;
+                  
+                  const sizeInKB = (file.size / 1024).toFixed(1);
+                  previewSize.textContent = `${sizeInKB} KB`;
+                  
+                  previewContainer.style.display = 'flex';
+                  filePicker.style.display = 'none';
+                }
+              };
+              reader.readAsDataURL(file);
+            } else {
+              resetPreview();
+            }
+          });
+          
+          if (btnCancel) {
+            btnCancel.addEventListener('click', function(e) {
+              e.preventDefault();
+              resetPreview();
+            });
+          }
+          
+          function resetPreview() {
+            fotoInput.value = '';
+            avatarPreview.innerHTML = originalAvatarHTML;
+            if (previewContainer && filePicker) {
+              previewContainer.style.display = 'none';
+              filePicker.style.display = 'flex';
+            }
+          }
+        }
+      }
+
+      // Eksekusi langsung jika halaman diload normal
+      initProfilePreview();
+      
+      // Jika menggunakan Turbo
+      document.addEventListener("turbo:load", initProfilePreview);
+    })();
+  </script>
 </body>
 </html>
 <?php /**PATH D:\TubesWeb\LabMoneyLens\resources\views/profile.blade.php ENDPATH**/ ?>

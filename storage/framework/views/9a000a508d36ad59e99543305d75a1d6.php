@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Galeri Struk — Dashboard</title>
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+  <title>Galeri Struk — LabMoneyLens</title>
   <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/js/script.js']); ?>
   
   <style>
@@ -18,12 +19,89 @@
       .sidebar.active { transform: translateX(0) !important; }
       .sidebar-overlay { opacity: 0 !important; transition: opacity 0.3s ease !important; }
       .sidebar-overlay.active { display: block !important; opacity: 1 !important; }
+      .filter-section { flex-direction: column; }
+      .filter-group { width: 100%; }
+      .filter-input, .filter-select { width: 100%; min-width: auto; max-width: 100%; }
+      .btn-apply-filter { width: 100%; }
     }
 
     .galeri-wrapper { padding: 28px 32px; max-width: 1200px; margin: 0 auto; }
     .galeri-header { margin-bottom: 28px; }
     .galeri-header h2 { font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
     .galeri-header p { color: #64748b; font-size: 14px; }
+
+    .filter-buttons {
+      display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 10px 18px; border: 2px solid #e2e8f0; background: #fff;
+      border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+      color: #64748b; transition: all 0.2s ease; font-family: inherit;
+    }
+    .filter-btn:hover { border-color: #cbd5e1; }
+    .filter-btn.active {
+      background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+      color: #fff; border-color: #0d9488;
+    }
+
+    .filter-section {
+      display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-end; flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex; flex-direction: column; gap: 6px;
+      flex: 0 1 auto;
+    }
+    .filter-label {
+      font-size: 11px; font-weight: 700; color: #0d9488; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .filter-input, .filter-select {
+      padding: 10px 14px; border: 2px solid #ccf0ee; border-radius: 10px;
+      font-size: 13px; font-family: inherit; color: #0f766e; background: #fff;
+      outline: none; transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .filter-input::placeholder {
+      color: #cbd5e1;
+    }
+    .filter-input[type="month"] {
+      color-scheme: light;
+    }
+    .filter-input[type="month"]::placeholder {
+      color: #cbd5e1;
+    }
+    .filter-input::-webkit-calendar-picker-indicator {
+      cursor: pointer; color: #0d9488;
+    }
+    .filter-input::-webkit-outer-spin-button,
+    .filter-input::-webkit-inner-spin-button {
+      -webkit-appearance: none; margin: 0;
+    }
+    .filter-input:hover, .filter-select:hover {
+      border-color: #a5e8e3; box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.08);
+    }
+    .filter-input:focus, .filter-select:focus {
+      border-color: #0d9488; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15);
+    }
+    .filter-input {
+      min-width: 200px;
+      max-width: 300px;
+      width: auto;
+    }
+    .filter-select {
+      min-width: 220px;
+      max-width: 350px;
+      width: auto;
+    }
+    .btn-apply-filter {
+      padding: 10px 24px; background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+      color: #fff; border: none; border-radius: 10px; font-size: 13px;
+      font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+    }
+    .btn-apply-filter:hover {
+      background: linear-gradient(135deg, #0a6d6a 0%, #083d39 100%);
+      transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13, 148, 136, 0.3);
+    }
 
     .flash-success {
       background: linear-gradient(135deg, #dcfce7, #bbf7d0);
@@ -177,74 +255,38 @@
       <span class="hamburger-line"></span>
     </button>
 
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
-    <aside class="sidebar">
-      <a href="<?php echo e(route('profile')); ?>" class="sidebar-user" style="display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit;">
-        <div class="avatar">
-          <?php if(!empty(session('user_photo'))): ?>
-            <img src="<?php echo e(asset('storage/' . session('user_photo'))); ?>" alt="Foto Profil" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" />
-          <?php else: ?>
-            <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          <?php endif; ?>
-        </div>
-        <div>
-          <div class="sidebar-username"><?php echo e(session('user_name', 'USERNAME')); ?></div>
-          <div class="sidebar-role"><?php echo e(session('user_role', 'Administrator')); ?></div>
-        </div>
-      </a>
-
-      <nav class="sidebar-nav">
-        <a href="<?php echo e(route('dashboard')); ?>" class="nav-item">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          Dashboard
-        </a>
-        <?php if (! (session('user_role') == 'Kepala Lab')): ?>
-          <a href="<?php echo e(route('welcome')); ?>" class="nav-item">
-            <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
-            Pengeluaran
-          </a>
-          <a href="<?php echo e(route('pemasukan')); ?>" class="nav-item">
-            <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Pemasukan
-          </a>
-        <?php endif; ?>
-        <a href="<?php echo e(route('struk')); ?>" class="nav-item active">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          Galeri Struk
-        </a>
-        <a href="<?php echo e(route('laporan')); ?>" class="nav-item">
-          <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          Laporan
-        </a>
-        <?php if (! (session('user_role') == 'Kepala Lab')): ?>
-          <a href="<?php echo e(route('recycle')); ?>" class="nav-item">
-            <svg viewBox="0 0 24 24" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            Back Up
-          </a>
-        <?php endif; ?>
-      </nav>
-
-      <div class="sidebar-logout">
-        <form action="<?php echo e(route('logout')); ?>" method="POST">
-          <?php echo csrf_field(); ?>
-          <button type="submit" class="logout-btn">
-            <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Log-out
-          </button>
-        </form>
-      </div>
-    </aside>
+    <?php echo $__env->make('includes.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <main class="main">
       <div class="galeri-wrapper">
         <div class="galeri-header">
-          <h2>🧾 Galeri Struk</h2>
+          <h2>Galeri Struk</h2>
           <p>Semua bukti transaksi yang telah diunggah. Klik gambar untuk memperbesar, atau gunakan tombol untuk mengedit / menghapus.</p>
         </div>
 
         <?php if(session('success')): ?>
           <div class="flash-success">✅ <?php echo e(session('success')); ?></div>
+        <?php endif; ?>
+
+        <?php if(!$strukList->isEmpty()): ?>
+          <div class="filter-buttons">
+            <button type="button" id="filter-type-pemasukan" class="filter-btn" onclick="selectFilterType('Pemasukan')">Pemasukan</button>
+            <button type="button" id="filter-type-pengeluaran" class="filter-btn" onclick="selectFilterType('Pengeluaran')">Pengeluaran</button>
+          </div>
+
+          <div class="filter-section">
+            <div class="filter-group">
+              <label class="filter-label">Tanggal</label>
+              <input type="date" id="filter-tanggal" class="filter-input" placeholder="Pilih tanggal">
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Kategori</label>
+              <select id="filter-kategori" class="filter-select" disabled>
+                <option value="">Pilih jenis terlebih dahulu</option>
+              </select>
+            </div>
+            <button class="btn-apply-filter" onclick="applyFilter()">Apply Filter</button>
+          </div>
         <?php endif; ?>
 
         <?php if($strukList->isEmpty()): ?>
@@ -256,7 +298,7 @@
         <?php else: ?>
           <div class="struk-grid">
             <?php $__currentLoopData = $strukList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $struk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <div class="struk-card">
+              <div class="struk-card" data-category="<?php echo e($struk->type); ?>" data-kategori="<?php echo e(strtolower(str_replace(' ', '-', $struk->kategori))); ?>" data-tanggal="<?php echo e($struk->tanggal); ?>">
                 <div class="struk-img-container">
                   <img src="<?php echo e(asset('storage/' . $struk->foto)); ?>"
                        alt="Struk <?php echo e($struk->uraian); ?>"
@@ -264,25 +306,28 @@
                 </div>
                 <div class="struk-info">
                   <span class="struk-type type-<?php echo e($struk->type); ?>"><?php echo e($struk->type); ?></span>
+                  <div style="font-size: 11px; color: #0d9488; font-weight: 600; margin-bottom: 6px;">🏷️ <?php echo e($struk->kategori); ?></div>
                   <div class="struk-date">📅 <?php echo e(\Illuminate\Support\Carbon::parse($struk->tanggal)->format('d M Y')); ?></div>
                   <div class="struk-amount">Rp <?php echo e(number_format($struk->nominal, 0, ',', '.')); ?></div>
                   <div class="struk-desc"><?php echo e($struk->uraian ?: '—'); ?></div>
                 </div>
                 <div class="struk-actions">
-                  <a href="<?php echo e(route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>" class="btn-edit-foto" style="text-decoration:none;">
+                  <a href="<?php echo e(route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>" class="btn-edit-foto" style="text-decoration:none; text-align:center; <?php if(session('user_role') == 'Kepala Lab'): ?> flex:1; <?php endif; ?>">
                     ⬇️ Download
                   </a>
-                  <button class="btn-edit-foto"
-                          onclick="openEditModal('<?php echo e(strtolower($struk->type)); ?>', <?php echo e($struk->id); ?>, '<?php echo e(asset('storage/' . $struk->foto)); ?>')">
-                    ✏️ Ganti Foto
-                  </button>
-                  <form method="POST"
-                        action="<?php echo e(route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>"
-                        style="flex:1;"
-                        data-confirm="soft">
-                    <?php echo csrf_field(); ?>
-                    <button type="submit" class="btn-hapus-struk">🗑 Hapus</button>
-                  </form>
+                  <?php if (! (session('user_role') == 'Kepala Lab')): ?>
+                    <button class="btn-edit-foto"
+                            onclick="openEditModal('<?php echo e(strtolower($struk->type)); ?>', <?php echo e($struk->id); ?>, '<?php echo e(asset('storage/' . $struk->foto)); ?>')">
+                      ✏️ Ganti Foto
+                    </button>
+                    <form method="POST"
+                          action="<?php echo e(route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>"
+                          style="flex:1;"
+                          data-confirm="soft">
+                      <?php echo csrf_field(); ?>
+                      <button type="submit" class="btn-hapus-struk">🗑 Hapus</button>
+                    </form>
+                  <?php endif; ?>
                 </div>
               </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -325,10 +370,6 @@
   </div>
 
   <script>
-    function openLightbox(src) {
-      document.getElementById('lightbox-img').src = src;
-      document.getElementById('lightbox').classList.add('show');
-    }
     function closeLightbox() {
       document.getElementById('lightbox').classList.remove('show');
     }
@@ -361,6 +402,102 @@
         document.getElementById('btn-save-foto').disabled = false;
       }
     });
+
+    const kategoriData = {
+      Pemasukan: <?php echo json_encode($kategoriPemasukan, 15, 512) ?>,
+      Pengeluaran: <?php echo json_encode($kategoriPengeluaran, 15, 512) ?>
+    };
+    let activeFilterType = '';
+
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('show');
+    }
+
+    function selectFilterType(type) {
+      activeFilterType = type;
+      document.getElementById('filter-type-pemasukan').classList.toggle('active', type === 'Pemasukan');
+      document.getElementById('filter-type-pengeluaran').classList.toggle('active', type === 'Pengeluaran');
+      updateCategoryOptions();
+    }
+
+    function updateCategoryOptions() {
+      const kategoriSelect = document.getElementById('filter-kategori');
+      kategoriSelect.innerHTML = '';
+
+      if (!activeFilterType) {
+        kategoriSelect.disabled = true;
+        kategoriSelect.innerHTML = '<option value="">Pilih jenis terlebih dahulu</option>';
+        return;
+      }
+
+      const categories = kategoriData[activeFilterType] || [];
+      kategoriSelect.disabled = false;
+      kategoriSelect.innerHTML = '<option value="">Semua</option>';
+
+      if (categories.length === 0) {
+        kategoriSelect.innerHTML = '<option value="">Tidak ada kategori aktif</option>';
+        kategoriSelect.disabled = true;
+        return;
+      }
+
+      categories.forEach(item => {
+        const option = document.createElement('option');
+        option.value = `kategori-${item.toLowerCase().replace(/\s+/g, '-')}`;
+        option.textContent = item;
+        kategoriSelect.appendChild(option);
+      });
+    }
+
+    function applyFilter() {
+      const tanggalInput = document.getElementById('filter-tanggal').value;
+      const kategoriInput = document.getElementById('filter-kategori').value;
+      const cards = document.querySelectorAll('.struk-card');
+
+      cards.forEach(card => {
+        const cardTanggal = card.getAttribute('data-tanggal');
+        const cardType = card.getAttribute('data-category');
+        const cardKategori = card.getAttribute('data-kategori');
+
+        let tanggalMatch = true;
+        let jenisMatch = true;
+        let kategoriMatch = true;
+
+        if (tanggalInput) {
+          tanggalMatch = cardTanggal === tanggalInput;
+        }
+
+        if (activeFilterType) {
+          jenisMatch = cardType === activeFilterType;
+        }
+
+        if (kategoriInput && kategoriInput.startsWith('kategori-')) {
+          const filterKategori = kategoriInput.replace('kategori-', '');
+          kategoriMatch = cardKategori === filterKategori;
+        }
+
+        if (tanggalMatch && jenisMatch && kategoriMatch) {
+          card.style.display = '';
+          card.style.animation = 'fadeIn 0.3s ease';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCategoryOptions();
+    });
+
+    // Add fadeIn animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>

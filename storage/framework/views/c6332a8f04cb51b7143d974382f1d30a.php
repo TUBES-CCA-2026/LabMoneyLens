@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>Dashboard — LabMoneyLens</title>
   <?php echo app('Illuminate\Foundation\Vite')(['resources/css/style.css','resources/css/dashboard.css','resources/js/script.js']); ?>
   
@@ -75,7 +76,7 @@
             <!-- ── Semester Filter Dropdown ── -->
             <div class="semester-filter" id="semester-filter">
               <button class="semester-btn" id="semester-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
-                <span id="semester-label">Sem <?php echo e($selectedSemester); ?> <?php echo e($selectedYear); ?></span>
+                <span id="semester-label">Semester <?php echo e($selectedSemester == 1 ? 'Genap' : 'Ganjil'); ?> <?php echo e($selectedYear); ?></span>
                 <svg class="semester-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <div class="semester-dropdown" id="semester-dropdown" role="listbox" aria-label="Pilih Semester">
@@ -84,13 +85,13 @@
                   <div class="semester-option <?php echo e($selectedYear == $yr && $selectedSemester == 1 ? 'active' : ''); ?>"
                        data-year="<?php echo e($yr); ?>" data-sem="1" role="option"
                        aria-selected="<?php echo e($selectedYear == $yr && $selectedSemester == 1 ? 'true' : 'false'); ?>">
-                    Sem 1 &mdash; Jan s/d Jun <?php echo e($yr); ?>
+                    Genap &mdash; Jan s/d Jun <?php echo e($yr); ?>
 
                   </div>
                   <div class="semester-option <?php echo e($selectedYear == $yr && $selectedSemester == 2 ? 'active' : ''); ?>"
                        data-year="<?php echo e($yr); ?>" data-sem="2" role="option"
                        aria-selected="<?php echo e($selectedYear == $yr && $selectedSemester == 2 ? 'true' : 'false'); ?>">
-                    Sem 2 &mdash; Jul s/d Des <?php echo e($yr); ?>
+                    Ganjil &mdash; Jul s/d Des <?php echo e($yr); ?>
 
                   </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -280,7 +281,7 @@
         const sem  = this.dataset.sem;
 
         // Update label tombol
-        label.textContent = `Sem ${sem} ${year}`;
+        label.textContent = `Semester ${sem == 1 ? 'Genap' : 'Ganjil'} ${year}`;
 
         // Update active state
         document.querySelectorAll('.semester-option').forEach(o => {

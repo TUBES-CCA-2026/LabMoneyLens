@@ -459,7 +459,7 @@
         ?>
         <div class="page-hero">
           <div class="page-hero-info">
-            <h1>💰 Input Pemasukan</h1>
+            <h1> Input Pemasukan</h1>
             <p>Catat pemasukan baru secara manual atau scan foto struk/kwitansi Anda.<br>Semua data tersimpan aman dan dapat diakses di halaman Laporan.</p>
           </div>
           <div class="hero-balance-badge">
@@ -481,16 +481,36 @@
           </div>
 
           <div class="form-card-body">
+            <?php if($errors->any()): ?>
+              <div style="background-color: #fee2e2; border: 1.5px solid #fecaca; border-radius: 12px; padding: 16px; margin-bottom: 20px; color: #991b1b; font-size: 13px;">
+                <strong style="display: block; margin-bottom: 8px;">⚠️ Gagal Menyimpan:</strong>
+                <ul style="margin: 0; padding-left: 20px;">
+                  <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </ul>
+              </div>
+            <?php endif; ?>
+
             <!-- Upload Zone (horizontal compact) - WAJIB PERTAMA -->
             <div class="upload-row" id="upload-row" role="button" tabindex="0" aria-label="Unggah foto struk">
               <div class="upload-row-icon">
                 <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               </div>
               <div class="upload-row-text">
-                <strong id="upload-filename">📎 Upload Foto Struk / Kwitansi Dulu <span style="color:#ef4444">*</span></strong>
+                <strong id="upload-filename">Upload Foto Struk / Kwitansi Dulu <span style="color:#ef4444">*</span></strong>
                 <span>Struk wajib diunggah sebelum mengisi form. Format: JPG, PNG, WEBP — Maks. 5MB.</span>
               </div>
               <button type="button" class="upload-row-btn" onclick="document.getElementById('receipt_image').click()">Pilih File</button>
+            </div>
+
+            <!-- Preview Foto Struk -->
+            <div id="preview-container" style="display:none; margin-bottom:20px; background: linear-gradient(135deg, #f0fdf9 0%, #ecfdf5 100%); border: 2px solid #a5e8e3; border-radius: 14px; padding: 16px; text-align: center;">
+              <div style="font-size: 12px; font-weight: 700; color: #0f766e; margin-bottom: 12px;">✅ Foto Struk Tersimpan</div>
+              <img id="preview-image" src="" alt="Preview Struk" style="max-width: 100%; max-height: 300px; border-radius: 10px; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);">
+              <div style="margin-top: 12px; display: flex; gap: 10px;">
+                <button type="button" class="reset-btn" onclick="clearPreview()" style="flex: 1; border-color: #0d9488; color: #0d9488;">🗑 Hapus Foto</button>
+              </div>
             </div>
 
             <form id="receipt_form" method="POST" action="<?php echo e(route('pemasukan.store')); ?>" enctype="multipart/form-data" class="input-form">
@@ -507,55 +527,77 @@
                   <button type="button" onclick="document.getElementById('receipt_image').click()" style="background:linear-gradient(135deg,#0d9488,#059669);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">📎 Pilih File Struk</button>
                 </div>
 
-              <div class="form-group span-2" style="margin-bottom: 20px;">
-                <label class="form-label" for="tanggal">
-                  <span class="required-dot"></span> Tanggal Transaksi (berlaku untuk semua baris)
-                </label>
-                <input type="date" class="form-input" id="tanggal" name="tanggal" value="<?php echo e(date('Y-m-d')); ?>" required />
+              <!-- Tanggal & Kategori (Fixed) -->
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="tanggal">
+                    <span class="required-dot"></span> Tanggal Transaksi (berlaku untuk semua baris)
+                  </label>
+                  <input type="date" class="form-input" id="tanggal" name="tanggal" value="<?php echo e(date('Y-m-d')); ?>" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="kategori_penerimaan">
+                    <span class="required-dot"></span> Kategori Default Penerimaan
+                  </label>
+                  <select class="form-input" id="kategori_penerimaan" required>
+                    <option value="">— Pilih Kategori —</option>
+                    <?php $__currentLoopData = $jenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                      <option value="<?php echo e($j->id); ?>"><?php echo e($j->nama); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                  </select>
+                </div>
               </div>
-              
+
+              <!-- Item rows: Keterangan + Nominal -->
               <div id="items-container">
                 <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #e0f7f5;">
-                  <!-- Kategori -->
-                  <div class="form-group">
-                    <label class="form-label" for="kategori_0">
-                      <span class="required-dot"></span> Kategori Penerimaan
-                    </label>
-                    <select class="form-input" id="kategori_0" name="id_jenis_penerimaan[]" required>
-                      <option value="">— Pilih Kategori —</option>
-                      <?php $__currentLoopData = $jenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($j->id); ?>"><?php echo e($j->nama); ?></option>
-                      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
+                  <!-- Hidden kategori sync -->
+                  <input type="hidden" name="id_jenis_penerimaan[]" class="row-kategori-sync">
+                  <!-- Keterangan -->
+                  <div class="form-group span-2">
+                    <label class="form-label" for="uraian_0"><span class="required-dot"></span> Keterangan / Uraian</label>
+                    <input type="text" class="form-input uraian-input" id="uraian_0" name="uraian[]"
+                           placeholder="Contoh: Transfer dari bendahara, dana hibah..." maxlength="255" required />
                   </div>
 
                   <!-- Nominal -->
                   <div class="form-group">
-                    <label class="form-label" for="jumlah_0">
+                    <label class="form-label" for="nominal_0">
                       <span class="required-dot"></span> Nominal (IDR)
                     </label>
                     <div class="nominal-wrapper">
                       <span class="nominal-prefix">Rp</span>
-                      <input type="number" class="form-input with-prefix" id="jumlah_0"
+                      <input type="number" class="form-input with-prefix nominal-input" id="nominal_0"
                              name="nominal[]" placeholder="0" min="1" required />
                     </div>
-                  </div>
-
-                  <!-- Keterangan -->
-                  <div class="form-group span-2">
-                    <label class="form-label" for="uraian_0">Keterangan / Uraian</label>
-                    <input type="text" class="form-input" id="uraian_0" name="uraian[]"
-                           placeholder="Contoh: Transfer dari bendahara, dana hibah..." maxlength="255" />
                   </div>
                   
                   <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #0d9488; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
                 </div>
               </div>
+
+              <!-- Total Section -->
+              <div class="form-group span-2" style="background: linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%); border: 2px solid #a5e8e3; border-radius: 12px; padding: 16px 18px; margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                  <span style="font-size: 13px; font-weight: 700; color: #0f766e; text-transform: uppercase; letter-spacing: 0.5px;">Total Pemasukan</span>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 12px; font-weight: 600; color: #059669;">Rp</span>
+                    <span id="total-nominal" style="font-size: 18px; font-weight: 800; color: #059669;">0</span>
+                  </div>
+                </div>
+              </div>
               
-              <button type="button" class="reset-btn" onclick="tambahBaris()" style="width: 100%; margin-bottom: 10px; border-style: dashed; color: #059669; border-color: #a7f3d0;">
-                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Tambah Baris Item
-              </button>
+              <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button type="button" class="reset-btn" onclick="tambahBaris()" style="flex: 1; border-style: dashed; color: #059669; border-color: #a7f3d0;">
+                  <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Tambah Baris Item
+                </button>
+                <button type="button" class="reset-btn" onclick="tambahKategori()" style="flex: 1; border-style: dashed; color: #b45309; border-color: #fcd34d;">
+                  <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="16" height="16"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="17" x2="21" y2="17"/><line x1="17" y1="14" x2="17" y2="21"/></svg>
+                  Tambah Kategori Lain
+                </button>
+              </div>
 
               </div><!-- /form-blocker -->
 
@@ -630,6 +672,18 @@
               </tbody>
             </table>
           </div>
+          <div style="margin-top: 20px; padding: 0 20px;">
+            <style>
+              .pagination { display: flex; list-style: none; padding: 0; margin: 0; justify-content: flex-end; gap: 4px; }
+              .page-item .page-link { display: block; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f766e; text-decoration: none; font-size: 13px; background: #fff; transition: all 0.2s ease; }
+              .page-item .page-link:hover { background: #f1f5f9; }
+              .page-item.active .page-link { background: #0d9488; color: #fff; border-color: #0d9488; }
+              .page-item.disabled .page-link { color: #94a3b8; background: #f8fafc; cursor: not-allowed; border-color: #e2e8f0; }
+            </style>
+            <?php echo e($incomes->links('pagination::bootstrap-4')); ?>
+
+
+          </div>
           <?php if(count($incomes) > 0): ?>
             <div class="laporan-tip">
               Lihat ringkasan lengkap dan ekspor data di halaman <a href="<?php echo e(route('laporan')); ?>">Laporan</a>.
@@ -641,7 +695,7 @@
     </main>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal Notifikasi -->
   <div id="custom-modal" class="custom-modal">
     <div class="modal-content">
       <div class="modal-icon" id="modal-icon"></div>
@@ -650,6 +704,8 @@
       <button class="modal-btn" onclick="closeModal()">Tutup</button>
     </div>
   </div>
+
+
 
   <style>
     .custom-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:9999; justify-content:center; align-items:center; }
@@ -667,24 +723,58 @@
     // Upload filename preview
     const receiptInput = document.getElementById('receipt_image');
     const formOverlay = document.getElementById('form-overlay');
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
 
     receiptInput.addEventListener('change', function() {
       if (this.files[0]) {
-        const name = this.files[0].name;
+        const file = this.files[0];
+        const name = file.name;
+        
+        // Validate file size (5MB = 5242880 bytes)
+        if (file.size > 5242880) {
+          alert('Ukuran file tidak boleh lebih dari 5MB');
+          this.value = '';
+          previewContainer.style.display = 'none';
+          formOverlay.style.display = 'flex';
+          return;
+        }
+        
+        // Update upload row status
         document.getElementById('upload-filename').textContent = '✅ ' + name;
         document.getElementById('upload-filename').style.color = '#16a34a';
         document.getElementById('upload-row').style.borderColor = '#16a34a';
         document.getElementById('upload-row').style.background = 'rgba(220,252,231,0.5)';
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImage.src = e.target.result;
+          previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+        
         // Hide overlay to unlock form
         formOverlay.style.display = 'none';
       } else {
-        document.getElementById('upload-filename').textContent = '📎 Upload Foto Struk / Kwitansi Dulu *';
+        document.getElementById('upload-filename').textContent = 'Upload Foto Struk / Kwitansi Dulu *';
         document.getElementById('upload-filename').style.color = '';
         document.getElementById('upload-row').style.borderColor = '';
         document.getElementById('upload-row').style.background = '';
+        previewContainer.style.display = 'none';
         formOverlay.style.display = 'flex';
       }
     });
+
+    function clearPreview() {
+      receiptInput.value = '';
+      previewContainer.style.display = 'none';
+      document.getElementById('upload-filename').textContent = 'Upload Foto Struk / Kwitansi Dulu *';
+      document.getElementById('upload-filename').style.color = '';
+      document.getElementById('upload-row').style.borderColor = '';
+      document.getElementById('upload-row').style.background = '';
+      formOverlay.style.display = 'flex';
+    }
 
     // Click upload row
     document.getElementById('upload-row').addEventListener('click', function(e) {
@@ -708,36 +798,41 @@
       <?php elseif(session('success')): ?>
         showModal('Berhasil', '<?php echo e(session("success")); ?>', '✅');
       <?php endif; ?>
+      attachNominalListeners();
+      // Sync awal: set nilai default kategori ke hidden inputs
+      syncKategoriSync();
     });
+
+    // Daftar kategori dari server (untuk dropdown dinamis)
+    const jenisData = <?php echo json_encode($jenis, 15, 512) ?>;
+
+    // Sync hidden kategori inputs dengan main dropdown
+    function syncKategoriSync() {
+      const val = document.getElementById('kategori_penerimaan').value;
+      document.querySelectorAll('.row-kategori-sync').forEach(inp => inp.value = val);
+    }
+
+    document.getElementById('kategori_penerimaan').addEventListener('change', syncKategoriSync);
 
     let rowCount = 1;
     function tambahBaris() {
       const container = document.getElementById('items-container');
+      const currentVal = document.getElementById('kategori_penerimaan').value;
       const rowHtml = `
         <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #e0f7f5; animation: slideUp 0.3s ease;">
-          <div class="form-group">
-            <label class="form-label" for="kategori_${rowCount}">
-              <span class="required-dot"></span> Kategori Penerimaan
-            </label>
-            <select class="form-input" id="kategori_${rowCount}" name="id_jenis_penerimaan[]" required>
-              <option value="">— Pilih Kategori —</option>
-              <?php $__currentLoopData = $jenis; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <option value="<?php echo e($j->id); ?>"><?php echo e($j->nama); ?></option>
-              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </select>
+          <input type="hidden" name="id_jenis_penerimaan[]" class="row-kategori-sync" value="${currentVal}">
+          <div class="form-group span-2">
+            <label class="form-label" for="uraian_${rowCount}">Keterangan / Uraian</label>
+            <input type="text" class="form-input uraian-input" id="uraian_${rowCount}" name="uraian[]" placeholder="Contoh: Transfer dari bendahara, dana hibah..." maxlength="255" />
           </div>
           <div class="form-group">
-            <label class="form-label" for="jumlah_${rowCount}">
+            <label class="form-label" for="nominal_${rowCount}">
               <span class="required-dot"></span> Nominal (IDR)
             </label>
             <div class="nominal-wrapper">
               <span class="nominal-prefix">Rp</span>
-              <input type="number" class="form-input with-prefix" id="jumlah_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+              <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
             </div>
-          </div>
-          <div class="form-group span-2">
-            <label class="form-label" for="uraian_${rowCount}">Keterangan / Uraian</label>
-            <input type="text" class="form-input" id="uraian_${rowCount}" name="uraian[]" placeholder="Contoh: Transfer dari bendahara, dana hibah..." maxlength="255" />
           </div>
           <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #ecfdf5; border: 1px solid #a7f3d0; color: #0d9488; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
         </div>
@@ -745,12 +840,48 @@
       container.insertAdjacentHTML('beforeend', rowHtml);
       rowCount++;
       updateHapusButtons();
+      attachNominalListeners();
+    }
+
+    function tambahKategori() {
+      const container = document.getElementById('items-container');
+      let optHtml = '<option value="">— Pilih Kategori —</option>';
+      jenisData.forEach(j => { optHtml += `<option value="${j.id}">${j.nama}</option>`; });
+      const rowHtml = `
+        <div class="form-grid item-row" style="position: relative; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #fcd34d; animation: slideUp 0.3s ease;">
+          <div class="form-group span-2" style="background:linear-gradient(135deg,rgba(251,191,36,0.08),transparent); border-radius:10px; padding:12px; border:1px dashed #fcd34d;">
+            <label class="form-label" style="color:#b45309;">Kategori Penerimaan <span style="color:#ef4444;">*</span></label>
+            <select class="form-input" name="id_jenis_penerimaan[]" required style="border-color:#fde68a;">
+              ${optHtml}
+            </select>
+          </div>
+          <div class="form-group span-2">
+            <label class="form-label" for="uraian_${rowCount}">Keterangan / Uraian</label>
+            <input type="text" class="form-input uraian-input" id="uraian_${rowCount}" name="uraian[]" placeholder="Contoh: Transfer dari bendahara, dana hibah..." maxlength="255" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="nominal_${rowCount}">
+              <span class="required-dot"></span> Nominal (IDR)
+            </label>
+            <div class="nominal-wrapper">
+              <span class="nominal-prefix">Rp</span>
+              <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
+            </div>
+          </div>
+          <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fef3c7; border: 1px solid #fcd34d; color: #b45309; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', rowHtml);
+      rowCount++;
+      updateHapusButtons();
+      attachNominalListeners();
     }
 
     function hapusBaris(btn) {
       const row = btn.closest('.item-row');
       row.remove();
       updateHapusButtons();
+      updateTotal();
     }
 
     function updateHapusButtons() {
@@ -761,6 +892,38 @@
       } else {
         btns.forEach(b => b.style.display = 'none');
       }
+    }
+
+    function updateTotal() {
+      const nominalInputs = document.querySelectorAll('.nominal-input');
+      let total = 0;
+      nominalInputs.forEach(input => {
+        // Allow users to type thousand separators like "100.000" — sanitize to digits only
+        const raw = String(input.value || '');
+        const digits = raw.replace(/[^0-9]/g, '');
+        const value = parseInt(digits, 10) || 0;
+        total += value;
+      });
+      const totalElement = document.getElementById('total-nominal');
+      totalElement.textContent = total.toLocaleString('id-ID');
+    }
+
+    function attachNominalListeners() {
+      const nominalInputs = document.querySelectorAll('.nominal-input');
+      nominalInputs.forEach(input => {
+        input.removeEventListener('input', updateTotal);
+        input.addEventListener('input', updateTotal);
+      });
+    }
+
+    // Sanitize nominal inputs before form submit (remove dots/commas/spaces)
+    const pemasukanForm = document.querySelector('form');
+    if (pemasukanForm) {
+      pemasukanForm.addEventListener('submit', function (e) {
+        document.querySelectorAll('.nominal-input').forEach(input => {
+          if (input.value) input.value = String(input.value).replace(/[^0-9]/g, '');
+        });
+      });
     }
   </script>
 </body>

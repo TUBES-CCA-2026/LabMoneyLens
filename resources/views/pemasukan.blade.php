@@ -459,7 +459,7 @@
         @endphp
         <div class="page-hero">
           <div class="page-hero-info">
-            <h1>💰 Input Pemasukan</h1>
+            <h1> Input Pemasukan</h1>
             <p>Catat pemasukan baru secara manual atau scan foto struk/kwitansi Anda.<br>Semua data tersimpan aman dan dapat diakses di halaman Laporan.</p>
           </div>
           <div class="hero-balance-badge">
@@ -498,7 +498,7 @@
                 <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
               </div>
               <div class="upload-row-text">
-                <strong id="upload-filename">📎 Upload Foto Struk / Kwitansi Dulu <span style="color:#ef4444">*</span></strong>
+                <strong id="upload-filename">Upload Foto Struk / Kwitansi Dulu <span style="color:#ef4444">*</span></strong>
                 <span>Struk wajib diunggah sebelum mengisi form. Format: JPG, PNG, WEBP — Maks. 5MB.</span>
               </div>
               <button type="button" class="upload-row-btn" onclick="document.getElementById('receipt_image').click()">Pilih File</button>
@@ -681,11 +681,7 @@
               .page-item.disabled .page-link { color: #94a3b8; background: #f8fafc; cursor: not-allowed; border-color: #e2e8f0; }
             </style>
             {{ $incomes->links('pagination::bootstrap-4') }}
-            @if($incomes->hasMorePages())
-              <div style="margin-top: 8px; display:flex; justify-content:flex-end; gap:8px;">
-                <a href="{{ $incomes->nextPageUrl() }}" class="btn-page-next" style="padding:8px 14px; background:#0d9488; color:#fff; border-radius:8px; text-decoration:none;">Next</a>
-              </div>
-            @endif
+
           </div>
           @if(count($incomes) > 0)
             <div class="laporan-tip">
@@ -760,7 +756,7 @@
         // Hide overlay to unlock form
         formOverlay.style.display = 'none';
       } else {
-        document.getElementById('upload-filename').textContent = '📎 Upload Foto Struk / Kwitansi Dulu *';
+        document.getElementById('upload-filename').textContent = 'Upload Foto Struk / Kwitansi Dulu *';
         document.getElementById('upload-filename').style.color = '';
         document.getElementById('upload-row').style.borderColor = '';
         document.getElementById('upload-row').style.background = '';
@@ -772,7 +768,7 @@
     function clearPreview() {
       receiptInput.value = '';
       previewContainer.style.display = 'none';
-      document.getElementById('upload-filename').textContent = '📎 Upload Foto Struk / Kwitansi Dulu *';
+      document.getElementById('upload-filename').textContent = 'Upload Foto Struk / Kwitansi Dulu *';
       document.getElementById('upload-filename').style.color = '';
       document.getElementById('upload-row').style.borderColor = '';
       document.getElementById('upload-row').style.background = '';
