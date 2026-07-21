@@ -901,7 +901,10 @@
       const nominalInputs = document.querySelectorAll('.nominal-input');
       let total = 0;
       nominalInputs.forEach(input => {
-        const value = parseInt(input.value) || 0;
+        // Allow users to type thousand separators like "100.000" — sanitize to digits only
+        const raw = String(input.value || '');
+        const digits = raw.replace(/[^0-9]/g, '');
+        const value = parseInt(digits, 10) || 0;
         total += value;
       });
       const totalElement = document.getElementById('total-nominal');
@@ -913,6 +916,16 @@
       nominalInputs.forEach(input => {
         input.removeEventListener('input', updateTotal);
         input.addEventListener('input', updateTotal);
+      });
+    }
+
+    // Sanitize nominal inputs before form submit (remove dots/commas/spaces)
+    const pemasukanForm = document.querySelector('form');
+    if (pemasukanForm) {
+      pemasukanForm.addEventListener('submit', function (e) {
+        document.querySelectorAll('.nominal-input').forEach(input => {
+          if (input.value) input.value = String(input.value).replace(/[^0-9]/g, '');
+        });
       });
     }
   </script>

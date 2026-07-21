@@ -542,8 +542,10 @@
       const nominalInputs = document.querySelectorAll('.nominal-input');
       let total = 0;
       nominalInputs.forEach(input => {
-        const val = parseFloat(input.value);
-        if (!isNaN(val)) total += val;
+        const raw = String(input.value || '');
+        const digits = raw.replace(/[^0-9]/g, '');
+        const val = parseFloat(digits) || 0;
+        total += val;
       });
       document.getElementById('total-nominal').textContent = total.toLocaleString('id-ID');
     }
@@ -552,6 +554,14 @@
       const nominalInputs = document.querySelectorAll('.nominal-input');
       nominalInputs.forEach(input => {
         input.addEventListener('input', calculateTotal);
+      });
+      // sanitize on submit
+      document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+          form.querySelectorAll('.nominal-input').forEach(input => {
+            if (input.value) input.value = String(input.value).replace(/[^0-9]/g, '');
+          });
+        });
       });
       calculateTotal();
       updateHapusButtons();

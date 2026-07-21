@@ -125,7 +125,15 @@
                   $total = $group->sum('jumlah');
                   $tipe = $first->tipe;
                   $kategori = $first->kategori;
-                  $tanggal = \Illuminate\Support\Carbon::parse($first->created_at)->format('d/m/Y H:i');
+                  $rawTanggal = $first->tanggal;
+                  $carbonTanggal = \Illuminate\Support\Carbon::parse($rawTanggal);
+                  // If `tanggal` only contains a date (time 00:00), combine date from `tanggal` with time from `created_at`.
+                  if ($carbonTanggal->hour === 0 && $carbonTanggal->minute === 0 && strpos($rawTanggal, ' ') === false) {
+                    $timePart = \Illuminate\Support\Carbon::parse($first->created_at)->format('H:i');
+                    $tanggal = $carbonTanggal->format('d/m/Y') . ' ' . $timePart;
+                  } else {
+                    $tanggal = $carbonTanggal->format('d/m/Y H:i');
+                  }
                 @endphp
                 @foreach($group as $index => $row)
                   <tr>
@@ -211,7 +219,7 @@
         const tipe = group.tipe;
         
         // Format date to match php's format d/m/Y H:i
-        const dateObj = new Date(group.created_at);
+        const dateObj = new Date(group.display_datetime || group.created_at);
         const day = String(dateObj.getDate()).padStart(2, '0');
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const year = dateObj.getFullYear();

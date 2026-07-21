@@ -13,7 +13,8 @@ class LaporanController extends Controller
             return redirect()->route('login');
         }
 
-        $query = $this->buildReportQuery($request);
+        $service = app(\App\Services\LaporanService::class);
+        $query = $service->buildReportQuery($request);
         $records = $query['records'];
         $pemasukan = $query['pemasukan'];
         $pengeluaran = $query['pengeluaran'];
@@ -47,12 +48,21 @@ class LaporanController extends Controller
                 fputcsv($output, ['ID Laporan', 'Kategori', 'Uraian', 'Jumlah (IDR)', 'Tanggal & Waktu', 'Jenis']);
 
                 foreach ($records as $row) {
+                    $rawTanggal = $row->tanggal;
+                    $carbonTanggal = \Illuminate\Support\Carbon::parse($rawTanggal);
+                    if ($carbonTanggal->hour === 0 && $carbonTanggal->minute === 0 && strpos($rawTanggal, ' ') === false) {
+                        $time = \Illuminate\Support\Carbon::parse($row->created_at)->format('H:i');
+                        $formatted = $carbonTanggal->format('d/m/Y') . ' ' . $time;
+                    } else {
+                        $formatted = $carbonTanggal->format('d/m/Y H:i');
+                    }
+
                     fputcsv($output, [
                         $row->id,
                         $row->kategori,
                         $row->uraian ?? '-',
                         $row->jumlah,
-                        \Illuminate\Support\Carbon::parse($row->created_at)->format('d/m/Y H:i'),
+                        $formatted,
                         $row->tipe,
                     ]);
                 }
@@ -91,8 +101,8 @@ class LaporanController extends Controller
         if (!session()->has('user_id')) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
-        $query = $this->buildReportQuery($request);
+        $service = app(\App\Services\LaporanService::class);
+        $query = $service->buildReportQuery($request);
         $records = $query['records'];
         $pemasukan = $query['pemasukan'];
         $pengeluaran = $query['pengeluaran'];
@@ -109,6 +119,17 @@ class LaporanController extends Controller
                 'tipe' => $first->tipe,
                 'created_at' => \Illuminate\Support\Carbon::parse($first->created_at)->toIso8601String(),
                 'total' => (float) $group->sum('jumlah'),
+                'display_datetime' => (function($first) {
+                    $rawTanggal = $first->tanggal;
+                    $carbonTanggal = \Illuminate\Support\Carbon::parse($rawTanggal);
+                    if ($carbonTanggal->hour === 0 && $carbonTanggal->minute === 0 && strpos($rawTanggal, ' ') === false) {
+                        $timePart = \Illuminate\Support\Carbon::parse($first->created_at)->toIso8601String();
+                        // take only time portion from created_at
+                        $time = \Illuminate\Support\Carbon::parse($first->created_at)->format('H:i');
+                        return $carbonTanggal->format('Y-m-d') . 'T' . $time . ':00+00:00';
+                    }
+                    return $carbonTanggal->toIso8601String();
+                })($first),
                 'items' => $group->map(function ($row) {
                     return [
                         'id' => $row->id,

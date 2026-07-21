@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePemasukanRequest;
+use App\Services\PemasukanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,93 +18,20 @@ class PemasukanController extends Controller
         if (session('user_role') === 'Kepala Lab') {
             abort(403, 'Unauthorized action.');
         }
-
-        $incomes = DB::table('pemasukan')
-            ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
-            ->select(
-                'pemasukan.id_pemasukan as id',
-                'jenis_penerimaan.nama_jenis as kategori',
-                'pemasukan.nominal as jumlah',
-                'pemasukan.tanggal as tanggal',
-                'pemasukan.uraian as uraian',
-                'pemasukan.created_at as created_at'
-            )
-            ->whereNull('pemasukan.deleted_at')
-            ->orderBy('pemasukan.tanggal', 'desc')
-            ->paginate(5);
-
-        $jenis = DB::table('jenis_penerimaan')->select('id_jenis_penerimaan as id', 'nama_jenis as nama')->get();
+        $service = app(\App\Services\PemasukanService::class);
+        $incomes = $service->paginate(5);
+        $jenis = $service->getJenis();
 
         return view('pemasukan', compact('incomes', 'jenis'));
     }
 
-    public function store(Request $request)
+    public function store(StorePemasukanRequest $request, PemasukanService $service)
     {
-        if (!session()->has('user_id')) {
-            return redirect()->route('login');
-        }
+        $validated = $request->validated();
+        $result = $service->store($validated, $request->file('receipt_image'));
 
-        if (session('user_role') === 'Kepala Lab') {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $data = $request->validate([
-            'tanggal' => 'required|date',
-            'uraian' => 'array',
-            'uraian.*' => 'nullable|string|max:255',
-            'nominal' => 'required|array',
-            'nominal.*' => 'required|numeric|min:0',
-            'id_jenis_penerimaan' => 'required|array',
-            'id_jenis_penerimaan.*' => 'required|integer',
-            'receipt_image' => 'required|image|max:5120',
-        ]);
-
-        $totalNominal = array_sum($data['nominal']);
-
-        // Validasi saldo tidak boleh Rp0
-        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal') + $totalNominal;
-        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
-        $newBalance = $totalIncome - $totalExpense;
-        
-        if ($newBalance == 0) {
-            return redirect()->route('pemasukan')->with('error', 'Saldo tidak boleh Rp0. Operasi dibatalkan.');
-        }
-
-        $receiptPath = null;
-        if ($request->hasFile('receipt_image')) {
-            $receiptPath = $request->file('receipt_image')->store('receipts', 'public');
-        }
-
-        $itemsCount = count($data['nominal']);
-        
-        for ($i = 0; $i < $itemsCount; $i++) {
-            $nominal = $data['nominal'][$i];
-            $uraian = $data['uraian'][$i] ?? '';
-            $id_jenis = $data['id_jenis_penerimaan'][$i];
-
-            // Cek apakah entri serupa ada di Recycle Bin (deleted)
-            $existsInRecycle = DB::table('pemasukan')
-                ->whereNotNull('deleted_at')
-                ->where('nominal', $nominal)
-                ->where('tanggal', $data['tanggal'])
-                ->where('id_jenis_penerimaan', $id_jenis)
-                ->exists();
-
-            if ($existsInRecycle) {
-                return redirect()->route('pemasukan')->with('error', "Entri serupa (Rp " . number_format($nominal, 0, ',', '.') . ") ditemukan di Recycle Bin. Pulihkan entri tersebut sebelum menambahkan kembali.");
-            }
-
-            DB::table('pemasukan')->insert([
-                'tanggal' => $data['tanggal'],
-                'uraian' => $uraian,
-                'nominal' => $nominal,
-                'foto_bukti' => $receiptPath,
-                'id_jenis_penerimaan' => $id_jenis,
-                'id_user' => session('user_id'),
-                'is_confirmed' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        if (! $result['success']) {
+            return redirect()->route('pemasukan')->with('error', $result['message']);
         }
 
         return redirect()->route('pemasukan')->with('success', 'Semua pemasukan berhasil disimpan.');
@@ -117,35 +46,20 @@ class PemasukanController extends Controller
         if (session('user_role') === 'Kepala Lab') {
             abort(403, 'Unauthorized action.');
         }
-
-        $baseItem = DB::table('pemasukan')->where('id_pemasukan', $id)->first();
-        if (!$baseItem) {
+        $service = app(\App\Services\PemasukanService::class);
+        $group = $service->findGroupById((int) $id);
+        if (!$group) {
             return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak ditemukan.');
         }
 
-        $incomes = DB::table('pemasukan')
-            ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
-            ->select(
-                'pemasukan.id_pemasukan as id',
-                'jenis_penerimaan.nama_jenis as kategori',
-                'pemasukan.nominal as jumlah',
-                'pemasukan.tanggal as tanggal',
-                'pemasukan.uraian as uraian',
-                'pemasukan.foto_bukti as foto_struk',
-                'pemasukan.id_jenis_penerimaan as id_jenis_penerimaan'
-            )
-            ->where('pemasukan.created_at', $baseItem->created_at)
-            ->whereNull('pemasukan.deleted_at')
-            ->get();
-
-        $income = $incomes->first();
-
-        $jenis = DB::table('jenis_penerimaan')->select('id_jenis_penerimaan as id', 'nama_jenis as nama')->get();
+        $income = $group['base'];
+        $incomes = $group['group'];
+        $jenis = $service->getJenis();
 
         return view('pemasukan_edit', compact('income', 'incomes', 'jenis'));
     }
 
-    public function update(Request $request, $id)
+    public function update(\App\Http\Requests\UpdatePemasukanRequest $request, $id)
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
@@ -154,58 +68,13 @@ class PemasukanController extends Controller
         if (session('user_role') === 'Kepala Lab') {
             abort(403, 'Unauthorized action.');
         }
+        $data = $request->validated();
 
-        $data = $request->validate([
-            'tanggal' => 'required|date',
-            'id_pemasukan' => 'array',
-            'uraian' => 'array',
-            'uraian.*' => 'nullable|string|max:255',
-            'nominal' => 'required|array',
-            'nominal.*' => 'required|numeric|min:0',
-            'id_jenis_penerimaan' => 'required|integer',
-        ]);
+        $service = app(\App\Services\PemasukanService::class);
+        $result = $service->update($data, (int) $id);
 
-        $baseItem = DB::table('pemasukan')->where('id_pemasukan', $id)->first();
-        if (!$baseItem) return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak ditemukan.');
-
-        $groupIds = DB::table('pemasukan')
-            ->where('created_at', $baseItem->created_at)
-            ->whereNull('deleted_at')
-            ->pluck('id_pemasukan')->toArray();
-
-        $submittedIds = $request->input('id_pemasukan', []);
-        
-        $deletedIds = array_diff($groupIds, $submittedIds);
-        if (!empty($deletedIds)) {
-            DB::table('pemasukan')->whereIn('id_pemasukan', $deletedIds)->update(['deleted_at' => now()]);
-        }
-
-        for ($i = 0; $i < count($data['nominal']); $i++) {
-            $itemId = $submittedIds[$i] ?? null;
-            $nominal = $data['nominal'][$i];
-            $uraian = $data['uraian'][$i] ?? '';
-
-            if ($itemId && in_array($itemId, $groupIds)) {
-                DB::table('pemasukan')->where('id_pemasukan', $itemId)->update([
-                    'tanggal' => $data['tanggal'],
-                    'uraian' => $uraian,
-                    'nominal' => $nominal,
-                    'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
-                    'updated_at' => now(),
-                ]);
-            } else {
-                DB::table('pemasukan')->insert([
-                    'tanggal' => $data['tanggal'],
-                    'uraian' => $uraian,
-                    'nominal' => $nominal,
-                    'foto_bukti' => $baseItem->foto_bukti,
-                    'id_jenis_penerimaan' => $data['id_jenis_penerimaan'],
-                    'id_user' => session('user_id'),
-                    'is_confirmed' => 1,
-                    'created_at' => $baseItem->created_at,
-                    'updated_at' => now(),
-                ]);
-            }
+        if (! $result['success']) {
+            return redirect()->route('pemasukan')->with('error', $result['message']);
         }
 
         return redirect()->route('pemasukan')->with('success', 'Pemasukan berhasil diperbarui.');
@@ -220,17 +89,9 @@ class PemasukanController extends Controller
         if (session('user_role') === 'Kepala Lab') {
             abort(403, 'Unauthorized action.');
         }
+        $service = app(\App\Services\PemasukanService::class);
+        $service->destroy((int) $id);
 
-        $item = DB::table('pemasukan')->where('id_pemasukan', $id)->first();
-        
-        if ($item) {
-            DB::table('pemasukan')
-                ->where('created_at', $item->created_at)
-                ->whereNull('deleted_at')
-                ->update(['deleted_at' => now()]);
-        }
-
-        // Jika dihapus dari halaman laporan, kembali ke laporan
         $referer = request()->headers->get('referer', '');
         if (str_contains($referer, '/laporan')) {
             return redirect()->route('laporan')->with('success', 'Pemasukan dihapus.');
@@ -248,31 +109,21 @@ class PemasukanController extends Controller
         if (session('user_role') === 'Kepala Lab') {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
-
         $data = $request->validate([
             'nama_jenis' => 'required|string|max:255',
         ]);
 
-        // Cek duplikat
-        $exists = DB::table('jenis_penerimaan')
-            ->where('nama_jenis', $data['nama_jenis'])
-            ->exists();
+        $service = app(\App\Services\PemasukanService::class);
+        $result = $service->storeKategori($data);
 
-        if ($exists) {
-            return response()->json(['success' => false, 'message' => 'Kategori sudah ada.']);
+        if (! $result['success']) {
+            return response()->json(['success' => false, 'message' => $result['message']]);
         }
-
-        $id = DB::table('jenis_penerimaan')->insertGetId([
-            'nama_jenis' => $data['nama_jenis'],
-            'isAktif' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
 
         return response()->json([
             'success' => true,
-            'id' => $id,
-            'nama' => $data['nama_jenis'],
+            'id' => $result['id'],
+            'nama' => $result['nama'],
         ]);
     }
 }

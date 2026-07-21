@@ -21,54 +21,21 @@ class ReceiptAnalysisController extends Controller
         $contents = base64_encode(file_get_contents($image->getRealPath()));
         $mimeType = $image->getMimeType();
 
-        $prompt = "Anda adalah asisten yang mengekstrak informasi dari struk kasir Indonesia. " .
-            "Kembalikan hanya JSON valid dengan field berikut: tanggal, nominal, kategori, uraian. " .
-            "Gunakan format tanggal YYYY-MM-DD. Untuk nominal, kembalikan hanya angka tanpa titik atau koma. " .
-            "Jika field tidak dapat dijelaskan, kembalikan string kosong untuk field tersebut.";
-
         $apiKey = config('services.gemini.key');
-
         if (empty($apiKey)) {
             return response()->json([
                 'error' => 'GEMINI_API_KEY belum dikonfigurasi di file .env Anda. Harap ikuti panduan sebelumnya untuk mendapatkan API Key dari Google AI Studio.'
             ], 500);
         }
 
-        $response = Http::withoutVerifying()->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $prompt],
-                        [
-                            'inlineData' => [
-                                'mimeType' => $mimeType,
-                                'data' => $contents,
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            'generationConfig' => [
-                'responseMimeType' => 'application/json',
-            ],
-        ]);
+        $service = app(\App\Services\ReceiptAnalysisService::class);
+        $result = $service->analyze($mimeType, $contents, $request->input('type'), $apiKey);
 
-        if (!$response->successful()) {
-            $body = $response->json();
-            Log::error('Receipt analysis failed', ['status' => $response->status(), 'body' => $body]);
-            $errorMessage = data_get($body, 'error.message', 'Gagal menganalisis gambar.');
-            return response()->json(['error' => $errorMessage], $response->status() ?: 500);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['status'] ?? 500);
         }
 
-        $body = $response->json();
-        $text = data_get($body, 'candidates.0.content.parts.0.text', '');
-        $parsed = $this->parseJsonText((string) $text);
-
-        $parsed['tanggal'] = $this->normalizeDate($parsed['tanggal']);
-        $parsed['nominal'] = $this->normalizeNominal($parsed['nominal']);
-        $parsed['type'] = $request->input('type');
-
-        return response()->json(['data' => $parsed]);
+        return response()->json(['data' => $result['data']]);
     }
 
     protected function parseJsonText(string $text): array

@@ -26,34 +26,14 @@ class ProfileController extends Controller
             return redirect()->route('login');
         }
 
-        $user = User::findOrFail(session('user_id'));
-
         $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
             'foto_profil' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $user->nama = $request->nama;
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        if ($request->hasFile('foto_profil')) {
-            if ($user->foto_profil && Storage::disk('public')->exists($user->foto_profil)) {
-                Storage::disk('public')->delete($user->foto_profil);
-            }
-
-            $user->foto_profil = $request->file('foto_profil')->store('profile', 'public');
-        }
-
-        $user->save();
-
-        session([
-            'user_name' => $user->nama,
-            'user_photo' => $user->foto_profil,
-        ]);
+        $service = app(\App\Services\ProfileService::class);
+        $service->updateProfile($request->only(['nama', 'password']), $request->file('foto_profil'));
 
         return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui.');
     }

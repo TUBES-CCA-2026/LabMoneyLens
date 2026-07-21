@@ -1001,7 +1001,8 @@
       rows.forEach(row => {
         const nominalInput = row.querySelector('.nominal-input');
         const kuantitiInput = row.querySelector('.kuantiti-input');
-        const nominal = parseInt(nominalInput?.value) || 0;
+        const rawNom = String(nominalInput?.value || '');
+        const nominal = parseInt(rawNom.replace(/[^0-9]/g, ''), 10) || 0;
         const kuantiti = parseInt(kuantitiInput?.value) || 1;
         total += nominal * kuantiti;
       });
@@ -1015,6 +1016,15 @@
         input.addEventListener('input', updateTotal);
       });
     }
+
+    // Ensure nominal inputs are sanitized before submitting any form on this page
+    document.addEventListener('submit', function(e) {
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      form.querySelectorAll('.nominal-input').forEach(input => {
+        if (input.value) input.value = String(input.value).replace(/[^0-9]/g, '');
+      });
+    }, true);
 
     document.addEventListener('DOMContentLoaded', function() {
       attachNominalListeners();

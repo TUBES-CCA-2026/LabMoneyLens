@@ -17,38 +17,23 @@ class LoginController extends Controller
         return view('login');
     }
 
-    public function login(Request $request)
+    public function login(\App\Http\Requests\LoginRequest $request)
     {
-        $request->validate([
-            'identifier' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $service = app(\App\Services\AuthService::class);
+        $result = $service->attemptLogin($request->input('identifier'), $request->input('password'));
 
-        $user = User::where('email', $request->identifier)
-            ->orWhere('nama', $request->identifier)
-            ->first();
-
-        if (!$user) {
-            return back()->withErrors(['type' => 'username_not_found'])->withInput();
+        if (! $result['success']) {
+            return back()->withErrors(['type' => $result['error']])->withInput();
         }
-
-        if (!Hash::check($request->password, $user->password)) {
-            return back()->withErrors(['type' => 'password_invalid'])->withInput();
-        }
-
-        session([
-            'user_id' => $user->id,
-            'user_name' => $user->nama,
-            'user_role' => $user->role,
-            'user_photo' => $user->foto_profil,
-        ]);
 
         return redirect()->route('dashboard');
     }
 
     public function logout()
     {
-        session()->flush();
+        $service = app(\App\Services\AuthService::class);
+        $service->logout();
+
         return redirect()->route('login');
     }
 }

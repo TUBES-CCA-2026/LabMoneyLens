@@ -601,7 +601,8 @@
       rows.forEach(row => {
         const nominalInput = row.querySelector('.nominal-input');
         const kuantitiInput = row.querySelector('.kuantiti-input');
-        const nominal = parseFloat(nominalInput?.value) || 0;
+        const rawNom = String(nominalInput?.value || '');
+        const nominal = parseFloat(rawNom.replace(/[^0-9]/g, '')) || 0;
         const kuantiti = parseInt(kuantitiInput?.value) || 1;
         total += nominal * kuantiti;
       });
@@ -611,6 +612,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.nominal-input, .kuantiti-input').forEach(input => {
         input.addEventListener('input', calculateTotal);
+      });
+      // sanitize nominals on form submit
+      document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+          form.querySelectorAll('.nominal-input').forEach(input => {
+            if (input.value) input.value = String(input.value).replace(/[^0-9]/g, '');
+          });
+        });
       });
       // Validasi kuantiti tidak boleh 0 atau kurang
       document.getElementById('items-container').addEventListener('input', function(e) {
