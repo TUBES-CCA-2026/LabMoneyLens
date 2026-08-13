@@ -260,12 +260,12 @@
     <main class="main">
       <div class="galeri-wrapper">
         <div class="galeri-header">
-          <h2>🧾 Galeri Struk</h2>
+          <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8H8M16 12H8M12 16H8"/></svg> Galeri Struk</h2>
           <p>Semua bukti transaksi yang telah diunggah. Klik gambar untuk memperbesar, atau gunakan tombol untuk mengedit / menghapus.</p>
         </div>
 
         <?php if(session('success')): ?>
-          <div class="flash-success">✅ <?php echo e(session('success')); ?></div>
+          <div class="flash-success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:3px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <?php echo e(session('success')); ?></div>
         <?php endif; ?>
 
         <?php if(!$strukList->isEmpty()): ?>
@@ -291,7 +291,7 @@
 
         <?php if($strukList->isEmpty()): ?>
           <div class="empty-state">
-            <div class="empty-icon">🧾</div>
+            <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56" style="display:inline-block;vertical-align:middle;opacity:0.3;"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8H8M16 12H8M12 16H8"/></svg></div>
             <h3>Belum Ada Struk</h3>
             <p>Upload struk saat menginput Pengeluaran atau Pemasukan untuk melihatnya di sini.</p>
           </div>
@@ -306,26 +306,26 @@
                 </div>
                 <div class="struk-info">
                   <span class="struk-type type-<?php echo e($struk->type); ?>"><?php echo e($struk->type); ?></span>
-                  <div style="font-size: 11px; color: #0d9488; font-weight: 600; margin-bottom: 6px;">🏷️ <?php echo e($struk->kategori); ?></div>
-                  <div class="struk-date">📅 <?php echo e(\Illuminate\Support\Carbon::parse($struk->tanggal)->format('d M Y')); ?></div>
+                  <div style="font-size: 11px; color: #0d9488; font-weight: 600; margin-bottom: 6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg> <?php echo e($struk->kategori); ?></div>
+                  <div class="struk-date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="display:inline-block;vertical-align:middle;margin-right:3px;"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> <?php echo e(\Illuminate\Support\Carbon::parse($struk->tanggal)->format('d M Y')); ?></div>
                   <div class="struk-amount">Rp <?php echo e(number_format($struk->nominal, 0, ',', '.')); ?></div>
                   <div class="struk-desc"><?php echo e($struk->uraian ?: '—'); ?></div>
                 </div>
                 <div class="struk-actions">
                   <a href="<?php echo e(route('struk.download', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>" class="btn-edit-foto" style="text-decoration:none; text-align:center; <?php if(session('user_role') == 'Kepala Lab'): ?> flex:1; <?php endif; ?>">
-                    ⬇️ Download
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download
                   </a>
                   <?php if (! (session('user_role') == 'Kepala Lab')): ?>
                     <button class="btn-edit-foto"
                             onclick="openEditModal('<?php echo e(strtolower($struk->type)); ?>', <?php echo e($struk->id); ?>, '<?php echo e(asset('storage/' . $struk->foto)); ?>')">
-                      ✏️ Ganti Foto
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Ganti Foto
                     </button>
                     <form method="POST"
                           action="<?php echo e(route('struk.delete', ['type' => strtolower($struk->type), 'id' => $struk->id])); ?>"
                           style="flex:1;"
                           data-confirm="soft">
                       <?php echo csrf_field(); ?>
-                      <button type="submit" class="btn-hapus-struk">🗑 Hapus</button>
+                      <button type="submit" class="btn-hapus-struk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" style="display:inline-block;vertical-align:middle;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Hapus</button>
                     </form>
                   <?php endif; ?>
                 </div>
@@ -346,7 +346,7 @@
   <!-- Edit Foto Modal -->
   <div id="edit-modal-overlay" class="edit-modal-overlay" onclick="closeEditModal(event)">
     <div class="edit-modal" onclick="event.stopPropagation()">
-      <h3>✏️ Ganti Foto Struk</h3>
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Ganti Foto Struk</h3>
       <p>Pilih foto baru untuk menggantikan foto struk saat ini. Foto lama akan dihapus secara otomatis.</p>
 
       <div class="edit-modal-preview" onclick="document.getElementById('foto_baru').click()">
@@ -363,7 +363,7 @@
         <input type="file" id="foto_baru" name="foto_baru" accept="image/*" hidden>
         <div class="edit-modal-actions">
           <button type="button" class="btn-cancel-modal" onclick="closeEditModal(null, true)">Batal</button>
-          <button type="submit" class="btn-save-foto" id="btn-save-foto" disabled>💾 Simpan Foto</button>
+          <button type="submit" class="btn-save-foto" id="btn-save-foto" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan Foto</button>
         </div>
       </form>
     </div>

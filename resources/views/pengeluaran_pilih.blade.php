@@ -205,22 +205,22 @@
         <div class="choice-grid">
           <!-- Manual Option -->
           <a href="{{ route('pengeluaran.manual') }}" class="choice-card">
-            <div class="choice-icon">✏️</div>
+            <div class="choice-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></div>
             <div class="choice-header">
               <div class="choice-title">Input Manual</div>
               <div class="choice-subtitle">Catat tanpa perlu foto struk</div>
             </div>
             <div class="choice-features">
               <div class="feature-item">
-                <span class="feature-icon">✓</span>
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" style="display:inline-block;vertical-align:middle;"><path d="m20 6-11 11-5-5"/></svg></span>
                 <span>Langsung menyimpan</span>
               </div>
               <div class="feature-item">
-                <span class="feature-icon">✓</span>
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" style="display:inline-block;vertical-align:middle;"><path d="m20 6-11 11-5-5"/></svg></span>
                 <span>Cocok untuk transfer bank</span>
               </div>
               <div class="feature-item">
-                <span class="feature-icon">✓</span>
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" style="display:inline-block;vertical-align:middle;"><path d="m20 6-11 11-5-5"/></svg></span>
                 <span>Cepat dan mudah</span>
               </div>
             </div>
@@ -232,22 +232,22 @@
 
           <!-- Otomatis Option -->
           <a href="{{ route('pengeluaran.otomatis') }}" class="choice-card">
-            <div class="choice-icon">📸</div>
+            <div class="choice-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" style="display:inline-block;vertical-align:middle;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
             <div class="choice-header">
               <div class="choice-title">Input Otomatis</div>
               <div class="choice-subtitle">Scan foto struk & parsing otomatis</div>
             </div>
             <div class="choice-features">
               <div class="feature-item">
-                <span class="feature-icon">✓</span>
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" style="display:inline-block;vertical-align:middle;"><path d="m20 6-11 11-5-5"/></svg></span>
                 <span>Upload foto struk</span>
               </div>
               <div class="feature-item">
-                <span class="feature-icon">✓</span>
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" style="display:inline-block;vertical-align:middle;"><path d="m20 6-11 11-5-5"/></svg></span>
                 <span>AI parsing otomatis</span>
               </div>
               <div class="feature-item">
-                <span class="feature-icon">✓</span>
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14" style="display:inline-block;vertical-align:middle;"><path d="m20 6-11 11-5-5"/></svg></span>
                 <span>Perlu validasi manual</span>
               </div>
             </div>

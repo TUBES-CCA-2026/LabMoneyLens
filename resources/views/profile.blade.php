@@ -105,13 +105,13 @@
                 <strong id="foto_preview_name" style="font-size: 13px; color: #0f766e; word-break: break-all;">Nama file</strong>
                 <small id="foto_preview_size" style="font-size: 11px; color: #0d9488;">Ukuran file</small>
                 <button type="button" id="btn_cancel_foto" style="align-self: flex-start; background: none; border: none; color: #dc2626; font-size: 11px; cursor: pointer; padding: 0; margin-top: 4px; font-weight: 600; display: flex; align-items: center; gap: 3px;">
-                  <span>✕</span> Hapus Pilihan
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" style="display:inline-block;vertical-align:middle;"><path d="M18 6 6 18M6 6l12 12"/></svg></span> Hapus Pilihan
                 </button>
               </div>
             </div>
 
             <label class="file-picker" for="foto_profil">
-              <span class="file-picker-icon">📷</span>
+              <span class="file-picker-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26" style="display:inline-block;vertical-align:middle;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg></span>
               <span class="file-picker-text">
                 <strong>Pilih foto profil baru</strong>
                 <small>PNG, JPG, atau JPEG</small>

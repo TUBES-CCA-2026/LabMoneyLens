@@ -489,7 +489,7 @@
           <div class="form-card-body">
             @if ($errors->any())
               <div style="background-color: #fee2e2; border: 1.5px solid #fecaca; border-radius: 12px; padding: 16px; margin-bottom: 20px; color: #991b1b; font-size: 13px;">
-                <strong style="display: block; margin-bottom: 8px;">⚠️ Gagal Menyimpan:</strong>
+                <strong style="display: block; margin-bottom: 8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg> Gagal Menyimpan:</strong>
                 <ul style="margin: 0; padding-left: 20px;">
                   @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -512,10 +512,10 @@
 
             <!-- Preview Foto Struk -->
             <div id="preview-container" style="display:none; margin-bottom:20px; background: linear-gradient(135deg, #f0fdf9 0%, #ecfdf5 100%); border: 2px solid #a5e8e3; border-radius: 14px; padding: 16px; text-align: center;">
-              <div style="font-size: 12px; font-weight: 700; color: #0f766e; margin-bottom: 12px;">✅ Foto Struk Tersimpan</div>
+              <div style="font-size: 12px; font-weight: 700; color: #0f766e; margin-bottom: 12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:3px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> Foto Struk Tersimpan</div>
               <img id="preview-image" src="" alt="Preview Struk" style="max-width: 100%; max-height: 300px; border-radius: 10px; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);">
               <div style="margin-top: 12px; display: flex; gap: 10px;">
-                <button type="button" class="reset-btn" onclick="clearPreview()" style="flex: 1; border-color: #0d9488; color: #0d9488;">🗑 Hapus Foto</button>
+                <button type="button" class="reset-btn" onclick="clearPreview()" style="flex: 1; border-color: #0d9488; color: #0d9488;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" style="display:inline-block;vertical-align:middle;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Hapus Foto</button>
               </div>
             </div>
 
@@ -527,10 +527,10 @@
               <!-- Form overlay blocker -->
               <div id="form-blocker" style="position:relative;">
                 <div id="form-overlay" style="position:absolute;inset:0;background:rgba(255,255,255,0.85);z-index:10;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(2px);">
-                  <div style="font-size:48px;">🧾</div>
+                  <div style="margin-bottom:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56" style="display:inline-block;vertical-align:middle;opacity:0.3;"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8H8M16 12H8M12 16H8"/></svg></div>
                   <div style="font-size:14px;font-weight:700;color:#0f766e;text-align:center;">Upload Foto Struk / Kwitansi Terlebih Dahulu</div>
                   <div style="font-size:12px;color:#64748b;text-align:center;">Form akan terbuka setelah foto struk berhasil diunggah.</div>
-                  <button type="button" onclick="document.getElementById('receipt_image').click()" style="background:linear-gradient(135deg,#0d9488,#059669);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">📎 Pilih File Struk</button>
+                  <button type="button" onclick="document.getElementById('receipt_image').click()" style="background:linear-gradient(135deg,#0d9488,#059669);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Pilih File Struk</button>
                 </div>
 
               <!-- Tanggal & Kategori (Fixed) -->
@@ -579,7 +579,7 @@
                     </div>
                   </div>
                   
-                  <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #0d9488; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
+                  <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #0d9488; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" style="display:inline-block;vertical-align:middle;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
                 </div>
               </div>
 
@@ -625,7 +625,7 @@
         <!-- Table Section -->
         <div class="table-section">
           <div class="table-section-header">
-            <h3>📋 Riwayat Pemasukan</h3>
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:4px;"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> Riwayat Pemasukan</h3>
             <span class="entry-count">{{ count($incomes) }} entri</span>
           </div>
           <div class="table-wrap">
@@ -746,7 +746,7 @@
         }
         
         // Update upload row status
-        document.getElementById('upload-filename').textContent = '✅ ' + name;
+        document.getElementById('upload-filename').textContent = '' + name;
         document.getElementById('upload-filename').style.color = '#16a34a';
         document.getElementById('upload-row').style.borderColor = '#16a34a';
         document.getElementById('upload-row').style.background = 'rgba(220,252,231,0.5)';
@@ -796,11 +796,11 @@
         if (!result?.data) throw new Error("Respons parsing tidak berisi data.");
         
         fillParsedReceipt(result.data);
-        document.getElementById('upload-filename').innerHTML = '✅ ' + file.name + ' <span style="font-size:12px;color:#16a34a;">(Analisis Selesai)</span>';
+        document.getElementById('upload-filename').innerHTML = '' + file.name + ' <span style="font-size:12px;color:#16a34a;">(Analisis Selesai)</span>';
       } catch (error) {
         console.error("Receipt parse failed", error);
         alert("Gagal menganalisis struk: " + (error?.message || "Silakan isi manual."));
-        document.getElementById('upload-filename').innerHTML = '✅ ' + file.name + ' <span style="font-size:12px;color:#ef4444;">(Gagal Dianalisis)</span>';
+        document.getElementById('upload-filename').innerHTML = '' + file.name + ' <span style="font-size:12px;color:#ef4444;">(Gagal Dianalisis)</span>';
       }
     }
 
@@ -855,8 +855,15 @@
       }
     });
 
-    function showModal(title, message, icon='✓') {
-      document.getElementById('modal-icon').textContent = icon;
+    function showModal(title, message, icon='ok') {
+      const modalIcon = document.getElementById('modal-icon');
+      if (icon === 'ok') {
+        modalIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" width="56" height="56"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+      } else if (icon === 'error' || icon === 'err') {
+        modalIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" width="56" height="56"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>';
+      } else {
+        modalIcon.textContent = icon;
+      }
       document.getElementById('modal-title').textContent = title;
       document.getElementById('modal-message').textContent = message;
       document.getElementById('custom-modal').classList.add('show');
@@ -866,9 +873,9 @@
 
     document.addEventListener('DOMContentLoaded', function() {
       @if(session('error'))
-        showModal('Gagal', '{{ session("error") }}', '❌');
+        showModal('Gagal', '{{ session("error") }}', 'error');
       @elseif(session('success'))
-        showModal('Berhasil', '{{ session("success") }}', '✅');
+        showModal('Berhasil', '{{ session("success") }}', 'ok');
       @endif
       attachNominalListeners();
       // Sync awal: set nilai default kategori ke hidden inputs
@@ -906,7 +913,7 @@
               <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
             </div>
           </div>
-          <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #ecfdf5; border: 1px solid #a7f3d0; color: #0d9488; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
+          <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #ecfdf5; border: 1px solid #a7f3d0; color: #0d9488; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" style="display:inline-block;vertical-align:middle;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
       `;
       container.insertAdjacentHTML('beforeend', rowHtml);
@@ -940,7 +947,7 @@
               <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
             </div>
           </div>
-          <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fef3c7; border: 1px solid #fcd34d; color: #b45309; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris">✖</button>
+          <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: -5px; right: -5px; background: #fef3c7; border: 1px solid #fcd34d; color: #b45309; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center;" aria-label="Hapus Baris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" style="display:inline-block;vertical-align:middle;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
       `;
       container.insertAdjacentHTML('beforeend', rowHtml);
