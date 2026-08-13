@@ -11,8 +11,8 @@ class ReceiptAnalysisService
     public function analyze(string $mimeType, string $base64Contents, string $type, string $apiKey)
     {
         $prompt = "Anda adalah asisten yang mengekstrak informasi dari struk kasir Indonesia. " .
-            "Kembalikan hanya JSON valid dengan field berikut: tanggal, nominal, kategori, uraian. " .
-            "Gunakan format tanggal YYYY-MM-DD. Untuk nominal, kembalikan hanya angka tanpa titik atau koma. " .
+            "Kembalikan hanya JSON valid dengan field berikut: tanggal, nominal, kategori, uraian, kuantiti. " .
+            "Gunakan format tanggal YYYY-MM-DD. Untuk nominal dan kuantiti, kembalikan hanya angka tanpa titik atau koma. " .
             "Jika field tidak dapat dijelaskan, kembalikan string kosong untuk field tersebut.";
 
         $response = Http::withoutVerifying()->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
@@ -55,7 +55,7 @@ class ReceiptAnalysisService
     protected function parseJsonText(string $text): array
     {
         if (empty(trim($text))) {
-            return ['tanggal' => '', 'nominal' => '', 'kategori' => '', 'uraian' => ''];
+            return ['tanggal' => '', 'nominal' => '', 'kategori' => '', 'uraian' => '', 'kuantiti' => ''];
         }
 
         $json = $this->extractJsonObject($text);
@@ -65,10 +65,11 @@ class ReceiptAnalysisService
                 'nominal' => strval($json['nominal'] ?? ''),
                 'kategori' => strval($json['kategori'] ?? ''),
                 'uraian' => strval($json['uraian'] ?? ''),
+                'kuantiti' => strval($json['kuantiti'] ?? ''),
             ];
         }
 
-        return ['tanggal' => '', 'nominal' => '', 'kategori' => '', 'uraian' => ''];
+        return ['tanggal' => '', 'nominal' => '', 'kategori' => '', 'uraian' => '', 'kuantiti' => ''];
     }
 
     protected function extractJsonObject(string $text): ?array

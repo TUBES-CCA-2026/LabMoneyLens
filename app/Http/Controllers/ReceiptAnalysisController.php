@@ -41,7 +41,7 @@ class ReceiptAnalysisController extends Controller
     protected function parseJsonText(string $text): array
     {
         if (empty(trim($text))) {
-            return ['tanggal' => '', 'nominal' => '', 'kategori' => '', 'uraian' => ''];
+            return ['tanggal' => '', 'nominal' => '', 'kategori' => '', 'uraian' => '', 'kuantiti' => ''];
         }
 
         $json = $this->extractJsonObject($text);
@@ -51,10 +51,11 @@ class ReceiptAnalysisController extends Controller
                 'nominal' => strval($json['nominal'] ?? ''),
                 'kategori' => strval($json['kategori'] ?? ''),
                 'uraian' => strval($json['uraian'] ?? ''),
+                'kuantiti' => strval($json['kuantiti'] ?? ''),
             ];
         }
 
-        return ['tanggal' => '', 'nominal' => '', 'kategori' => '', 'uraian' => ''];
+        return ['tanggal' => '', 'nominal' => '', 'kategori' => '', 'uraian' => '', 'kuantiti' => ''];
     }
 
     protected function extractJsonObject(string $text): ?array

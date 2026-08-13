@@ -180,4 +180,48 @@ class PengeluaranService
 
         return ['success' => true];
     }
+
+    // ========== PEMISAHAN MANUAL vs OTOMATIS ==========
+
+    public function storeManual(array $data)
+    {
+        Log::debug('PengeluaranService::storeManual received', ['data' => $data]);
+
+        $totalNominal = 0;
+        $itemsCount = count($data['nominal']);
+
+        for ($i = 0; $i < $itemsCount; $i++) {
+            $quantity = isset($data['kuantiti'][$i]) ? max(1, (int)$data['kuantiti'][$i]) : 1;
+            $totalNominal += $data['nominal'][$i] * $quantity;
+        }
+
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+        $currentBalance = $totalIncome - $totalExpense;
+
+        if ($totalNominal > $currentBalance) {
+            return ['success' => false, 'message' => 'Total pengeluaran tidak boleh melebihi saldo. Saldo Anda: Rp ' . number_format($currentBalance, 0, ',', '.')];
+        }
+
+        for ($i = 0; $i < $itemsCount; $i++) {
+            $quantity = isset($data['kuantiti'][$i]) ? max(1, (int)$data['kuantiti'][$i]) : 1;
+            $nominal = $data['nominal'][$i] * $quantity;
+            $jenisId = $data['id_jenis_pengeluaran'][$i] ?? $data['kategori_pengeluaran'];
+
+            DB::table('pengeluaran')->insert([
+                'tanggal' => $data['tanggal'],
+                'uraian' => $data['uraian'][$i] ?? '',
+                'nominal' => $nominal,
+                'foto_struk' => null, // Manual input tidak perlu foto
+                'id_jenis_pengeluaran' => $jenisId,
+                'id_user' => session('user_id'),
+                'is_confirmed' => 1, // Manual input langsung confirmed
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return ['success' => true];
+    }
 }
+

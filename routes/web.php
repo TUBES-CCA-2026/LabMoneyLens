@@ -17,13 +17,26 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])->name('dashboard.chartData');
 Route::get('/dashboard/live-data', [DashboardController::class, 'liveData'])->name('dashboard.liveData');
 Route::get('/welcome', [welcomecontroller::class, 'index'])->name('welcome');
-Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan');
+
+// Pemasukan - Pilih Manual vs Otomatis
+Route::get('/pemasukan', [PemasukanController::class, 'pilih'])->name('pemasukan.pilih');
+Route::get('/pemasukan/manual', [PemasukanController::class, 'showManual'])->name('pemasukan.manual');
+Route::get('/pemasukan/otomatis', [PemasukanController::class, 'showOtomatis'])->name('pemasukan.otomatis');
 Route::post('/pemasukan/store', [PemasukanController::class, 'store'])->name('pemasukan.store');
+Route::post('/pemasukan/store-manual', [PemasukanController::class, 'storeManual'])->name('pemasukan.store-manual');
+Route::post('/pemasukan/store-otomatis', [PemasukanController::class, 'storeOtomatis'])->name('pemasukan.store-otomatis');
 Route::get('/pemasukan/edit/{id}', [PemasukanController::class, 'edit'])->name('pemasukan.edit');
 Route::post('/pemasukan/update/{id}', [PemasukanController::class, 'update'])->name('pemasukan.update');
 Route::post('/pemasukan/delete/{id}', [PemasukanController::class, 'destroy'])->name('pemasukan.delete');
 Route::post('/receipt/parse', [ReceiptAnalysisController::class, 'parse'])->name('receipt.parse');
+
+// Pengeluaran - Pilih Manual vs Otomatis
+Route::get('/pengeluaran', [App\Http\Controllers\welcomecontroller::class, 'pilih'])->name('pengeluaran.pilih');
+Route::get('/pengeluaran/manual', [App\Http\Controllers\welcomecontroller::class, 'showManual'])->name('pengeluaran.manual');
+Route::get('/pengeluaran/otomatis', [App\Http\Controllers\welcomecontroller::class, 'showOtomatis'])->name('pengeluaran.otomatis');
 Route::post('/pengeluaran/store', [App\Http\Controllers\welcomecontroller::class, 'store'])->name('pengeluaran.store');
+Route::post('/pengeluaran/store-manual', [App\Http\Controllers\welcomecontroller::class, 'storeManual'])->name('pengeluaran.store-manual');
+Route::post('/pengeluaran/store-otomatis', [App\Http\Controllers\welcomecontroller::class, 'storeOtomatis'])->name('pengeluaran.store-otomatis');
 Route::get('/pengeluaran/edit/{id}', [App\Http\Controllers\welcomecontroller::class, 'edit'])->name('pengeluaran.edit');
 Route::post('/pengeluaran/update/{id}', [App\Http\Controllers\welcomecontroller::class, 'update'])->name('pengeluaran.update');
 Route::post('/pengeluaran/delete/{id}', [App\Http\Controllers\welcomecontroller::class, 'destroy'])->name('pengeluaran.delete');

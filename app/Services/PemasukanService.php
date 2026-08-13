@@ -179,4 +179,47 @@ class PemasukanService
 
         return ['success' => true, 'id' => $id, 'nama' => $data['nama_jenis']];
     }
+
+    // ========== PEMISAHAN MANUAL vs OTOMATIS ==========
+
+    public function storeManual(array $data)
+    {
+        Log::debug('PemasukanService::storeManual received', ['data' => $data]);
+
+        $totalNominal = 0;
+        $itemsCount = count($data['nominal']);
+
+        for ($i = 0; $i < $itemsCount; $i++) {
+            $quantity = isset($data['kuantiti'][$i]) ? max(1, (int)$data['kuantiti'][$i]) : 1;
+            $totalNominal += $data['nominal'][$i] * $quantity;
+        }
+
+        $totalIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal') + $totalNominal;
+        $totalExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+        $newBalance = $totalIncome - $totalExpense;
+
+        if ($newBalance == 0) {
+            return ['success' => false, 'message' => 'Saldo tidak boleh Rp0. Operasi dibatalkan.'];
+        }
+
+        for ($i = 0; $i < $itemsCount; $i++) {
+            $quantity = isset($data['kuantiti'][$i]) ? max(1, (int)$data['kuantiti'][$i]) : 1;
+            $nominal = $data['nominal'][$i] * $quantity;
+            $jenisId = $data['id_jenis_penerimaan'][$i] ?? $data['kategori_pemasukan'];
+
+            DB::table('pemasukan')->insert([
+                'tanggal' => $data['tanggal'],
+                'uraian' => $data['uraian'][$i] ?? '',
+                'nominal' => $nominal,
+                'foto_bukti' => null, // Manual input tidak perlu foto
+                'id_jenis_penerimaan' => $jenisId,
+                'id_user' => session('user_id'),
+                'is_confirmed' => 1, // Manual input langsung confirmed
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return ['success' => true];
+    }
 }

@@ -112,4 +112,104 @@ class welcomecontroller extends Controller
         return redirect()->route('welcome')->with('success', 'Pengeluaran berhasil diperbarui.');
     }
 
+    // ========== PEMISAHAN MANUAL vs OTOMATIS ==========
+
+    public function pilih()
+    {
+        if (!session()->has('user_id')) {
+            return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('pengeluaran_pilih');
+    }
+
+    public function showManual()
+    {
+        if (!session()->has('user_id')) {
+            return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $service = app(\App\Services\PengeluaranService::class);
+        $expenses = $service->paginate(5);
+        $jenis = $service->getJenis();
+
+        return view('pengeluaran_manual', compact('expenses', 'jenis'));
+    }
+
+    public function showOtomatis()
+    {
+        if (!session()->has('user_id')) {
+            return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $service = app(\App\Services\PengeluaranService::class);
+        $expenses = $service->paginate(5);
+        $jenis = $service->getJenis();
+
+        return view('pengeluaran_otomatis', compact('expenses', 'jenis'));
+    }
+
+    public function storeManual(Request $request, PengeluaranService $service)
+    {
+        if (!session()->has('user_id')) {
+            return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'tanggal'               => 'required|date',
+            'kategori_pengeluaran'  => 'required|integer',
+            'uraian'                => 'required|array',
+            'uraian.*'              => 'required|string|max:255',
+            'nominal'               => 'required|array',
+            'nominal.*'             => 'required|numeric|min:1',
+            'kuantiti'              => 'array',
+            'kuantiti.*'            => 'nullable|integer|min:1',
+            'id_jenis_pengeluaran'  => 'array',
+        ]);
+
+        $result = $service->storeManual($validated);
+
+        if (!$result['success']) {
+            return redirect()->route('pengeluaran.manual')->with('error', $result['message']);
+        }
+
+        return redirect()->route('pengeluaran.manual')->with('success', 'Semua pengeluaran berhasil disimpan.');
+    }
+
+    public function storeOtomatis(StorePengeluaranRequest $request, PengeluaranService $service)
+    {
+        if (!session()->has('user_id')) {
+            return redirect()->route('login');
+        }
+
+        if (session('user_role') === 'Kepala Lab') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validated();
+        $result = $service->store($validated, $request->file('receipt_image'));
+
+        if (!$result['success']) {
+            return redirect()->route('pengeluaran.otomatis')->with('error', $result['message']);
+        }
+
+        return redirect()->route('pengeluaran.otomatis')->with('success', 'Semua pengeluaran berhasil disimpan.');
+    }
+
 }
