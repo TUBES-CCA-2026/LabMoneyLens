@@ -620,7 +620,7 @@
         <div class="table-section">
           <div class="table-section-header">
             <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:4px;"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> Riwayat Pemasukan</h3>
-            <span class="entry-count">{{ count($incomes) }} entri</span>
+            <span class="entry-count">{{ $incomes->total() }} entri</span>
           </div>
           <div class="table-wrap">
             <table>
@@ -637,7 +637,7 @@
               <tbody>
                 @forelse($incomes as $i => $income)
                   <tr>
-                    <td>{{ $i + 1 }}</td>
+                    <td>{{ $incomes->firstItem() + $loop->index }}</td>
                     <td>{{ \Carbon\Carbon::parse($income->tanggal)->format('d M Y') }}</td>
                     <td>{{ $income->kategori }}</td>
                     <td>
@@ -683,7 +683,7 @@
             {{ $incomes->links('pagination::bootstrap-4') }}
 
           </div>
-          @if(count($incomes) > 0)
+          @if($incomes->total() > 0)
             <div class="laporan-tip">
               Lihat ringkasan lengkap dan ekspor data di halaman <a href="{{ route('laporan') }}">Laporan</a>.
             </div>

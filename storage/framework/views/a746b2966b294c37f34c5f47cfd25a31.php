@@ -22,11 +22,11 @@
       Dashboard
     </a>
     <?php if (! (session('user_role') == 'Kepala Lab')): ?>
-      <a href="<?php echo e(route('welcome')); ?>" class="nav-item <?php echo e(request()->routeIs('welcome') ? 'active' : ''); ?>">
+      <a href="<?php echo e(route('pengeluaran.pilih')); ?>" class="nav-item <?php echo e(request()->routeIs('pengeluaran.*') ? 'active' : ''); ?>">
         <svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
         Pengeluaran
       </a>
-      <a href="<?php echo e(route('pemasukan')); ?>" class="nav-item <?php echo e(request()->routeIs('pemasukan') ? 'active' : ''); ?>">
+      <a href="<?php echo e(route('pemasukan.pilih')); ?>" class="nav-item <?php echo e(request()->routeIs('pemasukan.*') ? 'active' : ''); ?>">
         <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Pemasukan
       </a>

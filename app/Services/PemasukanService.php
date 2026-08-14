@@ -182,7 +182,7 @@ class PemasukanService
 
     // ========== PEMISAHAN MANUAL vs OTOMATIS ==========
 
-    public function storeManual(array $data)
+    public function storeManual(array $data, ?UploadedFile $receiptImage = null)
     {
         Log::debug('PemasukanService::storeManual received', ['data' => $data]);
 
@@ -202,6 +202,11 @@ class PemasukanService
             return ['success' => false, 'message' => 'Saldo tidak boleh Rp0. Operasi dibatalkan.'];
         }
 
+        $receiptPath = null;
+        if ($receiptImage) {
+            $receiptPath = $receiptImage->store('receipts', 'public');
+        }
+
         for ($i = 0; $i < $itemsCount; $i++) {
             $quantity = isset($data['kuantiti'][$i]) ? max(1, (int)$data['kuantiti'][$i]) : 1;
             $nominal = $data['nominal'][$i] * $quantity;
@@ -211,10 +216,10 @@ class PemasukanService
                 'tanggal' => $data['tanggal'],
                 'uraian' => $data['uraian'][$i] ?? '',
                 'nominal' => $nominal,
-                'foto_bukti' => null, // Manual input tidak perlu foto
+                'foto_bukti' => $receiptPath,
                 'id_jenis_penerimaan' => $jenisId,
                 'id_user' => session('user_id'),
-                'is_confirmed' => 1, // Manual input langsung confirmed
+                'is_confirmed' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

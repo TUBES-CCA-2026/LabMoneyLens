@@ -31,21 +31,46 @@
     .galeri-header p { color: #64748b; font-size: 14px; }
 
     .filter-buttons {
-      display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 0 auto 28px auto;
+      width: min(100%, 600px);
     }
     .filter-btn {
-      padding: 10px 18px; border: 2px solid #e2e8f0; background: #fff;
-      border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
-      color: #64748b; transition: all 0.2s ease; font-family: inherit;
+      flex: 1 1 0;
+      height: 45px;
+      border: 2px solid #dfe7e5;
+      background: #edf3f2;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #1f2937;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0 16px;
+      line-height: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      min-width: 0;
+      white-space: nowrap;
     }
     .filter-btn:hover { border-color: #cbd5e1; }
     .filter-btn.active {
       background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
-      color: #fff; border-color: #0d9488;
+      color: #fff;
+      border-color: #0d9488;
+      box-shadow: 0 4px 10px rgba(13, 148, 136, 0.18);
     }
 
     .filter-section {
-      display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-end; flex-wrap: wrap;
+      display: flex; gap: 16px; margin-bottom: 24px; align-items: stretch; flex-wrap: wrap;
     }
     .filter-group {
       display: flex; flex-direction: column; gap: 6px;
@@ -93,14 +118,20 @@
       width: auto;
     }
     .btn-apply-filter {
-      padding: 10px 24px; background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
-      color: #fff; border: none; border-radius: 10px; font-size: 13px;
+      height: 45px;
+      min-height: 45px;
+      padding: 0 24px;
+      background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+      color: #fff; border: none; border-radius: 12px; font-size: 18px;
       font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s ease;
       box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+      display: flex; align-items: center; justify-content: center;
+      box-sizing: border-box; line-height: 1; margin: 0;
+      -webkit-appearance: none; appearance: none;
     }
     .btn-apply-filter:hover {
       background: linear-gradient(135deg, #0a6d6a 0%, #083d39 100%);
-      transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13, 148, 136, 0.3);
+      transform: none; box-shadow: 0 6px 16px rgba(13, 148, 136, 0.3);
     }
 
     .flash-success {
@@ -418,7 +449,9 @@
       activeFilterType = type;
       document.getElementById('filter-type-pemasukan').classList.toggle('active', type === 'Pemasukan');
       document.getElementById('filter-type-pengeluaran').classList.toggle('active', type === 'Pengeluaran');
+      document.getElementById('filter-kategori').value = '';
       updateCategoryOptions();
+      applyFilter();
     }
 
     function updateCategoryOptions() {

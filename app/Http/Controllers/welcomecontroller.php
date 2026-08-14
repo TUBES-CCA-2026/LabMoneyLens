@@ -181,9 +181,10 @@ class welcomecontroller extends Controller
             'kuantiti'              => 'array',
             'kuantiti.*'            => 'nullable|integer|min:1',
             'id_jenis_pengeluaran'  => 'array',
+            'receipt_image'         => 'nullable|image|max:5120',
         ]);
 
-        $result = $service->storeManual($validated);
+        $result = $service->storeManual($validated, $request->file('receipt_image'));
 
         if (!$result['success']) {
             return redirect()->route('pengeluaran.manual')->with('error', $result['message']);

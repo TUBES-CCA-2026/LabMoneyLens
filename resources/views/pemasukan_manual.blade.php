@@ -159,12 +159,17 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      height: 100%;
     }
 
     .form-label {
       font-size: 13px;
       font-weight: 700;
       color: #0f766e;
+      line-height: 1.4;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
     }
 
     .required-dot {
@@ -457,7 +462,6 @@
           <div class="hero-balance-badge">
             <div class="badge-label">Saldo Tersedia</div>
             <div class="badge-value">Rp {{ number_format($saldo, 0, ',', '.') }}</div>
-            <div class="badge-warning">Total: Pemasukan - Pengeluaran</div>
           </div>
         </div>
 
@@ -629,7 +633,7 @@
         <div class="table-section">
           <div class="table-section-header">
             <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="display:inline-block;vertical-align:middle;margin-right:4px;"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg> Riwayat Pemasukan</h3>
-            <span class="entry-count">{{ count($incomes) }} entri</span>
+            <span class="entry-count">{{ $incomes->total() }} entri</span>
           </div>
           <div class="table-wrap">
             <table>
@@ -681,6 +685,21 @@
               </tbody>
             </table>
           </div>
+          <div style="margin-top: 20px; padding: 0 20px;">
+            <style>
+              .pagination { display: flex; list-style: none; padding: 0; margin: 0; justify-content: flex-end; gap: 4px; }
+              .page-item .page-link { display: block; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f766e; text-decoration: none; font-size: 13px; background: #fff; transition: all 0.2s ease; }
+              .page-item .page-link:hover { background: #f1f5f9; }
+              .page-item.active .page-link { background: #0d9488; color: #fff; border-color: #0d9488; }
+              .page-item.disabled .page-link { color: #94a3b8; background: #f8fafc; cursor: not-allowed; border-color: #e2e8f0; }
+            </style>
+            {{ $incomes->links('pagination::bootstrap-4') }}
+          </div>
+          @if($incomes->total() > 0)
+            <div class="laporan-tip">
+              Lihat ringkasan lengkap dan ekspor data di halaman <a href="{{ route('laporan') }}">Laporan</a>.
+            </div>
+          @endif
         </div>
 
       </div>

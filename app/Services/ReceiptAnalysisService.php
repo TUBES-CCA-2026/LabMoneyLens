@@ -15,7 +15,7 @@ class ReceiptAnalysisService
             "Gunakan format tanggal YYYY-MM-DD. Untuk nominal dan kuantiti, kembalikan hanya angka tanpa titik atau koma. " .
             "Jika field tidak dapat dijelaskan, kembalikan string kosong untuk field tersebut.";
 
-        $response = Http::withoutVerifying()->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
+        $response = Http::withoutVerifying()->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
             'contents' => [
                 [
                     'parts' => [

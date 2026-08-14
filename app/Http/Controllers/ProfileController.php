@@ -16,6 +16,12 @@ class ProfileController extends Controller
         }
 
         $user = User::findOrFail(session('user_id'));
+        
+        // Sinkronisasi session dengan data database terbaru
+        session([
+            'user_name' => $user->nama,
+            'user_photo' => $user->foto_profil,
+        ]);
 
         return view('profile', compact('user'));
     }
@@ -29,11 +35,15 @@ class ProfileController extends Controller
         $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
-            'foto_profil' => ['nullable', 'image', 'max:2048'],
+            'foto_profil_cropped' => ['nullable', 'string'],
         ]);
 
         $service = app(\App\Services\ProfileService::class);
-        $service->updateProfile($request->only(['nama', 'password']), $request->file('foto_profil'));
+        $service->updateProfile(
+            $request->only(['nama', 'password']),
+            null,
+            $request->input('foto_profil_cropped')
+        );
 
         return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui.');
     }

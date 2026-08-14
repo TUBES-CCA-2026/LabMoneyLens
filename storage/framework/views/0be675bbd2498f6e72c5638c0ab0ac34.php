@@ -412,7 +412,7 @@
             <div class="struk-img-wrap">
               <?php if($expense->foto_struk): ?>
                 <img src="<?php echo e(asset('storage/' . $expense->foto_struk)); ?>" alt="Foto Struk Pengeluaran">
-                <p style="margin-top:10px; font-size:11px; color:#94a3b8;">📎 Tersimpan di server</p>
+                <p style="margin-top:10px; font-size:11px; color:#94a3b8;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="display:inline-block;vertical-align:middle;margin-right:3px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Tersimpan di server</p>
               <?php else: ?>
                 <div class="struk-no-photo">
                   <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
@@ -493,9 +493,9 @@
                     </div>
 
                     <?php if($index > 0): ?>
-                    <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
+                    <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" style="display:inline-block;vertical-align:middle;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
                     <?php else: ?>
-                    <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
+                    <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="display: none; position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" style="display:inline-block;vertical-align:middle;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
                     <?php endif; ?>
                   </div>
                   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -564,7 +564,7 @@
             </div>
           </div>
         </div>
-        <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris">✖</button>
+        <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: 0; right: 0; background: none; border: none; color: #dc2626; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" style="display:inline-block;vertical-align:middle;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       `;
       
       container.appendChild(newRow);
@@ -750,8 +750,15 @@
   </style>
 
   <script>
-    function showModal(title, message, icon = '✓') {
-      document.getElementById('modal-icon').textContent = icon;
+    function showModal(title, message, icon = 'ok') {
+      const modalIcon = document.getElementById('modal-icon');
+      if (icon === 'ok') {
+        modalIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" width="56" height="56"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+      } else if (icon === 'error' || icon === 'err') {
+        modalIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" width="56" height="56"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>';
+      } else {
+        modalIcon.textContent = icon;
+      }
       document.getElementById('modal-title').textContent = title;
       document.getElementById('modal-message').textContent = message;
       document.getElementById('custom-modal').classList.add('show');
@@ -771,9 +778,9 @@
     // Tampilkan pop-up untuk error/success messages
     document.addEventListener('DOMContentLoaded', function() {
       <?php if(session('error')): ?>
-        showModal('⚠️ Gagal', '<?php echo e(session("error")); ?>', '❌');
+        showModal('Gagal', '<?php echo e(session("error")); ?>', 'error');
       <?php elseif(session('success')): ?>
-        showModal('✅ Berhasil', '<?php echo e(session("success")); ?>', '✓');
+        showModal('Berhasil', '<?php echo e(session("success")); ?>', 'ok');
       <?php endif; ?>
     });
   </script>
