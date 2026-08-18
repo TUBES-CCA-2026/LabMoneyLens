@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< HEAD
+=======
+use App\Http\Requests\StrukUpdateFotoRequest;
+>>>>>>> 0026227 (Baru)
 use Illuminate\Http\Request;
 use App\Models\Pemasukan;
 use App\Models\Pengeluaran;
@@ -48,15 +52,26 @@ class StrukController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $service = app(\App\Services\StrukService::class);
+<<<<<<< HEAD
         $service->softDelete($type, $id);
 
         return redirect()->route('struk')->with('success', 'Struk dipindahkan ke Recycle Bin.');
+=======
+        $result = $service->softDelete($type, $id);
+
+        return redirect()->route('struk')
+            ->with($result['success'] ? 'success' : 'error', $result['success'] ? 'Transaksi struk dipindahkan ke Recycle Bin.' : $result['message']);
+>>>>>>> 0026227 (Baru)
     }
 
     /**
      * Ganti foto struk
      */
+<<<<<<< HEAD
     public function updateFoto(Request $request, string $type, int $id)
+=======
+    public function updateFoto(StrukUpdateFotoRequest $request, string $type, int $id)
+>>>>>>> 0026227 (Baru)
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
@@ -66,6 +81,7 @@ class StrukController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+<<<<<<< HEAD
         $request->validate([
             'foto_baru' => 'required|image|max:5120',
         ]);
@@ -76,6 +92,15 @@ class StrukController extends Controller
         $service->updateFoto($type, $id, $newPath);
 
         return redirect()->route('struk')->with('success', 'Foto struk berhasil diperbarui.');
+=======
+        $newPath = $request->file('foto_baru')->store('receipts', 'public');
+
+        $service = app(\App\Services\StrukService::class);
+        $result = $service->updateFoto($type, $id, $newPath);
+
+        return redirect()->route('struk')
+            ->with($result['success'] ? 'success' : 'error', $result['success'] ? 'Foto struk seluruh item transaksi berhasil diperbarui.' : $result['message']);
+>>>>>>> 0026227 (Baru)
     }
 }
 

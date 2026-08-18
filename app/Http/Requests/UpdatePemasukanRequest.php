@@ -20,7 +20,13 @@ class UpdatePemasukanRequest extends FormRequest
             'uraian.*' => 'nullable|string|max:255',
             'nominal' => 'required|array',
             'nominal.*' => 'required|numeric|min:0',
+<<<<<<< HEAD
             'id_jenis_penerimaan' => 'required|integer',
+=======
+            'kuantiti' => 'array',
+            'kuantiti.*' => 'nullable|integer|min:1',
+            'id_jenis_penerimaan' => 'required|integer|exists:jenis_penerimaan,id_jenis_penerimaan',
+>>>>>>> 0026227 (Baru)
         ];
     }
 }

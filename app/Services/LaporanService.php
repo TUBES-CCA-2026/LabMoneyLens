@@ -19,10 +19,20 @@ class LaporanService
                 'pemasukan.nominal as jumlah',
                 'pemasukan.tanggal',
                 'pemasukan.created_at as created_at',
+<<<<<<< HEAD
                 'pemasukan.uraian',
                 DB::raw("'Pemasukan' as tipe")
             )
             ->whereNull('pemasukan.deleted_at');
+=======
+                'pemasukan.transaction_group_id as transaction_group_id',
+                'pemasukan.is_confirmed as is_confirmed',
+                'pemasukan.uraian',
+                DB::raw("'Pemasukan' as tipe")
+            )
+            ->whereNull('pemasukan.deleted_at')
+            ->where('pemasukan.is_confirmed', 1);
+>>>>>>> 0026227 (Baru)
 
         $pengeluaranQuery = DB::table('pengeluaran')
             ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
@@ -32,10 +42,20 @@ class LaporanService
                 'pengeluaran.nominal as jumlah',
                 'pengeluaran.tanggal',
                 'pengeluaran.created_at as created_at',
+<<<<<<< HEAD
                 'pengeluaran.uraian',
                 DB::raw("'Pengeluaran' as tipe")
             )
             ->whereNull('pengeluaran.deleted_at');
+=======
+                'pengeluaran.transaction_group_id as transaction_group_id',
+                'pengeluaran.is_confirmed as is_confirmed',
+                'pengeluaran.uraian',
+                DB::raw("'Pengeluaran' as tipe")
+            )
+            ->whereNull('pengeluaran.deleted_at')
+            ->where('pengeluaran.is_confirmed', 1);
+>>>>>>> 0026227 (Baru)
 
         if ($month && preg_match('/^\d{4}-\d{2}$/', $month)) {
             [$year, $monthNumber] = explode('-', $month);

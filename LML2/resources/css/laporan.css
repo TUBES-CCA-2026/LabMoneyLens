@@ -1,0 +1,195 @@
+.report-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 20px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+}
+
+.download-btn:hover {
+    background: linear-gradient(135deg, #0a6d6a 0%, #083d39 100%);
+    box-shadow: 0 6px 16px rgba(13, 148, 136, 0.3);
+    transform: translateY(-2px);
+}
+
+.report-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.report-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
+    border-radius: 16px;
+    border: 2px solid #e0f7f5;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+    transition: all 0.3s ease;
+}
+
+.report-card:hover {
+    border-color: #0d9488;
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15);
+    transform: translateY(-4px);
+}
+
+.report-card-label {
+    font-size: 11px;
+    color: #0d9488;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 700;
+}
+
+.report-card-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f766e;
+    line-height: 1.1;
+}
+
+.report-card-note {
+    font-size: 11px;
+    color: #0d9488;
+    margin-top: 4px;
+}
+
+.expense-card {
+    background: linear-gradient(135deg, #fef2f2 0%, #fce7e6 100%);
+    border-color: rgba(248, 113, 113, 0.3);
+}
+
+.expense-card:hover {
+    border-color: rgba(248, 113, 113, 0.6);
+}
+
+.income-card {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-color: rgba(52, 211, 153, 0.3);
+}
+
+.income-card:hover {
+    border-color: rgba(52, 211, 153, 0.6);
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-color: rgba(96, 165, 250, 0.3);
+}
+
+.balance-card:hover {
+    border-color: rgba(96, 165, 250, 0.6);
+}
+
+.filter-form {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    padding: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
+    border-radius: 16px;
+    border: 2px solid #e0f7f5;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+}
+
+.apply-filter-btn {
+    background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.apply-filter-btn:hover {
+    background: linear-gradient(135deg, #0a6d6a 0%, #083d39 100%);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+    transform: translateY(-2px);
+}
+
+/* ── RESPONSIVE DESIGN (MOBILE) ── */
+@media (max-width: 1024px) {
+    .app {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        width: 220px;
+        height: 100vh;
+        border-radius: 0;
+        padding: 16px 0;
+        flex-direction: column;
+        z-index: 999;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .main {
+        flex-direction: column;
+        padding: 14px;
+        margin-left: 0;
+    }
+
+    .report-filter {
+        flex-direction: column;
+    }
+    .filter-group {
+        width: 100%;
+    }
+    .summary-cards {
+        flex-direction: column;
+    }
+    .summary-card {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .report-cards {
+        grid-template-columns: 1fr;
+    }
+}

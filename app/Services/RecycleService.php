@@ -2,8 +2,15 @@
 
 namespace App\Services;
 
+<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+=======
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
+>>>>>>> 0026227 (Baru)
 
 class RecycleService
 {
@@ -13,6 +20,10 @@ class RecycleService
             ->join('jenis_penerimaan', 'pemasukan.id_jenis_penerimaan', '=', 'jenis_penerimaan.id_jenis_penerimaan')
             ->select(
                 'pemasukan.id_pemasukan as id',
+<<<<<<< HEAD
+=======
+                'pemasukan.transaction_group_id',
+>>>>>>> 0026227 (Baru)
                 'jenis_penerimaan.nama_jenis as kategori',
                 'pemasukan.nominal as jumlah',
                 'pemasukan.tanggal as tanggal',
@@ -26,6 +37,10 @@ class RecycleService
             ->join('jenis_pengeluaran', 'pengeluaran.id_jenis_pengeluaran', '=', 'jenis_pengeluaran.id_jenis_pengeluaran')
             ->select(
                 'pengeluaran.id_pengeluaran as id',
+<<<<<<< HEAD
+=======
+                'pengeluaran.transaction_group_id',
+>>>>>>> 0026227 (Baru)
                 'jenis_pengeluaran.nama_jenis as kategori',
                 'pengeluaran.nominal as jumlah',
                 'pengeluaran.tanggal as tanggal',
@@ -36,6 +51,25 @@ class RecycleService
             ->get();
 
         $recordsCollection = $deletedIncome->concat($deletedExpense)
+<<<<<<< HEAD
+=======
+            ->groupBy(fn ($item) => $item->tipe . '|' . $item->transaction_group_id)
+            ->map(function ($group) {
+                $first = $group->first();
+                $categories = $group->pluck('kategori')->unique()->values();
+
+                return (object) [
+                    'id' => $first->id,
+                    'kategori' => $categories->count() > 1 ? 'Gabungan Kategori' : $categories->first(),
+                    'jumlah' => $group->sum('jumlah'),
+                    'tanggal' => $first->tanggal,
+                    'deleted_at' => $group->max('deleted_at'),
+                    'tipe' => $first->tipe,
+                    'item_count' => $group->count(),
+                    'transaction_group_id' => $first->transaction_group_id,
+                ];
+            })
+>>>>>>> 0026227 (Baru)
             ->sortByDesc('deleted_at')
             ->values();
 
@@ -60,6 +94,7 @@ class RecycleService
 
     public function restore(string $type, $id)
     {
+<<<<<<< HEAD
         if ($type === 'pemasukan') {
             DB::table('pemasukan')
                 ->where('id_pemasukan', $id)
@@ -73,10 +108,66 @@ class RecycleService
         }
 
         return ['success' => true];
+=======
+        try {
+            return DB::transaction(function () use ($type, $id) {
+                if ($type === 'pemasukan') {
+                    $record = DB::table('pemasukan')->where('id_pemasukan', $id)->whereNotNull('deleted_at')->lockForUpdate()->first();
+                    if (!$record) return ['success' => false, 'message' => 'Transaksi pemasukan tidak ditemukan di Recycle Bin.'];
+
+                    DB::table('pemasukan')
+                        ->where('transaction_group_id', $record->transaction_group_id)
+                        ->whereNotNull('deleted_at')
+                        ->update(['deleted_at' => null, 'updated_at' => now()]);
+
+                    return ['success' => true];
+                }
+
+                if ($type === 'pengeluaran') {
+                    $record = DB::table('pengeluaran')->where('id_pengeluaran', $id)->whereNotNull('deleted_at')->lockForUpdate()->first();
+                    if (!$record) return ['success' => false, 'message' => 'Transaksi pengeluaran tidak ditemukan di Recycle Bin.'];
+
+                    $groupId = $record->transaction_group_id;
+                    $restoreExpense = DB::table('pengeluaran')
+                        ->where('transaction_group_id', $groupId)
+                        ->whereNotNull('deleted_at')
+                        ->sum('nominal');
+                    $totalIncome = DB::table('pemasukan')
+                        ->where('is_confirmed', 1)
+                        ->whereNull('deleted_at')
+                        ->sum('nominal');
+                    $activeExpense = DB::table('pengeluaran')
+                        ->where('is_confirmed', 1)
+                        ->whereNull('deleted_at')
+                        ->sum('nominal');
+                    $projectedBalance = (float) $totalIncome - ((float) $activeExpense + (float) $restoreExpense);
+
+                    if ($projectedBalance < 0) {
+                        return [
+                            'success' => false,
+                            'message' => 'Pengeluaran tidak dapat dipulihkan karena saldo akan menjadi negatif. Saldo setelah pemulihan: Rp ' . number_format($projectedBalance, 0, ',', '.'),
+                        ];
+                    }
+
+                    DB::table('pengeluaran')
+                        ->where('transaction_group_id', $groupId)
+                        ->whereNotNull('deleted_at')
+                        ->update(['deleted_at' => null, 'updated_at' => now()]);
+
+                    return ['success' => true];
+                }
+
+                return ['success' => false, 'message' => 'Jenis transaksi tidak valid.'];
+            });
+        } catch (Throwable $e) {
+            return ['success' => false, 'message' => 'Transaksi gagal dipulihkan.'];
+        }
+>>>>>>> 0026227 (Baru)
     }
 
     public function forceDelete(string $type, $id)
     {
+<<<<<<< HEAD
         if ($type === 'pemasukan') {
             DB::table('pemasukan')
                 ->where('id_pemasukan', $id)
@@ -90,21 +181,99 @@ class RecycleService
         }
 
         return ['success' => true];
+=======
+        try {
+            return DB::transaction(function () use ($type, $id) {
+                if ($type === 'pemasukan') {
+                    $record = DB::table('pemasukan')->where('id_pemasukan', $id)->whereNotNull('deleted_at')->lockForUpdate()->first();
+                    if (!$record) return ['success' => false, 'message' => 'Transaksi pemasukan tidak ditemukan di Recycle Bin.'];
+
+                    $groupId = $record->transaction_group_id;
+                    $paths = DB::table('pemasukan')->where('transaction_group_id', $groupId)->pluck('foto_bukti')->filter()->unique()->values()->all();
+                    DB::table('pemasukan')->where('transaction_group_id', $groupId)->whereNotNull('deleted_at')->delete();
+
+                    return ['success' => true, 'paths' => $paths];
+                }
+
+                if ($type === 'pengeluaran') {
+                    $record = DB::table('pengeluaran')->where('id_pengeluaran', $id)->whereNotNull('deleted_at')->lockForUpdate()->first();
+                    if (!$record) return ['success' => false, 'message' => 'Transaksi pengeluaran tidak ditemukan di Recycle Bin.'];
+
+                    $groupId = $record->transaction_group_id;
+                    $paths = DB::table('pengeluaran')->where('transaction_group_id', $groupId)->pluck('foto_struk')->filter()->unique()->values()->all();
+                    DB::table('pengeluaran')->where('transaction_group_id', $groupId)->whereNotNull('deleted_at')->delete();
+
+                    return ['success' => true, 'paths' => $paths];
+                }
+
+                return ['success' => false, 'message' => 'Jenis transaksi tidak valid.'];
+            });
+        } catch (Throwable $e) {
+            return ['success' => false, 'message' => 'Transaksi gagal dihapus permanen.'];
+        }
+>>>>>>> 0026227 (Baru)
     }
 
     public function restoreAll()
     {
+<<<<<<< HEAD
         DB::table('pemasukan')->whereNotNull('deleted_at')->update(['deleted_at' => null]);
         DB::table('pengeluaran')->whereNotNull('deleted_at')->update(['deleted_at' => null]);
 
         return ['success' => true];
+=======
+        return DB::transaction(function () {
+            $deletedIncome = DB::table('pemasukan')->whereNotNull('deleted_at')->sum('nominal');
+            $deletedExpense = DB::table('pengeluaran')->whereNotNull('deleted_at')->sum('nominal');
+            $activeIncome = DB::table('pemasukan')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+            $activeExpense = DB::table('pengeluaran')->where('is_confirmed', 1)->whereNull('deleted_at')->sum('nominal');
+
+            $projectedBalance = ((float) $activeIncome + (float) $deletedIncome)
+                - ((float) $activeExpense + (float) $deletedExpense);
+
+            if ($projectedBalance < 0) {
+                return [
+                    'success' => false,
+                    'message' => 'Semua transaksi tidak dapat dipulihkan karena saldo akan menjadi negatif. Saldo setelah pemulihan: Rp ' . number_format($projectedBalance, 0, ',', '.'),
+                ];
+            }
+
+            DB::table('pemasukan')->whereNotNull('deleted_at')->update(['deleted_at' => null, 'updated_at' => now()]);
+            DB::table('pengeluaran')->whereNotNull('deleted_at')->update(['deleted_at' => null, 'updated_at' => now()]);
+            return ['success' => true];
+        });
+>>>>>>> 0026227 (Baru)
     }
 
     public function emptyTrash()
     {
+<<<<<<< HEAD
         DB::table('pemasukan')->whereNotNull('deleted_at')->delete();
         DB::table('pengeluaran')->whereNotNull('deleted_at')->delete();
 
         return ['success' => true];
+=======
+        return DB::transaction(function () {
+            $incomePaths = DB::table('pemasukan')->whereNotNull('deleted_at')->pluck('foto_bukti')->filter()->unique()->values()->all();
+            $expensePaths = DB::table('pengeluaran')->whereNotNull('deleted_at')->pluck('foto_struk')->filter()->unique()->values()->all();
+
+            DB::table('pemasukan')->whereNotNull('deleted_at')->delete();
+            DB::table('pengeluaran')->whereNotNull('deleted_at')->delete();
+
+            return ['success' => true, 'paths' => array_values(array_unique(array_merge($incomePaths, $expensePaths)))];
+        });
+    }
+
+    public function deleteReturnedFiles(array $paths): void
+    {
+        foreach (array_filter(array_unique($paths)) as $path) {
+            $stillReferenced = DB::table('pemasukan')->where('foto_bukti', $path)->exists()
+                || DB::table('pengeluaran')->where('foto_struk', $path)->exists();
+
+            if (!$stillReferenced) {
+                Storage::disk('public')->delete($path);
+            }
+        }
+>>>>>>> 0026227 (Baru)
     }
 }

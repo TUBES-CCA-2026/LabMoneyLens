@@ -8,6 +8,77 @@
   @vite(['resources/css/style.css','resources/css/welcome.css','resources/js/script.js'])
 
   <style>
+<<<<<<< HEAD
+=======
+
+    /* Transaction result popup: only for server-side success/error feedback. */
+    .transaction-result-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .transaction-result-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, .48);
+    }
+    .transaction-result-card {
+      position: relative;
+      width: min(460px, calc(100% - 32px));
+      background: #fff;
+      border-radius: 18px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, .25);
+    }
+    .transaction-result-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .transaction-result-icon.error {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .transaction-result-icon.success {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .transaction-result-card h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+      color: #0f172a;
+    }
+    .transaction-result-card p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+    .transaction-result-close {
+      margin-top: 20px;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 24px;
+      background: #0d9488;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .transaction-result-close:hover {
+      background: #0f766e;
+    }
+
+>>>>>>> 0026227 (Baru)
     /* ── Override layout: centered main ── */
     .main {
       flex-direction: column;
@@ -429,6 +500,28 @@
   </style>
 </head>
 <body>
+<<<<<<< HEAD
+=======
+
+  @if(session('error') || session('success'))
+    <div id="transaction-result-modal" class="transaction-result-modal"
+         role="dialog" aria-modal="true" aria-labelledby="transaction-result-title">
+      <div class="transaction-result-backdrop" onclick="closeTransactionResultModal()"></div>
+      <div class="transaction-result-card">
+        <div class="transaction-result-icon {{ session('error') ? 'error' : 'success' }}">
+          {{ session('error') ? '!' : '✓' }}
+        </div>
+        <h3 id="transaction-result-title">
+          {{ session('error') ? 'Penghapusan Ditolak' : 'Berhasil' }}
+        </h3>
+        <p>{{ session('error') ?? session('success') }}</p>
+        <button type="button" class="transaction-result-close"
+                onclick="closeTransactionResultModal()">Tutup</button>
+      </div>
+    </div>
+  @endif
+
+>>>>>>> 0026227 (Baru)
   <div class="app">
     <!-- Hamburger -->
     <button id="hamburger-menu" class="hamburger-menu" aria-label="Toggle Menu">
@@ -649,7 +742,11 @@
               </thead>
               <tbody>
                 @forelse($incomes as $i => $income)
+<<<<<<< HEAD
                   <tr>
+=======
+                  <tr data-transaction-group="{{ $income->transaction_group_id ?? $income->id }}" class="transaction-group-row">
+>>>>>>> 0026227 (Baru)
                     <td>{{ $i + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($income->tanggal)->format('d M Y') }}</td>
                     <td>{{ $income->kategori }}</td>
@@ -907,6 +1004,18 @@
     }
 
     attachNominalListeners();
+<<<<<<< HEAD
+=======
+
+    function closeTransactionResultModal() {
+      const modal = document.getElementById('transaction-result-modal');
+      if (modal) modal.remove();
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeTransactionResultModal();
+    });
+>>>>>>> 0026227 (Baru)
   </script>
 </body>
 </html>

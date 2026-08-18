@@ -1,0 +1,512 @@
+.dashboard-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.dashboard-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
+    border-radius: 16px;
+    border: 2px solid #e0f7f5;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 160px;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    border-color: #0d9488;
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15);
+    transform: translateY(-4px);
+}
+
+.card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.card-icon.up {
+    background: linear-gradient(135deg, #dcfce7 0%, #c6f6d5 100%);
+    color: #16a34a;
+}
+
+.card-icon.down {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626;
+}
+
+.card-icon.wallet {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1d4ed8;
+}
+
+.card-title {
+    font-size: 11px;
+    color: #0d9488;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 700;
+}
+
+.card-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #0f766e;
+    line-height: 1.1;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 18px;
+    flex: 1;
+}
+
+.chart-card,
+.recent-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
+    border-radius: 16px;
+    border: 2px solid #e0f7f5;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover,
+.recent-card:hover {
+    border-color: #0d9488;
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.chart-period {
+    font-size: 11px;
+    color: #0d9488;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+}
+
+/* ── Semester Filter ── */
+.semester-filter {
+    position: relative;
+}
+
+.semester-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 2px solid #0d9488;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0d9488;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.semester-btn:hover {
+    background: #0d9488;
+    color: #fff;
+}
+
+.semester-btn:hover .semester-chevron {
+    stroke: #fff;
+}
+
+.semester-chevron {
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+    stroke: #0d9488;
+}
+
+.semester-btn[aria-expanded="true"] .semester-chevron {
+    transform: rotate(180deg);
+}
+
+.semester-btn[aria-expanded="true"] {
+    background: #0d9488;
+    color: #fff;
+}
+
+.semester-btn[aria-expanded="true"] .semester-chevron {
+    stroke: #fff;
+}
+
+.semester-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: #fff;
+    border-radius: 14px;
+    border: 2px solid #e0f7f5;
+    box-shadow: 0 12px 32px rgba(13, 148, 136, 0.15);
+    overflow: hidden;
+    z-index: 100;
+    animation: dropFadeIn 0.18s ease;
+}
+
+.semester-dropdown.open {
+    display: block;
+}
+
+@keyframes dropFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.semester-group-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 16px 4px;
+}
+
+.semester-option {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f766e;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.semester-option:hover {
+    background: #f0fdf9;
+    color: #0d9488;
+}
+
+.semester-option.active {
+    background: linear-gradient(135deg, #ccfbf1 0%, #d1fae5 100%);
+    color: #065f46;
+    font-weight: 700;
+}
+
+/* ── Chart Loading Overlay ── */
+.chart-loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0d9488;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+}
+
+.chart-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e0f7f5;
+    border-top-color: #0d9488;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
+.chart-placeholder {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 110px) 1fr;
+    grid-template-rows: minmax(0, 1fr) 1px auto;
+    gap: 20px;
+    min-height: 360px;
+    flex: 1;
+}
+
+.chart-placeholder::before {
+    content: "";
+    grid-row: 1 / 2;
+    grid-column: 1 / 3;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent calc(100% / 18 - 1px),
+        rgba(13, 148, 136, 0.08) calc(100% / 18 - 1px),
+        rgba(13, 148, 136, 0.08) calc(100% / 18),
+        transparent calc(100% / 18),
+        transparent calc(100% / 9)
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+.chart-y-labels {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+    grid-template-rows: repeat(9, minmax(0, 1fr));
+    gap: 0;
+    min-width: 140px;
+    color: #0d9488;
+    font-size: 11px;
+    height: 100%;
+    align-items: center;
+    justify-items: start;
+}
+
+.chart-y-labels span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    height: auto;
+    line-height: 1.2;
+    padding: 0 0 0 12px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.chart-scrollable {
+    grid-row: 1 / 4;
+    grid-column: 2 / 3;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) 1px auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    border-left: 1px solid rgba(13, 148, 136, 0.12);
+}
+
+.chart-scrollable::-webkit-scrollbar {
+    height: 6px;
+}
+.chart-scrollable::-webkit-scrollbar-thumb {
+    background: rgba(13, 148, 136, 0.25);
+    border-radius: 4px;
+}
+
+.chart-bars {
+    position: relative;
+    z-index: 1;
+    grid-row: 1 / 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 20px;
+    height: 100%;
+    min-height: 0;
+    padding-bottom: 0;
+}
+
+.chart-base-line {
+    grid-row: 2 / 3;
+    width: 100%;
+    align-self: center;
+    height: 1px;
+    background: rgba(13, 148, 136, 0.15);
+}
+
+.chart-zero-label {
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+    align-self: center;
+    justify-self: end;
+    padding-right: 10px;
+    color: #0d9488;
+    font-size: 11px;
+}
+
+.chart-bar {
+    flex: 0 0 80px;
+    min-width: 80px;
+    height: calc(100% - 12px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.bar-fill {
+    width: 100%;
+    background: linear-gradient(180deg, #ef5350 0%, #ef4444 100%);
+    border-radius: 12px 12px 0 0;
+    min-height: 8px;
+    align-self: stretch;
+    transform-origin: bottom center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.chart-bar:hover .bar-fill {
+    transform: scaleY(1.05);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.chart-x-labels {
+    grid-row: 3 / 4;
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+    padding-top: 4px;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+}
+
+.chart-x-labels span {
+    display: inline-block;
+    flex: 0 0 80px;
+    width: 80px;
+    font-size: 11px;
+    color: #0f766e;
+    text-align: center;
+    line-height: 1.3;
+    font-weight: 500;
+}
+
+.recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid rgba(13, 148, 136, 0.1);
+    background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
+    transition: all 0.2s ease;
+}
+
+.recent-item:hover {
+    border-color: rgba(13, 148, 136, 0.25);
+    transform: translateX(4px);
+}
+
+.recent-item.income-row {
+    border-color: rgba(52, 211, 153, 0.3);
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.recent-item.expense-row {
+    border-color: rgba(248, 113, 113, 0.3);
+    background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%);
+}
+
+.recent-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f766e;
+}
+
+.recent-date {
+    font-size: 11px;
+    color: #0d9488;
+    margin-top: 4px;
+}
+
+.recent-item.empty {
+    justify-content: center;
+    padding: 24px;
+    color: #0d9488;
+}
+
+/* ── RESPONSIVE DESIGN (MOBILE) ── */
+@media (max-width: 1024px) {
+    .hamburger-menu {
+        display: flex;
+    }
+
+    .app {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        width: 220px;
+        height: 100vh;
+        border-radius: 0;
+        padding: 16px 0;
+        flex-direction: column;
+        z-index: 999;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .main {
+        flex-direction: column;
+        padding: 12px;
+        margin-left: 0;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+    .charts-row {
+        flex-direction: column;
+    }
+    .chart-container, .breakdown-container {
+        width: 100%;
+        min-width: unset;
+        min-height: 250px;
+    }
+}
+
+
+/* Hover tooltip tersedia melalui atribut title pada setiap bar. */
+.chart-bar{cursor:help;}

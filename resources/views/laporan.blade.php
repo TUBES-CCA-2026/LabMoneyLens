@@ -9,6 +9,15 @@
   
   <!-- Inline mobile hamburger styling as backup -->
   <style>
+<<<<<<< HEAD
+=======
+    .filter-auto-note {
+      align-self: center;
+      color: #64748b;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+>>>>>>> 0026227 (Baru)
     @media (max-width: 1024px) {
       .hamburger-menu {
         display: flex !important;
@@ -99,7 +108,11 @@
             </select>
           </div>
 
+<<<<<<< HEAD
           <button type="submit" class="apply-filter-btn">Apply Filter</button>
+=======
+          <span class="filter-auto-note">Filter diterapkan otomatis</span>
+>>>>>>> 0026227 (Baru)
         </form>
 
         <div class="table-wrap">
@@ -354,8 +367,26 @@
         });
     }
 
+<<<<<<< HEAD
     if (monthInput) monthInput.addEventListener('change', () => refreshReport(true));
     if (categorySelect) categorySelect.addEventListener('change', () => refreshReport(true));
+=======
+    // Filter diterapkan otomatis saat bulan atau kategori berubah.
+    // Tidak lagi bergantung pada tombol Apply Filter yang sebelumnya tidak
+    // memberikan feedback yang jelas karena tabel juga diperbarui via AJAX.
+    function applyAutoFilter() {
+      const params = new URLSearchParams();
+      if (monthInput && monthInput.value) params.set('month', monthInput.value);
+      if (categorySelect && categorySelect.value) params.set('category', categorySelect.value);
+      const query = params.toString();
+      const target = query ? ('{{ route('laporan') }}?' + query) : '{{ route('laporan') }}';
+      window.history.replaceState({}, '', target);
+      refreshReport(true);
+    }
+
+    if (monthInput) monthInput.addEventListener('change', applyAutoFilter);
+    if (categorySelect) categorySelect.addEventListener('change', applyAutoFilter);
+>>>>>>> 0026227 (Baru)
 
     refreshReport();
     setInterval(() => refreshReport(false), 4000);

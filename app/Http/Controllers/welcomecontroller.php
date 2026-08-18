@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePengeluaranRequest;
+<<<<<<< HEAD
+=======
+use App\Http\Requests\UpdatePengeluaranRequest;
+>>>>>>> 0026227 (Baru)
 use App\Services\PengeluaranService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -81,7 +85,11 @@ class welcomecontroller extends Controller
         return view('pengeluaran_edit', compact('expense', 'expenses', 'jenis'));
     }
 
+<<<<<<< HEAD
     public function update(Request $request, $id)
+=======
+    public function update(UpdatePengeluaranRequest $request, $id)
+>>>>>>> 0026227 (Baru)
     {
         if (!session()->has('user_id')) {
             return redirect()->route('login');
@@ -90,6 +98,7 @@ class welcomecontroller extends Controller
         if (session('user_role') === 'Kepala Lab') {
             abort(403, 'Unauthorized action.');
         }
+<<<<<<< HEAD
         $data = $request->validate([
             'tanggal'               => 'required|date',
             'id_pengeluaran'        => 'array',
@@ -101,12 +110,19 @@ class welcomecontroller extends Controller
             'kuantiti.*'            => 'nullable|integer|min:1',
             'id_jenis_pengeluaran'  => 'required|integer',
         ]);
+=======
+        $data = $request->validated();
+>>>>>>> 0026227 (Baru)
 
         $service = app(\App\Services\PengeluaranService::class);
         $result = $service->update($data, (int) $id);
 
         if (! $result['success']) {
+<<<<<<< HEAD
             return redirect()->route('pengeluaran.edit', $id)->with('error', $result['message']);
+=======
+            return redirect()->route('pengeluaran.edit', $id)->withInput()->with('error', $result['message']);
+>>>>>>> 0026227 (Baru)
         }
 
         return redirect()->route('welcome')->with('success', 'Pengeluaran berhasil diperbarui.');
@@ -173,7 +189,11 @@ class welcomecontroller extends Controller
 
         $validated = $request->validate([
             'tanggal'               => 'required|date',
+<<<<<<< HEAD
             'kategori_pengeluaran'  => 'required|integer',
+=======
+            'kategori_pengeluaran'  => 'required|integer|exists:jenis_pengeluaran,id_jenis_pengeluaran',
+>>>>>>> 0026227 (Baru)
             'uraian'                => 'required|array',
             'uraian.*'              => 'required|string|max:255',
             'nominal'               => 'required|array',
@@ -181,6 +201,10 @@ class welcomecontroller extends Controller
             'kuantiti'              => 'array',
             'kuantiti.*'            => 'nullable|integer|min:1',
             'id_jenis_pengeluaran'  => 'array',
+<<<<<<< HEAD
+=======
+            'id_jenis_pengeluaran.*' => 'nullable|integer|exists:jenis_pengeluaran,id_jenis_pengeluaran',
+>>>>>>> 0026227 (Baru)
             'receipt_image'         => 'nullable|image|max:5120',
         ]);
 

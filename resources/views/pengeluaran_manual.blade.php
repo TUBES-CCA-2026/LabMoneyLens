@@ -708,6 +708,75 @@
     </main>
   </div>
 
+<<<<<<< HEAD
+=======
+
+  <!-- Notification modal for transaction results -->
+  <div id="custom-modal" class="custom-modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-icon" id="modal-icon"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-message"></p>
+      <button type="button" class="modal-btn" onclick="closeModal()">Tutup</button>
+    </div>
+  </div>
+
+  <style>
+    .custom-modal {
+      display:none;
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      background:rgba(15,23,42,.45);
+      z-index:99999;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+    }
+    .custom-modal.show { display:flex; }
+    .modal-content {
+      background:#fff;
+      border-radius:18px;
+      padding:32px;
+      max-width:430px;
+      width:100%;
+      box-shadow:0 20px 60px rgba(15,23,42,.2);
+      text-align:center;
+      animation: modalIn .18s ease-out;
+    }
+    .modal-icon { margin-bottom:14px; min-height:56px; }
+    .modal-content h2 {
+      margin:0 0 10px;
+      font-size:22px;
+      font-weight:700;
+      color:#1f2937;
+    }
+    .modal-content p {
+      margin:0 0 24px;
+      font-size:14px;
+      color:#6b7280;
+      line-height:1.6;
+      white-space:pre-line;
+    }
+    .modal-btn {
+      border:0;
+      border-radius:10px;
+      padding:11px 30px;
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+      background:#16a34a;
+      color:#fff;
+    }
+    .modal-btn:hover { opacity:.92; }
+    @keyframes modalIn {
+      from { opacity:0; transform:translateY(8px) scale(.98); }
+      to { opacity:1; transform:translateY(0) scale(1); }
+    }
+  </style>
+
+>>>>>>> 0026227 (Baru)
   <script>
     // Upload filename preview
     const receiptInput = document.getElementById('receipt_image');
@@ -773,9 +842,65 @@
     // Data kategori
     const jenisDataManual = {!! json_encode($jenis) !!};
 
+<<<<<<< HEAD
     document.addEventListener('DOMContentLoaded', function() {
       syncKategoriSync();
       updateTotalManual();
+=======
+
+    function showModal(title, message, icon = 'ok') {
+      const modal = document.getElementById('custom-modal');
+      const modalIcon = document.getElementById('modal-icon');
+      const modalTitle = document.getElementById('modal-title');
+      const modalMessage = document.getElementById('modal-message');
+
+      if (!modal || !modalIcon || !modalTitle || !modalMessage) {
+        console.error('Notification modal elements are missing.');
+        return;
+      }
+
+      if (icon === 'error') {
+        modalIcon.innerHTML =
+          '<svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" width="56" height="56">' +
+          '<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>';
+      } else {
+        modalIcon.innerHTML =
+          '<svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" width="56" height="56">' +
+          '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>';
+      }
+
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('custom-modal');
+      if (!modal) return;
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      syncKategoriSync();
+      updateTotalManual();
+
+      // Show server-side business/validation errors as the same popup used
+      // by the other transaction pages. A rejected transaction is expected
+      // to be absent from the database, but the user must still be informed.
+      @if(session('error'))
+        showModal('Pengeluaran Ditolak', @json(session('error')), 'error');
+      @elseif(session('success'))
+        showModal('Berhasil', @json(session('success')), 'ok');
+      @elseif($errors->any())
+        showModal('Data Tidak Valid', @json($errors->first()), 'error');
+      @endif
+>>>>>>> 0026227 (Baru)
     });
 
     function syncKategoriSync() {

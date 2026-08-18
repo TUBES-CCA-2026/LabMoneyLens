@@ -247,6 +247,92 @@
       padding-left: 38px;
     }
 
+<<<<<<< HEAD
+=======
+
+    /* ── Quantity / nominal layout ── */
+    .nominal-qty-group {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 150px;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .qty-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .qty-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0f766e;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .qty-input {
+      width: 100%;
+      min-height: 43px;
+      padding: 10px 12px;
+      border: 2px solid #ccf0ee;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #0f766e;
+      background: #fff;
+      outline: none;
+      box-sizing: border-box;
+      transition: all .2s ease;
+    }
+
+    .qty-input:hover { border-color: #a5e8e3; }
+    .qty-input:focus {
+      border-color: #0d9488;
+      box-shadow: 0 0 0 4px rgba(13,148,136,.12);
+    }
+
+    .item-total-hint {
+      margin-top: 10px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      background: #f0fdf9;
+      color: #64748b;
+      font-size: 12px;
+      border: 1px solid #d8f3ef;
+    }
+
+    .item-total-hint strong { color: #0f766e; }
+
+    .item-row {
+      background: #fbfffe;
+      border: 1px solid #e0f7f5;
+      border-radius: 14px;
+      padding: 18px 18px 20px !important;
+      margin-bottom: 14px !important;
+      box-shadow: 0 2px 8px rgba(13,148,136,.05);
+    }
+
+    .item-row .btn-hapus-baris {
+      top: 12px !important;
+      right: 12px !important;
+      width: 30px;
+      height: 30px;
+      border: 1px solid #d8f3ef !important;
+      border-radius: 8px;
+      background: #fff !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 600px) {
+      .nominal-qty-group { grid-template-columns: 1fr; gap: 10px; }
+      .qty-wrapper { display: grid; grid-template-columns: 55px 1fr; align-items: center; gap: 8px; }
+    }
+
+>>>>>>> 0026227 (Baru)
     /* ── Form Actions ── */
     .form-actions {
       display: flex;
@@ -395,6 +481,24 @@
             </div>
 
             <div class="form-card-body">
+<<<<<<< HEAD
+=======
+              @if(session('error'))
+                <div style="margin-bottom:18px;padding:12px 14px;border:1px solid #fecaca;background:#fff1f2;color:#b91c1c;border-radius:10px;font-size:13px;line-height:1.5;">
+                  {{ session('error') }}
+                </div>
+              @endif
+              @if($errors->any())
+                <div style="margin-bottom:18px;padding:12px 14px;border:1px solid #fecaca;background:#fff1f2;color:#b91c1c;border-radius:10px;font-size:13px;line-height:1.5;">
+                  <strong>Periksa kembali data:</strong>
+                  <ul style="margin:6px 0 0 18px;padding:0;">
+                    @foreach($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+              @endif
+>>>>>>> 0026227 (Baru)
               <form method="POST" action="{{ route('pemasukan.update', ['id' => $income->id]) }}" class="input-form">
                 @csrf
 
@@ -436,12 +540,28 @@
                     <!-- Nominal -->
                     <div class="form-group span-2">
                       <label class="form-label" for="nominal_{{ $index }}">
+<<<<<<< HEAD
                         <span class="required-dot"></span> Nominal (IDR)
                       </label>
                       <div class="nominal-wrapper">
                         <span class="nominal-prefix">Rp</span>
                         <input type="number" class="form-input with-prefix nominal-input" id="nominal_{{ $index }}" name="nominal[]" placeholder="0" min="0" required value="{{ $item->jumlah }}" />
                       </div>
+=======
+                        <span class="required-dot"></span> Nominal Satuan (IDR)
+                      </label>
+                      <div class="nominal-qty-group">
+                        <div class="nominal-wrapper">
+                          <span class="nominal-prefix">Rp</span>
+                          <input type="number" class="form-input with-prefix nominal-input" id="nominal_{{ $index }}" name="nominal[]" placeholder="0" min="1" step="1" inputmode="numeric" required value="{{ (int) round($item->jumlah / max(1, (int) ($item->quantity ?? 1))) }}" />
+                        </div>
+                        <div class="qty-wrapper">
+                          <span class="qty-label">Qty</span>
+                          <input type="number" class="qty-input kuantiti-input" id="kuantiti_{{ $index }}" name="kuantiti[]" placeholder="1" min="1" value="{{ max(1, (int) ($item->quantity ?? 1)) }}" required />
+                        </div>
+                      </div>
+                      <div class="item-total-hint">Total item: <strong>Rp <span class="item-total-value">0</span></strong></div>
+>>>>>>> 0026227 (Baru)
                     </div>
 
                     @if($index > 0)
@@ -501,22 +621,43 @@
         </div>
         <div class="form-group span-2">
           <label class="form-label" for="nominal_${rowCount}">
+<<<<<<< HEAD
             <span class="required-dot"></span> Nominal (IDR)
           </label>
           <div class="nominal-wrapper">
             <span class="nominal-prefix">Rp</span>
             <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" required />
           </div>
+=======
+            <span class="required-dot"></span> Nominal Satuan (IDR)
+          </label>
+          <div class="nominal-qty-group">
+            <div class="nominal-wrapper">
+              <span class="nominal-prefix">Rp</span>
+              <input type="number" class="form-input with-prefix nominal-input" id="nominal_${rowCount}" name="nominal[]" placeholder="0" min="1" step="1" inputmode="numeric" required />
+            </div>
+            <div class="qty-wrapper">
+              <span class="qty-label">Qty</span>
+              <input type="number" class="qty-input kuantiti-input" id="kuantiti_${rowCount}" name="kuantiti[]" placeholder="1" min="1" value="1" required />
+            </div>
+          </div>
+          <div class="item-total-hint">Total item: <strong>Rp <span class="item-total-value">0</span></strong></div>
+>>>>>>> 0026227 (Baru)
         </div>
         <button type="button" class="btn-hapus-baris" onclick="hapusBaris(this)" style="position: absolute; top: 0; right: 0; background: none; border: none; color: #0d9488; cursor: pointer; font-size: 18px;" aria-label="Hapus Baris"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" style="display:inline-block;vertical-align:middle;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       `;
       
       container.appendChild(newRow);
       
+<<<<<<< HEAD
       // Re-bind calculation to new input
       const newNominalInput = newRow.querySelector('.nominal-input');
       newNominalInput.addEventListener('input', calculateTotal);
       
+=======
+      // Event calculation menggunakan delegation pada form sehingga nominal dan qty
+      // pada baris baru tetap ikut dihitung.
+>>>>>>> 0026227 (Baru)
       updateHapusButtons();
       rowCount++;
     }
@@ -538,6 +679,7 @@
       });
     }
 
+<<<<<<< HEAD
     function calculateTotal() {
       const nominalInputs = document.querySelectorAll('.nominal-input');
       let total = 0;
@@ -563,6 +705,66 @@
           });
         });
       });
+=======
+    function formatRupiah(value) {
+      return Math.max(0, Math.round(value)).toLocaleString('id-ID');
+    }
+
+    function calculateTotal() {
+      const rows = document.querySelectorAll('.item-row');
+      let total = 0;
+      rows.forEach(row => {
+        const nominalInput = row.querySelector('.nominal-input');
+        const quantityInput = row.querySelector('.kuantiti-input');
+        const nominal = Number(nominalInput?.value || 0);
+        const quantity = Math.max(1, Number(quantityInput?.value || 1));
+        const itemTotal = nominal * quantity;
+        total += itemTotal;
+        const itemTotalEl = row.querySelector('.item-total-value');
+        if (itemTotalEl) itemTotalEl.textContent = formatRupiah(itemTotal);
+      });
+      document.getElementById('total-nominal').textContent = formatRupiah(total);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('.input-form');
+      document.querySelectorAll('.nominal-input, .kuantiti-input').forEach(input => {
+        input.addEventListener('input', calculateTotal);
+        input.addEventListener('change', calculateTotal);
+      });
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          const rows = document.querySelectorAll('.item-row');
+          if (!rows.length) {
+            e.preventDefault();
+            showModal('Gagal', 'Minimal satu item pemasukan harus diisi.', 'error');
+            return;
+          }
+
+          let valid = true;
+          rows.forEach(row => {
+            const nominal = Number(row.querySelector('.nominal-input')?.value || 0);
+            const quantity = Number(row.querySelector('.kuantiti-input')?.value || 0);
+            if (nominal < 1 || quantity < 1) {
+              valid = false;
+              row.querySelector('.nominal-input')?.closest('.form-group')?.classList.add('has-error');
+            }
+          });
+
+          if (!valid) {
+            e.preventDefault();
+            showModal('Data belum lengkap', 'Nominal harus lebih dari Rp0 dan Qty minimal 1.', 'error');
+            return;
+          }
+
+          form.querySelectorAll('.nominal-input').forEach(input => {
+            input.value = String(input.value).replace(/[^0-9]/g, '');
+          });
+        });
+      }
+
+>>>>>>> 0026227 (Baru)
       calculateTotal();
       updateHapusButtons();
     });

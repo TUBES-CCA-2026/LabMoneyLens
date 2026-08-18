@@ -31,10 +31,17 @@ class PemasukanController extends Controller
         $result = $service->store($validated, $request->file('receipt_image'));
 
         if (! $result['success']) {
+<<<<<<< HEAD
             return redirect()->route('pemasukan')->with('error', $result['message']);
         }
 
         return redirect()->route('pemasukan')->with('success', 'Semua pemasukan berhasil disimpan.');
+=======
+            return redirect()->route('pemasukan.manual')->with('error', $result['message']);
+        }
+
+        return redirect()->route('pemasukan.manual')->with('success', 'Semua pemasukan berhasil disimpan.');
+>>>>>>> 0026227 (Baru)
     }
 
     public function edit($id)
@@ -49,7 +56,11 @@ class PemasukanController extends Controller
         $service = app(\App\Services\PemasukanService::class);
         $group = $service->findGroupById((int) $id);
         if (!$group) {
+<<<<<<< HEAD
             return redirect()->route('pemasukan')->with('error', 'Pemasukan tidak ditemukan.');
+=======
+            return redirect()->route('pemasukan.manual')->with('error', 'Pemasukan tidak ditemukan.');
+>>>>>>> 0026227 (Baru)
         }
 
         $income = $group['base'];
@@ -74,10 +85,17 @@ class PemasukanController extends Controller
         $result = $service->update($data, (int) $id);
 
         if (! $result['success']) {
+<<<<<<< HEAD
             return redirect()->route('pemasukan')->with('error', $result['message']);
         }
 
         return redirect()->route('pemasukan')->with('success', 'Pemasukan berhasil diperbarui.');
+=======
+            return redirect()->route('pemasukan.edit', ['id' => $id])->with('error', $result['message']);
+        }
+
+        return redirect()->route('pemasukan.manual')->with('success', 'Pemasukan berhasil diperbarui.');
+>>>>>>> 0026227 (Baru)
     }
 
     public function destroy($id)
@@ -90,6 +108,7 @@ class PemasukanController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $service = app(\App\Services\PemasukanService::class);
+<<<<<<< HEAD
         $service->destroy((int) $id);
 
         $referer = request()->headers->get('referer', '');
@@ -98,6 +117,20 @@ class PemasukanController extends Controller
         }
 
         return redirect()->route('pemasukan')->with('success', 'Pemasukan dihapus.');
+=======
+        $result = $service->destroy((int) $id);
+
+        $referer = request()->headers->get('referer', '');
+        $redirectRoute = str_contains($referer, '/laporan')
+            ? 'laporan'
+            : 'pemasukan.manual';
+
+        if (! $result['success']) {
+            return redirect()->route($redirectRoute)->with('error', $result['message']);
+        }
+
+        return redirect()->route($redirectRoute)->with('success', 'Pemasukan berhasil dipindahkan ke Recycle Bin.');
+>>>>>>> 0026227 (Baru)
     }
 
     public function storeKategori(Request $request)
@@ -188,7 +221,11 @@ class PemasukanController extends Controller
 
         $validated = $request->validate([
             'tanggal'               => 'required|date',
+<<<<<<< HEAD
             'kategori_pemasukan'    => 'required|integer',
+=======
+            'kategori_pemasukan'    => 'required|integer|exists:jenis_penerimaan,id_jenis_penerimaan',
+>>>>>>> 0026227 (Baru)
             'uraian'                => 'required|array',
             'uraian.*'              => 'required|string|max:255',
             'nominal'               => 'required|array',
@@ -196,6 +233,10 @@ class PemasukanController extends Controller
             'kuantiti'              => 'array',
             'kuantiti.*'            => 'nullable|integer|min:1',
             'id_jenis_penerimaan'   => 'array',
+<<<<<<< HEAD
+=======
+            'id_jenis_penerimaan.*' => 'nullable|integer|exists:jenis_penerimaan,id_jenis_penerimaan',
+>>>>>>> 0026227 (Baru)
             'receipt_image'         => 'nullable|image|max:5120',
         ]);
 

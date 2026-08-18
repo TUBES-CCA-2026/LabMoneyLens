@@ -22,7 +22,11 @@ class StorePengeluaranRequest extends FormRequest
             'kuantiti' => 'array',
             'kuantiti.*' => 'nullable|integer|min:1',
             'id_jenis_pengeluaran' => 'required|array',
+<<<<<<< HEAD
             'id_jenis_pengeluaran.*' => 'required|integer',
+=======
+            'id_jenis_pengeluaran.*' => 'required|integer|exists:jenis_pengeluaran,id_jenis_pengeluaran',
+>>>>>>> 0026227 (Baru)
             'receipt_image' => 'required|image|max:5120',
         ];
     }

@@ -22,7 +22,11 @@ class UpdatePengeluaranRequest extends FormRequest
             'nominal.*'             => 'required|numeric|min:0',
             'kuantiti'              => 'array',
             'kuantiti.*'            => 'nullable|integer|min:1',
+<<<<<<< HEAD
             'id_jenis_pengeluaran'  => 'required|integer',
+=======
+            'id_jenis_pengeluaran'  => 'required|integer|exists:jenis_pengeluaran,id_jenis_pengeluaran',
+>>>>>>> 0026227 (Baru)
         ];
     }
 }

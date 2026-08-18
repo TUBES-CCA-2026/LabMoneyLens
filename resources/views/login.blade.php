@@ -50,6 +50,7 @@
 
     </div>
 
+<<<<<<< HEAD
     <!-- Error Modal: Username Not Found -->
     <div id="usernameModal" class="modal" style="display: none;">
         <div class="modal-content modal-error-username">
@@ -78,18 +79,37 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="modal-btn" onclick="closeModal('passwordModal')">OK</button>
+=======
+    <!-- Generic authentication error modal -->
+    <div id="authErrorModal" class="modal" style="display: none;">
+        <div class="modal-content modal-error-password">
+            <div class="modal-header">
+                <h2>Login Gagal</h2>
+                <button type="button" class="modal-close" onclick="closeModal('authErrorModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Email/username atau password yang Anda masukkan salah. Silakan periksa kembali dan coba lagi.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn" onclick="closeModal('authErrorModal')">OK</button>
+>>>>>>> 0026227 (Baru)
             </div>
         </div>
     </div>
 
     <script>
         // Show appropriate modal based on error type
+<<<<<<< HEAD
         @if($errors->has('type'))
             @if($errors->first('type') === 'username_not_found')
                 showModal('usernameModal');
             @elseif($errors->first('type') === 'password_invalid')
                 showModal('passwordModal');
             @endif
+=======
+        @if($errors->has('type') || $errors->has('identifier') || $errors->has('password'))
+            showModal('authErrorModal');
+>>>>>>> 0026227 (Baru)
         @endif
 
         function showModal(modalId) {

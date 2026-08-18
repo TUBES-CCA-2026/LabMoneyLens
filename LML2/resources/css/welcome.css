@@ -1,0 +1,310 @@
+.input-panel {
+    width: 230px;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fdfb 100%);
+    border-radius: 16px;
+    border: 2px solid #e0f7f5;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+    transition: all 0.3s ease;
+}
+
+.input-panel:hover {
+    border-color: #0d9488;
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15);
+}
+
+.panel-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f766e;
+}
+
+.panel-subtitle {
+    font-size: 11px;
+    color: #0d9488;
+    line-height: 1.6;
+    margin-top: -4px;
+}
+
+.upload-zone {
+    border: 2px dashed rgba(13, 148, 136, 0.4);
+    border-radius: 12px;
+    padding: 32px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(224, 247, 245, 0.5) 0%, transparent 100%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.upload-zone svg {
+    width: 42px;
+    height: 42px;
+    stroke: #0d9488;
+    fill: none;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+.upload-label {
+    font-size: 12px;
+    color: #0d9488;
+    font-weight: 500;
+    text-align: center;
+}
+
+.upload-zone:hover {
+    border-color: #0d9488;
+    background: linear-gradient(135deg, rgba(224, 247, 245, 0.8) 0%, transparent 100%);
+}
+
+.upload-zone:hover svg {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.upload-zone.drag-over {
+    background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, transparent 100%);
+    border-color: #0d9488;
+    transform: scale(1.02);
+}
+
+.divider-text {
+    font-size: 11px;
+    color: #0d9488;
+    text-align: center;
+    font-weight: 500;
+}
+
+.save-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 12px;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+    background: linear-gradient(135deg, #0a6d6a 0%, #083d39 100%);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+    transform: translateY(-2px);
+}
+
+.save-btn:active {
+    transform: translateY(0);
+}
+
+.save-btn svg {
+    width: 17px;
+    height: 17px;
+    stroke: currentColor;
+    fill: none;
+}
+
+.preview-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.preview-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.preview-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f766e;
+}
+
+.preview-subtitle {
+    font-size: 11px;
+    color: #0d9488;
+    margin-top: 4px;
+}
+
+.confirm-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.4px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.confirm-btn:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-edit,
+.btn-hapus {
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-edit {
+    color: #0d9488;
+}
+
+.btn-edit:hover {
+    color: #0f766e;
+}
+
+.btn-hapus {
+    color: #ef4444;
+}
+
+.btn-hapus:hover {
+    color: #dc2626;
+}
+
+.status.confirmed {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+    color: #047857;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.empty-row {
+    text-align: center;
+    color: #0d9488;
+}
+
+.dropdown-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.apply-filter-btn {
+    background: linear-gradient(135deg, #0d9488 0%, #0a6d6a 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.apply-filter-btn:hover {
+    background: linear-gradient(135deg, #0a6d6a 0%, #083d39 100%);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+    transform: translateY(-2px);
+}
+
+/* ── RESPONSIVE DESIGN (MOBILE) ── */
+@media (max-width: 1024px) {
+    .app {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        width: 220px;
+        height: 100vh;
+        border-radius: 0;
+        padding: 16px 0;
+        flex-direction: column;
+        z-index: 999;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .sidebar-user {
+        margin-bottom: 8px;
+        padding: 10px 16px 18px;
+        justify-content: flex-start;
+    }
+
+    .sidebar-nav {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 2px;
+        padding: 0 10px;
+    }
+
+    .nav-item {
+        padding: 10px 12px;
+        font-size: 11px;
+        justify-content: flex-start;
+        white-space: nowrap;
+    }
+
+    .sidebar-logout {
+        display: flex;
+        justify-content: flex-start;
+        border-top: none;
+        margin-top: auto;
+        padding: 10px 16px;
+    }
+
+    .main {
+        flex-direction: column;
+        padding: 14px;
+        margin-left: 0;
+    }
+
+    .input-panel {
+        width: 100%;
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+        width: 100%;
+    }
+
+    table {
+        min-width: 600px;
+    }
+}

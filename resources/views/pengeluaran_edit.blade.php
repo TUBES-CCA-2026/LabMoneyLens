@@ -483,11 +483,19 @@
                       <div class="nominal-qty-group">
                         <div class="nominal-wrapper">
                           <span class="nominal-prefix">Rp</span>
+<<<<<<< HEAD
                           <input type="number" class="form-input with-prefix nominal-input" id="nominal_{{ $index }}" name="nominal[]" placeholder="0" min="1" required value="{{ $item->jumlah }}" />
                         </div>
                         <div class="qty-wrapper">
                           <span class="qty-label">Qty</span>
                           <input type="number" class="qty-input kuantiti-input" id="kuantiti_{{ $index }}" name="kuantiti[]" placeholder="1" min="1" value="1" required />
+=======
+                          <input type="number" class="form-input with-prefix nominal-input" id="nominal_{{ $index }}" name="nominal[]" placeholder="0" min="1" required value="{{ $item->quantity ? ($item->jumlah / max(1, $item->quantity)) : $item->jumlah }}" />
+                        </div>
+                        <div class="qty-wrapper">
+                          <span class="qty-label">Qty</span>
+                          <input type="number" class="qty-input kuantiti-input" id="kuantiti_{{ $index }}" name="kuantiti[]" placeholder="1" min="1" value="{{ max(1, (int) ($item->quantity ?? 1)) }}" required />
+>>>>>>> 0026227 (Baru)
                         </div>
                       </div>
                     </div>
@@ -601,8 +609,15 @@
       rows.forEach(row => {
         const nominalInput = row.querySelector('.nominal-input');
         const kuantitiInput = row.querySelector('.kuantiti-input');
+<<<<<<< HEAD
         const rawNom = String(nominalInput?.value || '');
         const nominal = parseFloat(rawNom.replace(/[^0-9]/g, '')) || 0;
+=======
+        const rawNom = String(nominalInput?.value || '').trim();
+        // Nominal adalah angka desimal. Jangan menghapus titik desimal:
+        // 1.00 harus tetap dibaca sebagai 1, bukan 100.
+        const nominal = Number(rawNom) || 0;
+>>>>>>> 0026227 (Baru)
         const kuantiti = parseInt(kuantitiInput?.value) || 1;
         total += nominal * kuantiti;
       });
@@ -613,6 +628,7 @@
       document.querySelectorAll('.nominal-input, .kuantiti-input').forEach(input => {
         input.addEventListener('input', calculateTotal);
       });
+<<<<<<< HEAD
       // sanitize nominals on form submit
       document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -621,6 +637,10 @@
           });
         });
       });
+=======
+      // Nominal dikirim apa adanya agar desimal seperti 1.00 tetap berarti Rp1.
+      // Tidak ada sanitasi yang menghapus titik desimal.
+>>>>>>> 0026227 (Baru)
       // Validasi kuantiti tidak boleh 0 atau kurang
       document.getElementById('items-container').addEventListener('input', function(e) {
         if (e.target.classList.contains('kuantiti-input')) {

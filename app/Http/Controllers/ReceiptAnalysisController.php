@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< HEAD
+=======
+use App\Http\Requests\ReceiptAnalysisRequest;
+>>>>>>> 0026227 (Baru)
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -10,6 +14,7 @@ use Carbon\Carbon;
 
 class ReceiptAnalysisController extends Controller
 {
+<<<<<<< HEAD
     public function parse(Request $request)
     {
         $request->validate([
@@ -17,6 +22,10 @@ class ReceiptAnalysisController extends Controller
             'type' => 'required|in:pemasukan,pengeluaran',
         ]);
 
+=======
+    public function parse(ReceiptAnalysisRequest $request)
+    {
+>>>>>>> 0026227 (Baru)
         $image = $request->file('receipt_image');
         $contents = base64_encode(file_get_contents($image->getRealPath()));
         $mimeType = $image->getMimeType();
